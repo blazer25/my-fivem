@@ -1,0 +1,52 @@
+[
+  {
+    "$schema": 1,
+    "name": "zap1339023",
+    "master": true,
+    "password_hash": "$2y$10$wHwlMcL/CF9jDwqTOW3Yxe5haAqwQ3h4smM/qmh1VBRUe8aMR49/O",
+    "providers": {},
+    "permissions": []
+  },
+  {
+    "$schema": 1,
+    "name": "ryanmilano",
+    "master": false,
+    "password_hash": "$2a$11$H9aVEOXEt5SofqRpdINadu71o2ZOm10Xrb8sTLVfBMOm6/aKWIdk2",
+    "providers": {
+      "citizenfx": {
+        "id": "Ross_Beaver",
+        "identifier": "fivem:5469982",
+        "data": {}
+      },
+      "discord": {
+        "id": "795494974182391838",
+        "identifier": "discord:795494974182391838",
+        "data": {}
+      }
+    },
+    "permissions": [
+      "all_permissions"
+    ]
+  },
+  {
+    "$schema": 1,
+    "name": "blazer",
+    "master": false,
+    "password_hash": "$2a$11$80n9OGOz7cgfhJUDoDcd/.1nAZlsoyby.EVwVnEeUgEGpoAjgkfyK",
+    "providers": {
+      "citizenfx": {
+        "id": "chevyajb1997",
+        "identifier": "fivem:4935569",
+        "data": {}
+      },
+      "discord": {
+        "id": "907787623681110047",
+        "identifier": "discord:907787623681110047",
+        "data": {}
+      }
+    },
+    "permissions": [
+      "all_permissions"
+    ]
+  }
+]

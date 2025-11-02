@@ -1,0 +1,288 @@
+[38;5;218m[    c-server-monitor] [0m[0m[32m  _______  ______                           
+[38;5;218m[    c-server-monitor] [0m[32m |  ___\ \/ / ___|  ___ _ ____   _____ _ __ 
+[38;5;218m[    c-server-monitor] [0m[32m | |_   \  /\___ \ / _ \ '__\ \ / / _ \ '__|
+[38;5;218m[    c-server-monitor] [0m[32m |  _|  /  \ ___) |  __/ |   \ V /  __/ |   
+[38;5;218m[    c-server-monitor] [0m[32m |_|   /_/\_\____/ \___|_|    \_/ \___|_|   
+[38;5;218m[    c-server-monitor] [0m[32m-------------------------------- [93mtxAdmin[32m ---[0m
+[38;5;218m[    c-server-monitor] [0m[0m
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for monitor
+[43m[30m[14:18:45][tx][39m[49m WARNING: The 'txDataPath' ConVar is deprecated and will be removed in the next update.
+[43m[30m[14:18:45][tx][39m[49m          Please use the 'TXHOST_DATA_PATH' environment variable instead.
+[43m[30m[14:18:45][tx][39m[49m WARNING: The 'txAdminPort' ConVar is deprecated and will be removed in the next update.
+[43m[30m[14:18:45][tx][39m[49m          Please use the 'TXHOST_TXA_PORT' environment variable instead.
+[43m[30m[14:18:45][tx][39m[49m WARNING: For more information: https://aka.cfx.re/txadmin-env-config
+[43m[30m[14:18:45][tx][39m[49m WARNING: Both the environment variable 'TXHOST_DATA_PATH' and the ConVar equivalent are set. The environment variable will be prioritized.
+[43m[30m[14:18:45][tx][39m[49m WARNING: The 'txAdminZapConfig.json' file has been deprecated and this feature will be removed in the next update.
+[43m[30m[14:18:45][tx][39m[49m          Please use the 'TXHOST_' environment variables instead.
+[43m[30m[14:18:45][tx][39m[49m          For more information: https://aka.cfx.re/txadmin-env-config.
+[43m[30m[14:18:45][tx][39m[49m WARNING: Both the environment variable 'TXHOST_TXA_PORT' and the ConVar equivalent are set. The environment variable will be prioritized.
+[43m[30m[14:18:45][tx][39m[49m WARNING: Both the environment variable 'TXHOST_PROVIDER_NAME' and the txAdminZapConfig.json equivalent are set. The environment variable will be prioritized.
+]0;txAdmin v8.0.1[44m[30m[14:18:46][tx][39m[49m Starting txAdmin v8.0.1/b21703/ZAP...
+[43m[30m[14:18:46][tx:WebServer][39m[49m Starting with interface 5.249.165.251.
+[43m[30m[14:18:46][tx:WebServer][39m[49m If the HTTP server doesn't start, this is probably the reason.
+[42m[30m[14:18:46][tx:WebServer][39m[49m Listening on 5.249.165.251.
+[42m[30m[14:18:47][tx][39m[49m 
+[42m[30m[14:18:47][tx][39m[49m [36m   ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓[39m
+[42m[30m[14:18:47][tx][39m[49m    [36m┃[39m                                  [36m┃[39m
+[42m[30m[14:18:47][tx][39m[49m    [36m┃[39m    All ready! Please access:     [36m┃[39m
+[42m[30m[14:18:47][tx][39m[49m    [36m┃[39m   [7m http://5.249.165.251:30101 [27m   [36m┃[39m
+[42m[30m[14:18:47][tx][39m[49m    [36m┃[39m                                  [36m┃[39m
+[42m[30m[14:18:47][tx][39m[49m [36m   ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛[39m
+[42m[30m[14:18:47][tx][39m[49m 
+[42m[30m[14:18:47][tx:FXProc][3151233][39m[49m FXServer Started!
+[104m[30m[104m[30m║             TXADMIN║[39m[30m[49m[104m ================================================================[39m[49m
+[104m[30m[104m[30m║             TXADMIN║[39m[30m[49m[104m ======== [3151233] FXServer Starting - 11/2/2025, 2:18:47 PM    [39m[49m
+[104m[30m[104m[30m║             TXADMIN║[39m[30m[49m[104m ================================================================[39m[49m
+[38;5;83m[           resources] [0m[0m[32mScanning resources.[0m
+[38;5;81m[resources:hycsunrise] [0m[0m[93mWarning: hycsunrise does not have a resource manifest (fxmanifest.lua)[0m
+[38;5;83m[           resources] [0m[0m[32mFound 115 resources.[0m
+[38;5;83m[           resources] [0m[0m[93m1 warning was encountered.[0m
+[38;5;66m[          svadhesive] [0m[0mAuthenticating server license key...
+[38;5;66m[          svadhesive] [0m[0mServer license key authentication succeeded. Welcome!
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for monitor
+[38;5;84m[      script:monitor] [0m[0m[36m[txAdmin][97m Resource v8.0.1 threads and commands set up. All Ready.[97m
+[38;5;83m[           resources] [0m[97mStarted resource monitor
+[38;5;171m[                 cmd] [0m[97mNo such command load_server_Life$tyle.
+[38;5;83m[           resources] [0m[97mStarted resource ziv-loadscreen
+[38;5;161m[    c-scripting-core] [0m[97mCreating script environments for mapmanager
+[38;5;83m[           resources] [0m[97mStarted resource mapmanager
+[38;5;161m[    c-scripting-core] [0m[97mCreating script environments for chat
+[38;5;83m[           resources] [0m[97mStarted resource chat
+[38;5;83m[           resources] [0m[97mStarted resource spawnmanager
+[38;5;161m[    c-scripting-core] [0m[97mCreating script environments for sessionmanager
+[38;5;83m[           resources] [0m[97mStarted resource sessionmanager
+[38;5;161m[    c-scripting-core] [0m[97mCreating script environments for hardcap
+[38;5;83m[           resources] [0m[97mStarted resource hardcap
+[38;5;161m[    c-scripting-core] [0m[97mCreating script environments for baseevents
+[38;5;83m[           resources] [0m[97mStarted resource baseevents
+[38;5;83m[           resources] [0m[97mStarted resource map
+[38;5;48m[resources:19415_c324] [0m[97m[94mAsset 19415_c324gresley/c324gresley.yft uses 19.9 MiB of virtual memory.[0m
+[38;5;48m[resources:19415_c324] [0m[0m[91mAsset 19415_c324gresley/c324gresley.ytd uses 129.0 MiB of physical memory. Oversized assets can and WILL lead to streaming issues (such as models not loading/rendering).[0m
+[38;5;48m[resources:19415_c324] [0m[0m[94mAsset 19415_c324gresley/c324gresley_hi.yft uses 19.9 MiB of virtual memory.[0m
+[38;5;83m[           resources] [0m[0mStarted resource 19415_c324gresley (3 warnings)
+[38;5;73m[ citizen-server-impl] [0m[0mYou lack the required entitlement to use cfx-stxh-jakers
+[38;5;73m[ citizen-server-impl] [0m[0m[93mCouldn't start resource cfx-stxh-jakers.[0m
+[38;5;230m[resources:driftstang] [0m[0m[93mWarning: could not find file `data/**/vehiclelayouts.meta` (defined in __resource.lua:3)[0m
+[38;5;201m[resources:driftstang] [0m[0m[94mAsset driftstang/rrdominators197.bak uses 18.0 MiB of virtual memory.[0m
+[38;5;201m[resources:driftstang] [0m[0m[94mAsset driftstang/rrdominators197.yft uses 18.0 MiB of virtual memory.[0m
+[38;5;201m[resources:driftstang] [0m[0m[94mAsset driftstang/rrdominators197.ytd uses 23.0 MiB of physical memory.[0m
+[38;5;201m[resources:driftstang] [0m[0m[94mAsset driftstang/rrdominators197_hi.yft uses 18.0 MiB of virtual memory.[0m
+[38;5;83m[           resources] [0m[0mStarted resource driftstang (5 warnings)
+[38;5;186m[ resources:gstsadlt1] [0m[0m[93mWarning: could not find file `data/**/vehiclelayouts.meta` (defined in __resource.lua:3)[0m
+[38;5;156m[resources:gstsadlt1:] [0m[0m[91mAsset gstsadlt1/gstsadlt1.ytd uses 192.0 MiB of physical memory. Oversized assets can and WILL lead to streaming issues (such as models not loading/rendering).[0m
+[38;5;156m[resources:gstsadlt1:] [0m[0m[91mAsset gstsadlt1/gstsadlt1b.ytd uses 224.0 MiB of physical memory. Oversized assets can and WILL lead to streaming issues (such as models not loading/rendering).[0m
+[38;5;156m[resources:gstsadlt1:] [0m[0m[91mAsset gstsadlt1/gstsadlt1c.ytd uses 192.0 MiB of physical memory. Oversized assets can and WILL lead to streaming issues (such as models not loading/rendering).[0m
+[38;5;156m[resources:gstsadlt1:] [0m[0m[91mAsset gstsadlt1/gstsadlt1d.ytd uses 224.0 MiB of physical memory. Oversized assets can and WILL lead to streaming issues (such as models not loading/rendering).[0m
+[38;5;83m[           resources] [0m[0mStarted resource gstsadlt1 (5 warnings)
+[38;5;78m[resources:gstsadlt1b] [0m[0m[93mWarning: could not find file `data/**/vehiclelayouts.meta` (defined in __resource.lua:3)[0m
+[38;5;175m[resources:gstsadlt1b] [0m[0m[91mAsset gstsadlt1b/gstsadlt1.ytd uses 192.0 MiB of physical memory. Oversized assets can and WILL lead to streaming issues (such as models not loading/rendering).[0m
+[38;5;175m[resources:gstsadlt1b] [0m[0m[91mAsset gstsadlt1b/gstsadlt1b.ytd uses 224.0 MiB of physical memory. Oversized assets can and WILL lead to streaming issues (such as models not loading/rendering).[0m
+[38;5;175m[resources:gstsadlt1b] [0m[0m[91mAsset gstsadlt1b/gstsadlt1c.ytd uses 192.0 MiB of physical memory. Oversized assets can and WILL lead to streaming issues (such as models not loading/rendering).[0m
+[38;5;175m[resources:gstsadlt1b] [0m[0m[91mAsset gstsadlt1b/gstsadlt1d.ytd uses 224.0 MiB of physical memory. Oversized assets can and WILL lead to streaming issues (such as models not loading/rendering).[0m
+[38;5;83m[           resources] [0m[0mStarted resource gstsadlt1b (5 warnings)
+[38;5;141m[resources:gstsadlt1c] [0m[0m[93mWarning: could not find file `data/**/vehiclelayouts.meta` (defined in __resource.lua:3)[0m
+[38;5;200m[resources:gstsadlt1c] [0m[0m[91mAsset gstsadlt1c/gstsadlt1.ytd uses 192.0 MiB of physical memory. Oversized assets can and WILL lead to streaming issues (such as models not loading/rendering).[0m
+[38;5;200m[resources:gstsadlt1c] [0m[0m[91mAsset gstsadlt1c/gstsadlt1b.ytd uses 224.0 MiB of physical memory. Oversized assets can and WILL lead to streaming issues (such as models not loading/rendering).[0m
+[38;5;200m[resources:gstsadlt1c] [0m[0m[91mAsset gstsadlt1c/gstsadlt1c.ytd uses 192.0 MiB of physical memory. Oversized assets can and WILL lead to streaming issues (such as models not loading/rendering).[0m
+[38;5;200m[resources:gstsadlt1c] [0m[0m[91mAsset gstsadlt1c/gstsadlt1d.ytd uses 224.0 MiB of physical memory. Oversized assets can and WILL lead to streaming issues (such as models not loading/rendering).[0m
+[38;5;83m[           resources] [0m[0mStarted resource gstsadlt1c (5 warnings)
+[38;5;78m[resources:gstsadlt1d] [0m[0m[93mWarning: could not find file `data/**/vehiclelayouts.meta` (defined in __resource.lua:3)[0m
+[38;5;201m[resources:gstsadlt1d] [0m[0m[91mAsset gstsadlt1d/gstsadlt1.ytd uses 192.0 MiB of physical memory. Oversized assets can and WILL lead to streaming issues (such as models not loading/rendering).[0m
+[38;5;201m[resources:gstsadlt1d] [0m[0m[91mAsset gstsadlt1d/gstsadlt1b.ytd uses 224.0 MiB of physical memory. Oversized assets can and WILL lead to streaming issues (such as models not loading/rendering).[0m
+[38;5;201m[resources:gstsadlt1d] [0m[0m[91mAsset gstsadlt1d/gstsadlt1c.ytd uses 192.0 MiB of physical memory. Oversized assets can and WILL lead to streaming issues (such as models not loading/rendering).[0m
+[38;5;201m[resources:gstsadlt1d] [0m[0m[91mAsset gstsadlt1d/gstsadlt1d.ytd uses 224.0 MiB of physical memory. Oversized assets can and WILL lead to streaming issues (such as models not loading/rendering).[0m
+[38;5;83m[           resources] [0m[0mStarted resource gstsadlt1d (5 warnings)
+[38;5;90m[   resources:gstsug1] [0m[0m[93mWarning: could not find file `data/**/vehiclelayouts.meta` (defined in __resource.lua:3)[0m
+[38;5;92m[resources:gstsug1:st] [0m[0m[94mAsset gstsug1/gstsug1.ytd uses 18.0 MiB of physical memory.[0m
+[38;5;83m[           resources] [0m[0mStarted resource gstsug1 (2 warnings)
+[38;5;134m[     resources:vette] [0m[0m[93mWarning: could not find file `data/**/vehiclelayouts.meta` (defined in __resource.lua:3)[0m
+[38;5;183m[resources:vette:stre] [0m[0m[94mAsset vette/rrcoquette6r.ytd uses 28.0 MiB of physical memory.[0m
+[38;5;83m[           resources] [0m[0mStarted resource vette (2 warnings)
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for Ricky-VinewoodSign
+[38;5;155m[script:Ricky-Vinewoo] [0m[0m[Ricky-VinewoodSign] Framework found: standalone
+[38;5;83m[           resources] [0m[0mStarted resource Ricky-VinewoodSign
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for oxmysql
+[38;5;83m[           resources] [0m[0mStarted resource oxmysql
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qb-admin
+[38;5;205m[     script:qb-admin] [0m[0m[91mSCRIPT ERROR: @qb-admin/compat/qbcore.lua:1: No such export GetCoreObject in resource qb-core[0m
+[38;5;205m[     script:qb-admin] [0m[0m[91mSCRIPT ERROR: @qb-admin/server/main.lua:90: attempt to index a nil value (global 'Compat')[0m
+[38;5;205m[     script:qb-admin] [0m[0m[93m> fn[0m ([36m@qb-admin/server/main.lua[0m:90)
+[38;5;188m[  resources:qb-admin] [0m[0m[93mWarning: could not find file `version.lua` (defined in fxmanifest.lua:35)[0m
+[38;5;83m[           resources] [0m[0mStarted resource qb-admin (1 warning)
+[38;5;171m[                 cmd] [0m[0mNo such command Start/Encure.
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for ox_lib
+[38;5;83m[           resources] [0m[0mStarted resource ox_lib
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_core
+[38;5;84m[     script:qbx_core] [0m[0m[36m[qbx_core] [0m[INFO] Stopping hardcap...[0m
+[38;5;83m[           resources] [0m[0mStopping resource hardcap
+[38;5;83m[           resources] [0m[0mStarted resource qbx_core
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for ox_target
+[38;5;83m[           resources] [0m[0mStarted resource ox_target
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for ox_doorlock
+[38;5;83m[           resources] [0m[0mStarted resource ox_doorlock
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for ox_inventory
+[38;5;83m[           resources] [0m[0mStarted resource ox_inventory
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for ox_fuel
+[38;5;83m[           resources] [0m[0mStarted resource ox_fuel
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_adminmenu
+[38;5;83m[           resources] [0m[0mStarted resource qbx_adminmenu
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_medical
+[38;5;83m[           resources] [0m[0mStarted resource qbx_medical
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_ambulancejob
+[38;5;83m[           resources] [0m[0mStarted resource qbx_ambulancejob
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_bankrobbery
+[38;5;83m[           resources] [0m[0mStarted resource qbx_bankrobbery
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_binoculars
+[38;5;83m[           resources] [0m[0mStarted resource qbx_binoculars
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_busjob
+[38;5;83m[           resources] [0m[0mStarted resource qbx_busjob
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_carwash
+[38;5;83m[           resources] [0m[0mStarted resource qbx_carwash
+[38;5;83m[           resources] [0m[0mStarted resource qbx_chat_theme
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_cityhall
+[38;5;83m[           resources] [0m[0mStarted resource qbx_cityhall
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_customs
+[38;5;83m[           resources] [0m[0mStarted resource qbx_customs
+[38;5;83m[           resources] [0m[0mStarted resource qbx_density
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_divegear
+[38;5;83m[           resources] [0m[0mStarted resource qbx_divegear
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_diving
+[38;5;83m[           resources] [0m[0mStarted resource qbx_diving
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_drugs
+[38;5;83m[           resources] [0m[0mStarted resource qbx_drugs
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_fireworks
+[38;5;83m[           resources] [0m[0mStarted resource qbx_fireworks
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_garages
+[38;5;83m[           resources] [0m[0mStarted resource qbx_garages
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_garbagejob
+[38;5;83m[           resources] [0m[0mStarted resource qbx_garbagejob
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_houserobbery
+[38;5;83m[           resources] [0m[0mStarted resource qbx_houserobbery
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_hud
+[38;5;83m[           resources] [0m[0mStarted resource qbx_hud
+[38;5;83m[           resources] [0m[0mStarted resource MugShotBase64
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_idcard
+[38;5;83m[           resources] [0m[0mStarted resource qbx_idcard
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_jewelery
+[38;5;83m[           resources] [0m[0mStarted resource qbx_jewelery
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_lapraces
+[38;5;83m[           resources] [0m[0mStarted resource qbx_lapraces
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_management
+[38;5;83m[           resources] [0m[0mStarted resource qbx_management
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_mechanicjob
+[38;5;83m[           resources] [0m[0mStarted resource qbx_mechanicjob
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_newsjob
+[38;5;83m[           resources] [0m[0mStarted resource qbx_newsjob
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_pawnshop
+[38;5;83m[           resources] [0m[0mStarted resource qbx_pawnshop
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_police
+[38;5;83m[           resources] [0m[0mStarted resource qbx_police
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_properties
+[38;5;83m[           resources] [0m[0mStarted resource qbx_properties
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_radialmenu
+[38;5;83m[           resources] [0m[0mStarted resource qbx_radialmenu
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_recyclejob
+[38;5;83m[           resources] [0m[0mStarted resource qbx_recyclejob
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_scoreboard
+[38;5;83m[           resources] [0m[0mStarted resource qbx_scoreboard
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_scrapyard
+[38;5;83m[           resources] [0m[0mStarted resource qbx_scrapyard
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_seatbelt
+[38;5;83m[           resources] [0m[0mStarted resource qbx_seatbelt
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_smallresources
+[38;5;69m[script:qbx_smallreso] [0m[0m[36m[qbx_smallresources] [93m[WARN] [qbx_entitiesblacklist] You have entity blacklist enabled, this means that any entity that is blacklisted in config.lua will not be able to spawn, you can change this in qbx_smallresource/qbx_entitiesblacklist/config.lua[0m
+[38;5;83m[           resources] [0m[0mStarted resource qbx_smallresources
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_spawn
+[38;5;83m[           resources] [0m[0mStarted resource qbx_spawn
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_storerobbery
+[38;5;83m[           resources] [0m[0mStarted resource qbx_storerobbery
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_streetraces
+[38;5;83m[           resources] [0m[0mStarted resource qbx_streetraces
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_taxijob
+[38;5;83m[           resources] [0m[0mStarted resource qbx_taxijob
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_towjob
+[38;5;83m[           resources] [0m[0mStarted resource qbx_towjob
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_truckerjob
+[38;5;83m[           resources] [0m[0mStarted resource qbx_truckerjob
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_truckrobbery
+[38;5;83m[           resources] [0m[0mStarted resource qbx_truckrobbery
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_vehiclekeys
+[38;5;83m[           resources] [0m[0mStarted resource qbx_vehiclekeys
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_vehicles
+[38;5;83m[           resources] [0m[0mStarted resource qbx_vehicles
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_vehiclesales
+[38;5;83m[           resources] [0m[0mStarted resource qbx_vehiclesales
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_vehicleshop
+[38;5;83m[           resources] [0m[0mStarted resource qbx_vehicleshop
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_vineyard
+[38;5;83m[           resources] [0m[0mStarted resource qbx_vineyard
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_weed
+[38;5;83m[           resources] [0m[0mStarted resource qbx_weed
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for Renewed-Banking
+[38;5;83m[           resources] [0m[0mStarted resource Renewed-Banking
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for Renewed-Weathersync
+[38;5;83m[           resources] [0m[0mStarted resource Renewed-Weathersync
+[38;5;83m[           resources] [0m[0mStarted resource bob74_ipl
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for illenium-appearance
+[38;5;83m[           resources] [0m[0mStarted resource illenium-appearance
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for informational
+[38;5;83m[           resources] [0m[0mStarted resource informational
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for loadscreen
+[38;5;83m[           resources] [0m[0mStarted resource loadscreen
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for mana_audio
+[38;5;83m[           resources] [0m[0mStarted resource mana_audio
+[38;5;83m[           resources] [0m[0mStarted resource mhacking
+[38;5;83m[           resources] [0m[0mStarted resource safecracker
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for screencapture
+[38;5;83m[           resources] [0m[0mStarted resource screencapture
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for scully_emotemenu
+[38;5;83m[           resources] [0m[0mStarted resource scully_emotemenu
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for ultra-voltlab
+[38;5;83m[           resources] [0m[0mStarted resource ultra-voltlab
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for vehiclehandler
+[38;5;83m[           resources] [0m[0mStarted resource vehiclehandler
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for xt-prison
+[38;5;83m[           resources] [0m[0mStarted resource xt-prison
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for pma-voice
+[38;5;83m[           resources] [0m[0mStarted resource pma-voice
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for mm_radio
+[38;5;83m[           resources] [0m[0mStarted resource mm_radio
+[38;5;110m[   resources:pillbox] [0m[0m[93mWarning: could not find file `v_int_40.ytyp` (defined in fxmanifest.lua:6)[0m
+[38;5;83m[           resources] [0m[0mStarted resource pillbox (1 warning)
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for npwd_qbx_garages
+[38;5;83m[           resources] [0m[0mStarted resource npwd_qbx_garages
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for npwd_qbx_mail
+[38;5;83m[           resources] [0m[0mStarted resource npwd_qbx_mail
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for qbx_npwd
+[38;5;83m[           resources] [0m[0mStarted resource qbx_npwd
+[38;5;161m[    c-scripting-core] [0m[0mCreating script environments for npwd
+[38;5;83m[           resources] [0m[0mStarted resource npwd
+[38;5;73m[ citizen-server-impl] [0m[0mserver thread hitch warning: timer interval of 2268 milliseconds
+[38;5;42m[      script:oxmysql] [0m[0m[36m[11.6.2-MariaDB-ubu2404] [32mDatabase server connection established![97m
+[38;5;176m[    script:xt-prison] [0m[97m[36m[xt-prison] [0m[INFO] Initializing Table: xt_prison[0m
+[38;5;176m[    script:xt-prison] [0m[0m[36m[xt-prison] [0m[INFO] Initializing Table: xt_prison_items[0m
+[38;5;73m[ citizen-server-impl] [0m[0m[91m        fff                          
+[38;5;73m[ citizen-server-impl] [0m[91m[91m  cccc ff   xx  xx     rr rr    eee  
+[38;5;73m[ citizen-server-impl] [0m[91m[91mcc     ffff   xx       rrr  r ee   e 
+[38;5;73m[ citizen-server-impl] [0m[91m[91mcc     ff     xx   ... rr     eeeee  
+[38;5;73m[ citizen-server-impl] [0m[91m[91m ccccc ff   xx  xx ... rr      eeeee 
+[38;5;73m[ citizen-server-impl] [0m[91m                                     [0m
+[38;5;73m[ citizen-server-impl] [0m[0m[32mAuthenticated with cfx.re Nucleus: [0mhttps://zaphosting-b9epap.users.cfx.re/
+[38;5;84m[     script:qbx_core] [0m[0m[36m[qbx_core] [0m[INFO] Removed invalid groups from player_groups table[0m
+[38;5;84m[     script:qbx_core] [0m[0m[0m
+[38;5;84m[     script:qbx_core] [0m[0m[94mWelcome to [93mQbox[94m!
+[38;5;84m[     script:qbx_core] [0m[94mTo learn more, please check out the documentation at [36mhttps://docs.qbox.re/[94m.
+[38;5;84m[     script:qbx_core] [0m[94mTo turn this message off, set the [93mqbx:acknowledge[94m convar to true in your server.cfg file.[0m
+[38;5;84m[     script:qbx_core] [0m[0m[0m
+[38;5;205m[     script:qb-admin] [0m[0m[91mSCRIPT ERROR: @qb-admin/server/main.lua:20: attempt to call a nil value (field 'GetAllPlayers')[0m
+[38;5;205m[     script:qb-admin] [0m[0m[93m> fn[0m ([36m@qb-admin/server/main.lua[0m:20)
+[38;5;135m[ script:ox_inventory] [0m[0m[36m[ox_inventory] [0m[INFO] Inventory has loaded 301 items[0m
+[38;5;212m[script:scully_emotem] [0m[0m[38;2;46;164;247m[scully_emotemenu][0m You are currently running the latest version.[0m
+]0;(0) Life$tyleRolePlay - txAdmin - txAdmin[42m[30m[14:19:14][tx:DatabaseDao][39m[49m Internal Database optimized. This applies only for the txAdmin internal database, and does not affect your MySQL or framework (ESX/QBCore/etc) databases.
+[42m[30m[14:19:14][tx:DatabaseDao][39m[49m - 0 players that haven't connected in the past 16 days and had less than 2 hours of playtime.
+[42m[30m[14:19:14][tx:DatabaseDao][39m[49m - 0 whitelist requests older than a week.
+[42m[30m[14:19:14][tx:DatabaseDao][39m[49m - 0 whitelist approvals older than a week.
+]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin[38;5;73m[ citizen-server-impl] [0m[0m[91mServer list query returned an error: Newtonsoft.Json.JsonReaderException: Error reading JArray from JsonReader. Path '', line 0, position 0.[0m
+]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin[44m[30m[14:37:46][tx:Logger:Admin][39m[49m logged in from 98.16.79.221 via password
+]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin[38;5;84m[      script:monitor] [0m[0m[36m[txAdmin][97m Sending resources list to txAdmin.[97m
+]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin]0;(0) Life$tyleRolePlay - txAdmin - txAdmin

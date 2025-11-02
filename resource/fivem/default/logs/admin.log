@@ -1,0 +1,241 @@
+================================================================
+======== txAdmin v8.0.1 atop fxserver 21703 Starting - 10/31/2025, 5:48:08 PM
+================================================================
+[17:48:09][zap1339023] logged in from 98.16.79.221 via password
+[17:48:48][zap1339023] Config changes: general.serverName
+[17:48:48][zap1339023] Changing global settings via setup stepper and started Deployer.
+[17:48:51][zap1339023] Setting recipe.
+[17:48:53][zap1339023] Running recipe.
+[17:51:36][zap1339023] Config changes: server.dataPath
+[17:51:36][zap1339023] Completed and committed server deploy.
+[17:53:47][zap1339023] Refreshed resources
+[17:53:49][zap1339023] Ensured resource "map"
+[17:53:59][zap1339023] [zap1339023] executed "RESTART SERVER"
+[17:56:41][zap1339023] Adding user 'ryanmilano'.
+[17:59:46][zap1339023] [zap1339023] executed "RESTART SERVER"
+[18:04:33][zap1339023] Refreshed resources
+[18:04:38][zap1339023] Refreshed resources
+[18:05:35][zap1339023] Refreshed resources
+[18:05:42][zap1339023] Refreshed resources
+[18:05:44][zap1339023] Refreshed resources
+[18:06:13][zap1339023] Refreshed resources
+[18:06:17][zap1339023] Refreshed resources
+[18:06:37][zap1339023] Refreshed resources
+[18:06:43][zap1339023] Refreshed resources
+[18:06:45][zap1339023] Refreshed resources
+[18:06:46][zap1339023] Refreshed resources
+[18:07:34][zap1339023] Refreshed resources
+[18:07:43][zap1339023] Refreshed resources
+[18:08:08][zap1339023] Refreshed resources
+[18:08:09][zap1339023] Refreshed resources
+[18:08:11][zap1339023] Refreshed resources
+[18:08:15][zap1339023] Ensured resource "buffstx"
+[18:08:21][zap1339023] [zap1339023] executed "RESTART SERVER"
+[18:13:43][ryanmilano] Changing own password.
+[18:14:10][ryanmilano] Refreshed resources
+[18:14:21][ryanmilano] Ensured resource "buffstx"
+[18:14:25][ryanmilano] Ensured resource "buffstx"
+[18:14:36][ryanmilano] [ryanmilano] executed "RESTART SERVER"
+[18:14:56][zap1339023] Refreshed resources
+[18:15:04][zap1339023] Ensured resource "buffstx"
+[18:15:06][zap1339023] Ensured resource "buffstx"
+[18:15:35][zap1339023] Ensured resource "buffstx"
+[18:15:37][zap1339023] Ensured resource "buffstx"
+[18:15:38][zap1339023] Refreshed resources
+[18:15:41][zap1339023] Ensured resource "buffstx"
+[18:16:15][zap1339023] Refreshed resources
+[18:16:19][zap1339023] Ensured resource "buffstx"
+[18:16:21][zap1339023] Ensured resource "buffstx"
+[18:16:23][zap1339023] Ensured resource "buffstx"
+[18:16:24][zap1339023] Ensured resource "buffstx"
+[18:16:24][zap1339023] Ensured resource "buffstx"
+[18:16:30][zap1339023] Ensured resource "buffstx"
+[18:19:13][zap1339023] Refreshed resources
+[18:19:20][zap1339023] Refreshed resources
+[18:19:27][zap1339023] Ensured resource "vd_buffalo4h"
+[18:19:30][zap1339023] Ensured resource "buffstx"
+[18:19:45][zap1339023] Refreshed resources
+[18:19:51][zap1339023] Ensured resource "buffstx"
+[18:20:25][zap1339023] Refreshed resources
+[18:20:27][zap1339023] Refreshed resources
+[18:20:29][zap1339023] Refreshed resources
+[18:20:34][zap1339023] Ensured resource "dodgehemihellcat"
+[18:20:42][zap1339023] [zap1339023] executed "RESTART SERVER"
+[21:37:11][zap1339023] Refreshed resources
+[21:37:18][zap1339023] Ensured resource "gstsadlt1"
+[21:37:22][zap1339023] Ensured resource "rrdominators197"
+[21:37:25][zap1339023] Ensured resource "gstsug1"
+[21:37:27][zap1339023] Refreshed resources
+[21:37:32][zap1339023] Ensured resource "qb-admin"
+[21:37:35][zap1339023] Ensured resource "rrcoquette6r"
+[21:37:37][zap1339023] Ensured resource "gstsadlt1c"
+[21:37:39][zap1339023] Ensured resource "gstsadlt1b"
+[21:37:41][zap1339023] Ensured resource "gstsadlt1d"
+[21:37:44][zap1339023] Ensured resource "buffstx"
+[21:37:53][zap1339023] [zap1339023] executed "RESTART SERVER"
+[21:43:38][zap1339023] Adding user 'blazer'.
+[21:58:54][ryanmilano] Ensured resource "buffstx"
+[21:58:57][ryanmilano] Ensured resource "buffstx"
+[21:59:00][ryanmilano] Refreshed resources
+[21:59:21][ryanmilano] Stopped resource "dodgehemihellcat"
+[22:07:07][zap1339023] Refreshed resources
+[22:07:10][zap1339023] Ensured resource "qb-admin"
+[22:07:33][zap1339023] Sending announcement: gotta restart
+[22:07:44][zap1339023] [zap1339023] executed "RESTART SERVER"
+================================================================
+======== txAdmin v8.0.1 atop fxserver 21703 Starting - 10/31/2025, 10:24:48 PM
+================================================================
+[22:26:22][zap1339023] logged in from 98.16.79.221 via password
+[22:26:56][zap1339023] Ensured resource "example-loadscreen"
+[22:27:03][zap1339023] [zap1339023] executed "RESTART SERVER"
+[22:37:58][zap1339023] Refreshed resources
+[22:38:01][zap1339023] Ensured resource "gucci_loading"
+[22:38:07][zap1339023] [zap1339023] executed "RESTART SERVER"
+[22:40:06][zap1339023] Refreshed resources
+[22:40:10][zap1339023] [zap1339023] executed "RESTART SERVER"
+[22:52:37][zap1339023] Refreshed resources
+[22:52:44][zap1339023] [zap1339023] executed "RESTART SERVER"
+[22:57:00][zap1339023] Refreshed resources
+[22:57:22][zap1339023] Refreshed resources
+[22:57:34][zap1339023] Refreshed resources
+[22:57:42][zap1339023] Refreshed resources
+[22:57:46][zap1339023] Refreshed resources
+[22:57:49][zap1339023] Ensured resource "buffstx"
+[23:12:11][zap1339023] Refreshed resources
+[23:12:17][zap1339023] Refreshed resources
+[23:13:00][zap1339023] Refreshed resources
+[23:13:15][zap1339023] Ensured resource "buffstx"
+[23:13:18][zap1339023] Refreshed resources
+[23:21:44][zap1339023] Refreshed resources
+[23:21:47][zap1339023] Ensured resource "Ricky-VinewoodSign"
+[23:23:47][zap1339023] [zap1339023] executed "RESTART SERVER"
+[23:26:26][ryanmilano] Ensured resource "qb-admin"
+[23:30:20][ryanmilano] Ensured resource "Ricky-VinewoodSign"
+[23:33:15][zap1339023] Ensured resource "Ricky-VinewoodSign"
+[23:33:17][zap1339023] Refreshed resources
+[23:33:40][zap1339023] [zap1339023] executed "RESTART SERVER"
+[23:34:44][zap1339023] [zap1339023] executed "RESTART SERVER"
+[23:36:29][ryanmilano] Ensured resource "Ricky-VinewoodSign"
+[23:36:39][ryanmilano] Refreshed resources
+[23:37:54][ryanmilano] Ensured resource "qb-admin"
+[00:11:26][zap1339023] Refreshed resources
+[00:11:34][zap1339023] Ensured resource "driftstang"
+[00:11:37][zap1339023] Ensured resource "buffstx"
+[00:11:45][zap1339023] Refreshed resources
+[00:12:06][zap1339023] Ensured resource "ziv-loadscreen"
+[00:12:48][zap1339023] [zap1339023] executed "RESTART SERVER"
+[00:17:13][zap1339023] Ensured resource "ziv-loadscreen"
+[00:17:18][zap1339023] [zap1339023] executed "RESTART SERVER"
+[00:18:36][zap1339023] Refreshed resources
+[00:18:46][zap1339023] Ensured resource "ziv-loadscreen"
+[00:19:23][zap1339023] Refreshed resources
+[00:19:56][zap1339023] [zap1339023] executed "RESTART SERVER"
+[00:22:57][zap1339023] Refreshed resources
+[00:23:43][zap1339023] Ensured resource "loadscreen"
+[00:58:17][zap1339023] Refreshed resources
+[00:58:21][zap1339023] Ensured resource "loadscreen"
+[00:58:27][zap1339023] [zap1339023] executed "RESTART SERVER"
+[01:25:20][zap1339023] [zap1339023] executed "RESTART SERVER"
+[01:29:41][zap1339023] Refreshed resources
+[01:30:02][zap1339023] [zap1339023] executed "RESTART SERVER"
+[13:15:17][blazer] Changing own password.
+[13:15:22][blazer] Changing own identifiers.
+[13:15:43][blazer] Refreshed resources
+[13:40:53][zap1339023] Refreshed resources
+[13:41:52][zap1339023] Refreshed resources
+[13:41:59][zap1339023] Refreshed resources
+[13:42:03][zap1339023] Ensured resource "buffstx"
+[13:48:23][zap1339023] Refreshed resources
+[13:48:25][zap1339023] Ensured resource "buffstx"
+[13:48:27][zap1339023] Ensured resource "buffstx"
+[13:48:29][zap1339023] Ensured resource "buffstx"
+[13:48:31][zap1339023] Ensured resource "buffstx"
+[13:48:32][zap1339023] Ensured resource "buffstx"
+[13:48:33][zap1339023] Ensured resource "buffstx"
+[13:55:20][zap1339023] Refreshed resources
+[13:55:23][zap1339023] Ensured resource "buffstx"
+[13:55:25][zap1339023] Ensured resource "buffstx"
+[13:55:26][zap1339023] Ensured resource "buffstx"
+[13:56:02][zap1339023] Sending announcement: Learn to drive hippie
+[13:56:25][zap1339023] Ensured resource "buffstx"
+[14:44:47][ryanmilano] Ensured resource "qb-admin"
+================================================================
+======== txAdmin v8.0.1 atop fxserver 21703 Starting - 11/1/2025, 3:52:36 PM
+================================================================
+[17:08:25][zap1339023] logged in from 98.16.79.221 via password
+[17:08:33][zap1339023] Ensured resource "buffstx"
+[17:08:36][zap1339023] Refreshed resources
+[17:08:38][zap1339023] Ensured resource "buffstx"
+[17:08:40][zap1339023] Ensured resource "buffstx"
+[17:08:41][zap1339023] Ensured resource "buffstx"
+[17:08:54][zap1339023] Ensured resource "buffstx"
+[17:08:56][zap1339023] Ensured resource "buffstx"
+[17:08:57][zap1339023] Ensured resource "buffstx"
+[17:09:05][zap1339023] Ensured resource "buffstx"
+[17:09:49][zap1339023] Ensured resource "buffstx"
+[17:09:50][zap1339023] Ensured resource "buffstx"
+[17:10:07][zap1339023] Ensured resource "buffstx"
+[17:10:09][zap1339023] Ensured resource "buffstx"
+[17:10:44][zap1339023] Ensured resource "buffstx"
+[17:10:45][zap1339023] Ensured resource "buffstx"
+[17:10:47][zap1339023] Refreshed resources
+[17:11:07][zap1339023] Ensured resource "buffstx"
+[17:11:11][zap1339023] Ensured resource "buffstx"
+[17:11:53][zap1339023] Refreshed resources
+[17:11:55][zap1339023] Ensured resource "buffstx"
+[17:11:56][zap1339023] Ensured resource "buffstx"
+[17:11:57][zap1339023] Ensured resource "buffstx"
+[17:21:43][zap1339023] Ensured resource "buffstx"
+[17:37:23][zap1339023] Refreshed resources
+[17:37:26][zap1339023] Ensured resource "Ricky-VinewoodSign"
+[17:42:42][zap1339023] Ensured resource "Ricky-VinewoodSign"
+[17:45:37][zap1339023] Refreshed resources
+[17:45:40][zap1339023] Ensured resource "cfx-stxh-jakers"
+[17:45:42][zap1339023] Ensured resource "cfx-stxh-jakers"
+[17:45:44][zap1339023] Ensured resource "cfx-stxh-jakers"
+[17:45:46][zap1339023] Refreshed resources
+[17:45:47][zap1339023] Ensured resource "cfx-stxh-jakers"
+[17:45:50][zap1339023] Ensured resource "buffstx"
+[17:46:24][zap1339023] [zap1339023] executed "RESTART SERVER"
+[17:50:05][ryanmilano] Refreshed resources
+[17:50:19][ryanmilano] Refreshed resources
+[17:50:26][ryanmilano] Ensured resource "cfx-stxh-jakers"
+[17:51:19][ryanmilano] Ensured resource "cfx-stxh-jakers"
+================================================================
+======== txAdmin v8.0.1 atop fxserver 21703 Starting - 11/1/2025, 10:40:03 PM
+================================================================
+[22:46:23][blazer] Ensured resource "cfx-stxh-jakers"
+[22:46:28][blazer] Refreshed resources
+[22:46:32][blazer] Ensured resource "cfx-stxh-jakers"
+[23:33:58][zap1339023] logged in from 98.16.79.221 via password
+[00:38:39][zap1339023] Refreshed resources
+[00:39:07][zap1339023] Ensured resource "cfx-stxh-jakers"
+[00:39:13][zap1339023] Ensured resource "buffstx"
+[00:39:28][zap1339023] Refreshed resources
+[00:40:47][zap1339023] Refreshed resources
+[00:41:07][zap1339023] Refreshed resources
+[00:41:12][zap1339023] Ensured resource "buffstx"
+[00:41:14][zap1339023] Ensured resource "cfx-stxh-jakers"
+[00:41:44][zap1339023] Refreshed resources
+[00:42:15][zap1339023] [zap1339023] executed "RESTART SERVER"
+[00:48:25][zap1339023] Refreshed resources
+[00:48:26][zap1339023] Refreshed resources
+[00:48:31][zap1339023] Ensured resource "example-loadscreen"
+================================================================
+======== txAdmin v8.0.1 atop fxserver 21703 Starting - 11/2/2025, 12:54:31 PM
+================================================================
+================================================================
+======== txAdmin v8.0.1 atop fxserver 21703 Starting - 11/2/2025, 1:30:43 PM
+================================================================
+================================================================
+======== txAdmin v8.0.1 atop fxserver 21703 Starting - 11/2/2025, 1:40:48 PM
+================================================================
+[13:43:22][blazer] Refreshed resources
+[13:43:25][blazer] Ensured resource "cfx-stxh-jakers"
+[13:43:47][blazer] Ensured resource "cfx-stxh-jakers"
+[13:44:04][blazer] Ensured resource "19415_c324gresley"
+[14:02:50][blazer] Ensured resource "cfx-stxh-jakers"
+================================================================
+======== txAdmin v8.0.1 atop fxserver 21703 Starting - 11/2/2025, 2:18:46 PM
+================================================================
+[14:37:46][zap1339023] logged in from 98.16.79.221 via password
