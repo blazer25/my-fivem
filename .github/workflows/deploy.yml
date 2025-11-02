@@ -21,3 +21,4 @@ jobs:
           server-dir: /gta5-fivem/server-data/resources
           local-dir: ./resources
           protocol: sftp
+.
