@@ -1,3 +1,5 @@
+name: Deploy to ZAP Hosting
+
 on:
 push:
 branches: [ main ]
