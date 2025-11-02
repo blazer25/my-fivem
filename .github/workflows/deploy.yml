@@ -12,8 +12,8 @@ uses: actions/checkout@v4,
 
       
 name: Upload to ZAP via SFTP
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.2
-      with:
+uses: SamKirkland/FTP-Deploy-Action@v4.3.2
+with:
         server: ${{ secrets.ZAP_HOST }}
         username: ${{ secrets.ZAP_USER }}
         password: ${{ secrets.ZAP_PASSWORD }}
