@@ -16,7 +16,7 @@ jobs:
         with:
           server: ${{ secrets.ZAP_HOST }}
           username: ${{ secrets.ZAP_USER }}
-          password: ${{ secrets.ZAP_PASS }}
+          password: ${{ secrets.ZAP_PASSWORD }}
           server-dir: /gta5-fivem/server-data/resources
           local-dir: ./resources
           port: 21
