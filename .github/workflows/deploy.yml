@@ -11,13 +11,13 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Upload to ZAP via SFTP
+      - name: Upload to ZAP via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.2
         with:
           server: ${{ secrets.ZAP_HOST }}
           username: ${{ secrets.ZAP_USER }}
           password: ${{ secrets.ZAP_PASS }}
           server-dir: /fivem/Qbox_052EBB.base/resources/
-          local-dir: ./resources/
+          local-dir: ./resource/
           port: 21
           protocol: ftp
