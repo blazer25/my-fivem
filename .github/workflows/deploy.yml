@@ -22,7 +22,7 @@ jobs:
           port: 21
           protocol: ftp
           # 🧹 Automatically remove deleted files/folders on next deploy
-          dangerous-clean-slate: true
+          dangerous-clean-slate: false
           # 🚀 Optional – speeds up uploads by skipping identical files
           exclude: |
             **/.git*
