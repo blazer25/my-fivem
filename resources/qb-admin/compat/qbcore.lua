@@ -1,5 +1,29 @@
-QBCore = exports["qbx_core"]
+QBCore = {}
+QBCore.Functions = {}
+
+-- Qbox Compatibility
+QBCore.Functions.GetPlayer = function(src)
+    return exports.qbx_core:GetPlayer(src)
+end
+
+QBCore.Functions.GetPlayers = function()
+    return exports.qbx_core:GetPlayers()
+end
+
+QBCore.Functions.HasPermission = function(src, perm)
+    return exports.qbx_core:HasPermission(src, perm)
+end
+
+QBCore.Functions.CreateCallback = function(name, cb)
+    return exports.qbx_core:CreateCallback(name, cb)
+end
+
+QBCore.Functions.TriggerCallback = function(name, src, cb, ...)
+    return exports.qbx_core:TriggerCallback(name, src, cb, ...)
+end
+
 Compat = {}
+print("^2[Bridge]^7 Qbox compatibility bridge for qb-admin loaded successfully.^0")
 
 
 -- SERVER COMPATIBILITY LAYER
