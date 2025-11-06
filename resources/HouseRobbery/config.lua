@@ -93,7 +93,7 @@ Config.Ped = {
 }  
 
 
-Config.Debug = true   ---  Add all the debuging tools that is used for the script.
+Config.Debug = false   ---  Add all the debuging tools that is used for the script.
 
 Config.Ban = function()
                             ---- put your banning method in here (Server Sided ONlny)

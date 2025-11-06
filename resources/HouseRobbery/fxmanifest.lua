@@ -21,6 +21,8 @@ client_scripts {
     'bridge/client/*.lua',
 }
 
+}
+
 
 
 lua54 'yes'
