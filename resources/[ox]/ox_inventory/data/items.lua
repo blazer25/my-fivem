@@ -827,4 +827,11 @@ return {
     goldpan = { label = "Gold Panning Tray", weight = 10, stack = true, close = false, description = "Don't worry you'll hit gold eventually!",
         client = { image = "goldpan.png", }
     },
+    ['water_bottle'] = {
+    label = 'Water Bottle',
+    weight = 200,
+    stack = true,
+    close = true,
+    description = 'Refresh yourself with some water.'
+},
 }
