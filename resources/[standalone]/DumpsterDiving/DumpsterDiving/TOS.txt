@@ -1,0 +1,22 @@
+📜 Terms of Service
+Dumpster Diving Script — Mints Modifications
+
+By downloading or using this script, you agree to the following terms:
+
+Free Use:
+This script is provided free of charge by Mints Modifications for use on any FiveM server.
+
+Attribution:
+You may use, modify, and share this script freely, but you must credit Mints Modifications as the original creator in any distribution, fork, or derivative version.
+
+No Resale:
+You may not sell this script or any modified version of it. Commercial resale or monetization is strictly prohibited.
+
+Liability:
+This script is provided “as is” without warranty of any kind. Mints Modifications is not liable for any issues, data loss, or server problems resulting from its use.
+
+Support:
+Free support is not guaranteed, but suggestions and improvements are welcome!
+
+Modification:
+You are free to modify the script for your personal server or community, as long as the original author credit remains intact.

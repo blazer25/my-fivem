@@ -1,0 +1,58 @@
+📦 Dumpster Diving Script — Install Instructions
+By Mints Modifications
+
+✅ How to Install
+1️⃣ Download & Extract
+
+Download the ZIP file (e.g. DumpsterDiving_Expanded.zip).
+
+Extract it — you should have a folder named DumpsterDiving (or rename it if needed).
+
+2️⃣ Add to Your Server Resources
+
+Place the DumpsterDiving folder inside your server’s resources directory:
+
+bash
+Copy
+Edit
+/resources/DumpsterDiving
+3️⃣ Add to server.cfg
+
+Open your server.cfg and add the following line:
+
+ensure DumpsterDiving
+
+4️⃣ Customize if You Want
+
+Open config.lua inside the script folder.
+
+Adjust:
+
+Dumpster models
+
+Cooldown times
+
+Loot table
+
+Map blip locations
+
+Raccoon chance
+
+Save your changes.
+
+5️⃣ Restart & Test
+
+Restart your server.
+
+Walk up to a dumpster, press E, and start diving!
+
+⚠️ Note
+This script is standalone. For the cash reward to actually pay players, you may need to integrate the server.lua event with your framework’s money system (like QBCore or ESX).
+Example for QB-Core:
+
+local Player = QBCore.Functions.GetPlayer(_source)
+Player.Functions.AddMoney('cash', amount)
+
+ℹ️ Credits
+Free script by Mints Modifications — see TOS.md for usage rules.
+
