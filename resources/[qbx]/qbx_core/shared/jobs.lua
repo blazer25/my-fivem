@@ -349,4 +349,15 @@ return {
             },
         },
     },
+    ['miner'] = {
+    label = 'Miner',
+    defaultDuty = true,
+    offDutyPay = false,
+    grades = {
+        ['0'] = {
+            name = 'Worker',
+            payment = 50
+        },
+    },
+},
 }
