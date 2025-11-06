@@ -1,10 +1,6 @@
-2.1.08
+3.0.12
 
-- Fix getStash() always trying to use fallback functions
-- Start adding stashEditMetadata() function - wip
-- Add check for broken/missing config.lua in scripts
-- Add fix for debugMode breaking if no config file
-- Add a callback to check for society bank balances
-- Add player head movement for `lookEnt()` to continue looking after turning
+- Check if the "reward" items exist before giving them
+- Fix cracking process kicks if player has no drillbit (and added config option for it)
 
-https://github.com/jimathy/jim_bridge/releases/latest
+https://github.com/jimathy/jim-mining/releases/latest

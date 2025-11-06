@@ -1,28 +1,27 @@
-name "Jim_Bridge"
+name "Jim-Mining"
 author "Jimathy"
-version "2.1.08"
-description "Framework Bridge By Jimathy"
+version "3.0.12"
+description "Mining Script"
 fx_version "cerulean"
-rdr3_warning 'I acknowledge that this is a prerelease build of RedM, and I am aware my resources *will* become incompatible once RedM ships.'
-games { 'gta5', 'rdr3' }
+game "gta5"
 lua54 'yes'
 
-files {
-    'starter.lua',
-    'shared/*.lua',
-    'shared/make/*.lua',
-    'shared/scaleforms/*.lua',
-}
+server_script '@oxmysql/lib/MySQL.lua'
 
--- Version checker
-server_scripts {
-    'frameworkCache.lua',
-    '_versioncheck.lua',
+shared_scripts {
+	'locales/*.lua',
+	'config.lua',
+
+    --Jim Bridge - https://github.com/jimathy/jim_bridge
+    '@jim_bridge/starter.lua',
+
+	'shared/*.lua',
 }
 
 client_scripts {
-    'clientFrameworkCache.lua',
-    'ui_modules/*.lua',
+    'client/*.lua'
 }
 
-suppress_updates 'false'   -- set to 'true' to disable update pings
+server_scripts { 'server/*.lua' }
+
+dependency 'jim_bridge'
