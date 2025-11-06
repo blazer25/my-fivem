@@ -164,17 +164,6 @@ function spawnmarkers()
     end
 end
 
--- Ensure markers spawn when the resource starts and when player joins
-AddEventHandler('onResourceStart', function(resourceName)
-    if GetCurrentResourceName() ~= resourceName then return end
-    Wait(1500) -- wait for ox_target to initialize
-    spawnmarkers()
-    if Config.Debug then print('✅ House robbery markers spawned on resource start') end
-end)
-
--- Also ensure markers load after joining the server
-CreateThread(function()
-    Wait(2000) -- let frameworks (ox_lib, qbx_core) finish loading
-    spawnmarkers()
-    if Config.Debug then print('✅ House robbery markers spawned on player join') end
+AddEventHandler('onResourceStart', function()
+  spawnmarkers()
 end)

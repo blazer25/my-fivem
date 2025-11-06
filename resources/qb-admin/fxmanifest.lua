@@ -46,7 +46,6 @@ client_scripts {
     'client/freecam/main.lua',
     'client/noclip.lua',
     'client/devmode.lua',
-    'client/cl_main.lua',
 }
 
 escrow_ignore {
