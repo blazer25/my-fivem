@@ -1,6 +1,10 @@
 Framework = {}
 currentZone = nil
 
+if GetResourceState('qbx_core') == 'started' then
+    shared.Framework = "qb"
+end
+
 function Framework:GetIdentifier()
     if shared.Framework == "qb" then
         return FrameworkObject.Functions.GetPlayerData().citizenid

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Savana Storage</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="indexResponsive.css">
+    <link rel="icon" type="image/x-icon" href="/images/yt.png">
+    <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="https://kit.fontawesome.com/a317844617.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="gallery">
+        <div class="entopWrapper">
+            <div class="closePage">
+                <p data-locale="closepage">Close Page</p>
+                <div class="closeIcon">
+                    <img src="images/close.png" id="closeIcon" alt="">
+                </div>
+            </div>
+        </div>
+        <div class="topWrapper">
+            <div class="galleryHeader">
+                <div id="logoArea">
+                    <i class="fa-solid fa-box-open"></i>
+                </div>
+                <p data-locale="storage">STORAGE</p>
+            </div>
+            <div class="galleryHeadermed">
+                <div class="leftWrapper-favoriArea">
+                    <div class="leftWrapper-favori-button" id="searchFavorite">
+                        <img src="images/Favorite.png">
+                    </div>
+                </div>
+                <div class="leftWrapper-leftArea">
+                    <div class="leftWrapper-leftArea-button">
+                        <p data-locale="buyButton">BUY</p>
+                    </div>
+                </div>
+                <div class="leftWrapper-rightArea">
+                    <div class="leftRight-InputArea">
+                        <input type="text" id="searchCar" placeholder="Search...">
+                        <div id="imgSearch">
+                            <img src="images/search.png" alt="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+       
+        </div>
+        <div class="galleryMain">
+            <div id="leftRight-carList">
+                <div class="item">
+                    <div id="itemImg">
+                        <img src="${item.image ? item.image : 'images/Lotus.png'}">
+                    </div>
+                    <div id="itemFunctions">
+                        <div id="itemName">Ryu</div>
+                        <div id="itemCapacity">
+                            <div class="capatiyTop">
+                                <i class="fa-solid fa-warehouse"></i>
+                                <p class="capacity">Stock Capatiy</p> 
+                            </div>
+                            <p class="capacityValue">15000x</p>
+                        </div>
+                        <div id="itemType">
+                            <div class="capatiyTop">
+                                <i class="fa-solid fa-weight-hanging"></i>
+                                <p class="capacity">Weight Capacity</p> 
+                            </div>
+                            <p class="weightValue">15000x</p>
+                        </div>
+                    </div>
+                    <div id="itemPrice">
+                        <div id="favorite">
+                            <img src="${favoriteImage}" id="changeFavorite">
+                        </div>
+                        <div id="open">
+                            <p>${locales["openstash"]}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="bottom">
+        </div>
+    </div>
+    <div class="popup-CreateAna">
+        <div class="popup-Create">
+            <div id="popupHeader" data-locale="storageFeatures">
+                STORAGE FEATURES
+            </div>
+            <div id="popupimg">
+                <img src="images/logo.png" id="popupImagex">
+            </div>
+            <div class="popupFunctions">
+                <div class="popup1">
+                    <p data-locale="storageIcon">Storage Icon</p>
+                    <div class="leftRight-InputArea">
+                        <input type="text" id="writeIcon" placeholder="Add Url..." required>
+                        <span class="error" id="iconError"></span>
+                    </div>
+                </div>
+                <div class="popup1">
+                    <p data-locale="storageName">Storage Name</p>
+                    <div class="leftRight-InputArea">
+                        <input type="text" id="writeStorageName" placeholder="Type storage name..." required>
+                        <span class="error" id="nameError"></span>
+                    </div>
+                </div>
+                <div class="popup1">
+                    <p data-locale="storageCapacity">Storage Capacity</p>
+                    <div class="leftRight-InputArea">
+                        <input type="number" id="writeStorageCapacity" placeholder="Type storage capacity..." required>
+                        <span class="error" id="capacityError"></span>
+                    </div>
+                </div>
+                <div class="popup1">
+                    <p data-locale="storageWeight">Storage Weight</p>
+                    <div class="leftRight-InputArea">
+                        <input type="number" id="writeStorageWeight" placeholder="Type storage weight..." required>
+                        <span class="error" id="weightError"></span>
+                    </div>
+                </div>
+                <div class="popup1">
+                    <p data-locale="storagePassword">Storage Password (8 characters minimum)</p>
+                    <div class="leftRight-InputArea">
+                        <input type="password" id="writeStoragePassword" placeholder="Type storage password..." minlength="8" required>
+                        <span class="error" id="passwordError"></span>
+                    </div>
+                </div>
+                <!-- <div class="popup1" id="refprice">
+                    <p>Weight Price + Capacity Price + Storage Price = Total Price</p>
+                    <p>15000 + 25000 + 10000 = 45000</p>
+                </div> -->
+            </div>
+            <div class="popupButton">
+                <div class="popupButtonCancel">
+                    <p data-locale="cancelButton">CANCEL</p>
+                </div>
+                <div class="popupButtonBuy">
+                    <p>PURCHASE $ 2,500,000</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="popup-CreateAna2">
+        <div class="popup-Create">
+            <div id="popupHeader" data-locale="storagePassword">
+                STORAGE PASSWORD
+            </div>
+            <div class="popupFunctions">
+                <div class="popup1">
+                    <p data-locale="storagePassword">Storage Password</p>
+                    <div class="leftRight-InputArea">
+                        <input type="password" id="writeOpenStoragePassword" placeholder="Type storage password..." minlength="8" required>
+                        <span class="error" id="passwordError"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="popupButton">
+                <div class="popupButtonCancel">
+                    <p data-locale="cancelButton">CANCEL</p>
+                </div>
+                <div class="popupButtonBuyx" id="openstashpassword">
+                    <p data-locale="confirmButton">CONFIRM</p>
+                </div>
+                <div class="popupButtonPass">
+                    <p>Change Pass</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="resetPassword">
+        <p class="resetHeader">Change Password</p>
+        <p class="resetComment">Enter Your Current Password</p>
+        <input type="password" id="changePasswordFirst">
+        <p class="resetComment">Enter Your New Password</p>
+        <input type="password" id="changePasswordSecond">
+        <div id="changePasswordOk">
+            <div class="cancel">
+                CANCEL
+            </div>
+            <div class="ok">
+                CONFIRM
+            </div>
+
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

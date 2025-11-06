@@ -1,0 +1,693 @@
+
+@font-face {
+    font-family: "Oswald";
+    src: url("font/Oswald-Bold.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Barlow";
+    src: url("font/Barlow-Medium.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Poppins";
+    src: url("font/Poppins-Medium.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Oswald-Reg";
+    src: url("font/Oswald-Regular.ttf") format("truetype");
+}
+
+* {
+    margin: 0;
+    padding: 0; 
+    box-sizing: border-box; 
+    user-select: none;
+}
+
+::-webkit-scrollbar {
+    width: 0.3vw;
+    background-color: #222222;
+    padding-right: 0.35vw;
+}
+  
+::-webkit-scrollbar-thumb {
+    background: rgba(217, 217, 217, 0.55);
+
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(217, 217, 217, 0.75);
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    display: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.gallery {
+    width: 60%;
+    height: 80%;
+    display: none;
+    flex-direction: column;
+    background: rgba(15, 20, 24, 0.92);
+    animation-name: sun-rise;
+    animation-duration: 1s;
+    transition: 1s;
+}
+
+@keyframes sun-rise {
+    from {
+        opacity: 0.5;
+    }
+    to {
+        opacity: 1;
+    }
+  }
+
+.popup-CreateAna { 
+    position: absolute;
+    display: flex;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 55%;
+    height: 80%;
+    animation-name: sun-rise;
+    animation-duration: 1s;
+}
+
+.popup-CreateAna2 { 
+    position: absolute;
+    display: flex;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 55%;
+    height: 80%;
+    animation-name: sun-rise;
+    animation-duration: 1s;
+}
+
+.topWrapper {
+    display: flex;
+    align-items: flex-end;
+    width: 100%;
+    height: 10%;
+}
+
+.galleryHeader {
+    display: flex;
+    align-items: center;
+    width: 18.542vw;
+    height: 4.635vw;
+    margin-left: 2.87vw;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+#logoArea {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 3.063vw;
+    height: 3.063vw;
+    background-color: rgba(255, 255, 255, 0.24);
+    border: 0.15vw solid rgba(255, 255, 255, 0.29);
+    border-radius: 0.22vw;
+    margin-left: 4%;
+}
+
+#logoArea img {
+    width: 60%;
+    height: 50%;
+}
+
+.galleryHeader p {
+    font-size: 2vw;
+    font-family: OSWALD;
+    color: white;
+    font-weight: 700;
+    margin-left: 5%;
+}
+
+.closePage {
+    display: flex;
+    align-items: center;
+    margin-top: 1.3%;
+    margin-right: 1.3%;
+    width: auto;
+    height: 100%;
+    cursor: pointer;
+}
+
+.closePage .closeIcon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 1.563vw;
+    height: 1.563vw;
+    background-color: rgba(201, 61, 61);
+    border-radius: 0.208vw;
+    margin-left: 3%;
+    margin-top: 0.8%;
+
+}
+
+.closePage p {
+    font-size: 1.117vw;
+    color: rgb(255, 255, 255, 0.63);
+    font-family: Barlow;
+}
+
+.closeIcon img {
+    width: 40%;
+    height: 40%;
+}
+
+.galleryHeadermed {
+    width: 70%;
+    display: flex;
+    align-items: end;
+    justify-content: end;
+    margin-right: 4.5%;
+    height: 100%;
+}
+
+.leftWrapper-leftArea {
+    width: 15%;
+    height: 50%;
+    display: flex;
+    align-items: end;
+    justify-content: end;
+}
+
+.leftWrapper-leftArea .leftWrapper-leftArea-button {
+    width: 90%;
+    background-color: #229649;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Oswald-Reg;
+    font-size: 1.042vw;
+    color: white;
+    height: 100%;
+    padding-top: 0.365vw;
+    padding-bottom: 0.365vw;
+    cursor: pointer;
+}
+
+.leftWrapper-favoriArea{
+    width: 6%;
+    background-color: rgba(253, 253, 253, 0.13);
+    height: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.leftWrapper-favoriArea .leftWrapper-favori-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+
+}
+
+.leftWrapper-favoriArea .leftWrapper-favori-button:hover {
+    background-color: rgba(253, 253, 253, 0.432);
+}
+
+.leftWrapper-favoriArea .leftWrapper-favori-button img{
+    width: 60%;
+    height: 60%;
+}
+
+.leftWrapper-leftArea .leftWrapper-leftArea-button:hover {
+    background-color: #215f36;
+}
+
+.leftWrapper-rightArea {
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+    height: 50%;
+    margin-left: 1.5%;
+}
+
+.leftWrapper-rightArea .leftRight-InputArea {
+    display: flex;
+    align-items: center;
+    width: 97.95%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 0.1vw solid rgba(255, 255, 255, 0.2);
+}
+
+.leftRight-InputArea input {
+    width: 90%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0);
+    border: none;
+    padding: 2%;
+    font-size: 0.7vw;
+    font-family: Poppins;
+    font-family: 700;
+    color: white;
+
+}
+
+input:focus {
+    border: none;
+    outline: none;
+}
+
+.galleryMain {
+    display: flex;
+    width: 90%;
+    height: 81.5%;
+    margin-left: 4.5%;
+    margin-top: 2%;
+}
+
+#leftRight-carList {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    grid-auto-rows: 4.167vw; 
+    row-gap: 2.1%;
+    column-gap: 3%;
+    width: 100%;
+    height: 95%;
+    overflow: hidden;
+    overflow-y: auto;
+    margin-top: 1%;
+    padding-right: 0.26vw;
+}
+
+#leftRight-carList .item {
+    width: 100%;
+    height: 100%;
+    border: 0.055vw solid rgba(255, 255, 255, 0.171);
+    background-color: rgba(255, 255, 255, 0.03);
+    min-height: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    animation: item 1s both
+}
+
+#imgSearch {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 3%;
+    width: 7%;
+    height: 100%;
+}
+
+#imgSearch img {
+    width: 55%;
+    height: 45%;
+}
+
+#itemImg {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 10%;
+    height: 100%;
+}
+
+#itemImg img {
+    width: 60%;
+    height: 80%;
+}
+
+#itemFunctions {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    align-items: center;
+    padding-left: 1.302vw;
+    width: 70%;
+    height: 100%;
+    font-family: OSWALD;
+    color: rgba(255, 255, 255, 0.603);
+    font-size: 0.885vw;
+}
+
+#itemPrice {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 16%;
+    height: 100%;
+    margin-left: 4%;
+}
+
+#favorite{
+    height: 1.563vw;
+    width: 1.563vw;
+    background-color: rgba(253, 253, 253, 0.13);
+    border-radius: 0.208vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.156vw;
+    cursor: pointer;
+}
+
+#favorite:hover {
+    background-color: rgba(253, 253, 253, 0.534);
+}
+
+#open:hover {
+    background-color: rgba(253, 253, 253, 0.534);
+}
+
+#open{
+    height: 1.563vw;
+    width: 5.833vw;
+    background-color: rgba(253, 253, 253, 0.13);
+    border-radius: 0.208vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.603);
+    font-family: OSWALD;
+    cursor: pointer;
+}
+
+.bottom {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 90%;
+    height: 15%;
+    margin-left: 5%;
+    margin-top: 3%;
+}
+
+.entopWrapper{
+    height: 3%;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    
+}
+
+.popup-Create {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 50%;
+    background-color: #0F1418;
+    border: 0.15vw solid rgba(255, 255, 255, 0.17);
+}
+
+.popup-Create #popupHeader {
+    font-family: OSWALD;
+    font-size: 1.667vw;
+    color: #FFFFFF;
+    margin-top: 2%;
+}
+
+#popupimg {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 5.208vw;
+    height: 5.208vw;
+    background-color: #D9D9D9;
+    border-radius: 4.688vw;
+    margin-top: 3%;
+}
+
+#popupimg img{
+    width: 100%;
+    height: 100%;
+    border-radius: 4.688vw;
+}
+
+.popupFunctions {
+    display: flex;
+    align-items: start;
+    justify-content: left;
+    flex-direction: column;
+    width: 80%;
+}
+
+.popup1 {
+    width: 100%;
+    margin-top: 2%;
+}
+
+.popup1 p {
+    font-size: 0.781vw;
+    color: rgba(255, 255, 255, 0.35);
+    font-family: Oswald-Reg;
+}
+
+.popup1 .leftRight-InputArea {
+    display: flex;
+    align-items: center;
+    width: 97.95%;
+    height: 5.5%;
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 0.1vw solid rgba(255, 255, 255, 0.2);
+}
+
+.popupButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80%;
+    height: 100%;
+    margin: 0.781vw;
+}
+
+.popupButtonCancel {
+    background-color: rgba(255, 255, 255, 0.25);
+    width: 5.587vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.popupButtonCancel:hover {
+    background-color: rgba(255, 255, 255, 0.55);
+}
+
+.popupButtonCancel p {
+    font-family: Oswald-Reg;
+    font-size: 1.042vw;
+}
+
+.popupButtonBuy {
+    background-color: #42EA7B;
+    width: 8.532vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.popupButtonBuyx {
+    background-color: #42EA7B;
+    width: 8.532vw;
+    height: 1.7vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-family: Oswald-Reg;
+    font-size: 1.042vw;
+}
+
+.popupButtonBuy:hover {
+    background-color: rgb(33, 136, 67);
+}
+
+
+.popupButtonBuy p {
+    font-family: Oswald-Reg;
+    font-size: 1.042vw;
+    color: rgba(0, 0, 0, 0.548);
+}
+
+#itemName {
+    width: 20%;
+}
+
+.capatiyTop {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 30%;
+}
+
+.capacityValue {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 40%;
+
+}
+
+.weightValue {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 40%;
+
+}
+
+#itemType {
+    margin-left: 20%;
+}
+
+#itemCapacity {
+    margin-left: 5%;
+}
+
+#itemCapacity, #itemType {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 21%;
+    height: 100%;
+    /* background: blue; */
+}
+
+#itemCapacity p, #itemType p {
+    margin-left: 3%;
+}
+
+
+.error {
+    color: red;
+    font-size: 0.625vw;
+    font-family: Oswald-Reg;
+    white-space: nowrap;
+}
+
+.fa-box-open {
+    color: #9fa0a2;
+    font-size: 1.6vw;
+}
+
+.popupButtonPass {
+    color: rgba(255, 0, 0, 0.452);
+    background-color: rgba(255, 0, 0, 0.308);    
+    width: 5.687vw;
+    height: 1.7vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.8vw;
+    font-family: Oswald-Reg;
+    text-transform: uppercase;
+}
+
+.popupButtonPass:hover {
+    color: white;    
+}
+
+
+
+.resetPassword {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 20%;
+    height: 40%;
+    background-color: #0F1418;
+    border: 0.15vw solid rgba(255, 255, 255, 0.17);
+    display: none;
+}
+
+.resetHeader {
+    font-size: 1vw;
+    font-family: Oswald;
+    color:white;
+}
+
+#changePasswordFirst, #changePasswordSecond {
+    background-color: rgba(255, 222, 173, 0);
+    border: 0.1vw solid rgba(255, 255, 255, 0.26);
+    width: 55%;
+    height: 8.5%;
+    margin-top: 2%;
+    color: white;
+    text-align: center;
+}
+
+#changePasswordOk {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.8vw;
+    width: 55%;
+    height: 7%;
+    margin-top: 3%;
+}
+
+.ok {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 55%;
+    height: 90%;
+    background-color: #42EA7B;
+    color: rgb(56, 56, 56);
+    font-family: Oswald-Reg;
+    cursor: pointer;
+}
+
+.cancel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 55%;
+    height: 90%;
+    background-color: #ffffff3a;
+    color: rgba(255, 255, 255, 0.445);
+    font-family: Oswald-Reg;
+    cursor: pointer;
+}
+
+.cancel:hover {
+    background-color: #ffffff;
+    color: rgb(56, 56, 56);
+
+}
+
+
+.resetComment {
+    font-size: 0.8vw;
+    font-family: Oswald-Reg;
+    color: rgba(255, 255, 255, 0.692);
+    margin-top: 3%;
+}
+
+@keyframes item {
+    0% {
+        margin-left: -50%;
+    }
+}
