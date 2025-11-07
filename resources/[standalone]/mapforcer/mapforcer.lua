@@ -9,7 +9,7 @@ local maps = {
     'anarchy_underground',
     'anarchy_Unicorn',
     'anarchy_LsCustoms',
-    'pickle_prisons'
+    'prison'
 }
 
 CreateThread(function()
