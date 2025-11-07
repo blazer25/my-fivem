@@ -1,16 +1,23 @@
 CreateThread(function()
-    while not GetResourceState('qbx_core'):find('start') do
-        Wait(50)
+    -- Wait for qbx_core to fully start
+    while GetResourceState('qbx_core') ~= 'started' do
+        Wait(200)
     end
 
-    local QBCore = exports['qbx_core']:GetCoreObject()
+    local success, QBCore = pcall(function()
+        return exports['qbx_core']:GetCoreObject()
+    end)
 
-    -- Basic QBCore export
+    if not success or not QBCore then
+        print("^1[qb-core bridge]^7 ERROR: Unable to get CoreObject from qbx_core. Check load order or errors above.")
+        return
+    end
+
+    -- Export the old QBCore functions for compatibility
     exports('GetCoreObject', function()
         return QBCore
     end)
 
-    -- Compatibility with older QB scripts:
     exports('GetPlayers', function()
         return QBCore.Functions.GetPlayers()
     end)
@@ -31,5 +38,5 @@ CreateThread(function()
         return QBCore.Functions.GetPlayerByPhone(phoneNumber)
     end)
 
-    print('[qb-core] Bridge server initialized with legacy exports.')
+    print('^2[qb-core bridge]^7 fully initialized — Qbox compatibility active.')
 end)
