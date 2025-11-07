@@ -11,7 +11,7 @@ Keys = {
 
 Config = {}
 
-Config.CoreName = "qbx_core" ---- core name
+Config.CoreName = "qb-core" ---- core name
 Config.UseTargetSystem = true
 Config.LetSystemManageRadar = true
 Config.TargetScript = "qb-target" 
