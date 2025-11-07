@@ -3,7 +3,8 @@ local maps = {
     'grizmowe_hideout',
     'new_map',
     'Ricky-VinewoodSign',
-    'patoche_free_cardealer'
+    'patoche_free_cardealer',
+    'anarchy_Cardealer'
 }
 
 CreateThread(function()
