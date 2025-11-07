@@ -1,5 +1,5 @@
 CreateThread(function()
-    while not GetResourceState('qbx_core'):find('start') do
+    while GetResourceState('qbx_core') ~= 'started' do
         Wait(50)
     end
 
