@@ -4,7 +4,7 @@ Config.DB = {}
 -------             CONFIGURATION          --------           
 ---------------------------------------------------
 
-Config.EnableDebug                          = false                 -- Whether to enable debug prints or not
+Config.EnableDebug                          = true               -- Whether to enable debug prints or not
 
 Config.ESXSkin                              = "AK"                  -- AK for ak47 or Default for esx_skin
 
