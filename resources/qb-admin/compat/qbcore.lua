@@ -315,32 +315,50 @@ if (IsDuplicityVersion()) then
             end
             return money, vehicles
         end,
-        PlayerActions = {
+                PlayerActions = {
             AddMoney = function(targetId, amount)
                 local p = QBCore.Functions.GetPlayer(targetId)
                 if p then
                     p.Functions.AddMoney("cash", amount, "Admin Action")
                 end
             end,
+
             RemoveMoney = function(targetId, amount)
                 local p = QBCore.Functions.GetPlayer(targetId)
                 if p then
                     p.Functions.RemoveMoney("cash", amount, "Admin Action")
                 end
             end,
+
             AddBank = function(targetId, amount)
                 local p = QBCore.Functions.GetPlayer(targetId)
                 if p then
                     p.Functions.AddMoney("bank", amount, "Admin Action")
                 end
             end,
+
             RemoveBank = function(targetId, amount)
                 local p = QBCore.Functions.GetPlayer(targetId)
                 if p then
                     p.Functions.RemoveMoney("bank", amount, "Admin Action")
                 end
             end,
+
+            -- ✅ Add these two new ones for 919Admin
+            AddItem = function(targetId, item, amount)
+                local p = QBCore.Functions.GetPlayer(targetId)
+                if p then
+                    print(("[919ADMIN][Compat] Adding item '%s' x%s to ID %s"):format(item, amount, targetId))
+                    TriggerEvent('qb-core-bridge:server:addItem', targetId, item, amount)
+                end
+            end,
+
+            SpawnVehicle = function(src, model)
+                print(("[919ADMIN][Compat] Spawning vehicle '%s' for source %s"):format(model, src))
+                TriggerEvent('qb-core-bridge:server:spawnVehicle', model)
+            end,
         },
+
     }
 end
 
