@@ -245,3 +245,52 @@ if (not IsDuplicityVersion()) then
         Notify = function(message) exports.qbx_core:Notify(message) end,
     }
 end
+-- ============================================
+-- 919 Admin - Legacy QB Compatibility (QBox)
+-- ============================================
+
+RegisterNetEvent('QBCore:Server:SpawnVehicle', function(model, plate, props)
+    local src = source
+    print(('[919ADMIN-Bridge] Spawning vehicle -> %s %s'):format(tostring(model), tostring(plate)))
+    TriggerClientEvent('919-admin:client:spawnVehicle', src, model, plate, props)
+end)
+
+RegisterNetEvent('QBCore:Server:AddItem', function(target, name, amount, slot, info)
+    local Player = exports.qbx_core:GetPlayer(tonumber(target))
+    if not Player then return end
+
+    local ok = Player.Functions.AddItem(name, tonumber(amount or 1), slot, info)
+    if ok then
+        TriggerClientEvent('inventory:client:ItemBox', Player.PlayerData.source, exports.qbx_core:GetItemsByName()[name], "add", tonumber(amount or 1))
+        print(('[919ADMIN-Bridge] Added item %s x%s to player %s'):format(name, amount, target))
+    else
+        print(('[919ADMIN-Bridge] Failed to give %s x%s to %s'):format(name, amount, target))
+    end
+end)
+
+-- Client handler for spawning the vehicle
+RegisterNetEvent('919-admin:client:spawnVehicle', function(model, plate, props)
+    local playerPed = PlayerPedId()
+    local pos = GetEntityCoords(playerPed)
+    local heading = GetEntityHeading(playerPed)
+
+    if not IsModelInCdimage(model) or not IsModelAVehicle(model) then
+        print(("[919ADMIN-Bridge] Invalid vehicle model: %s"):format(model))
+        return
+    end
+
+    RequestModel(model)
+    while not HasModelLoaded(model) do Wait(0) end
+
+    local veh = CreateVehicle(model, pos.x + 2.0, pos.y, pos.z, heading, true, false)
+    SetPedIntoVehicle(playerPed, veh, -1)
+    SetVehicleNumberPlateText(veh, plate or "ADMIN")
+    SetEntityAsMissionEntity(veh, true, true)
+    SetModelAsNoLongerNeeded(model)
+
+    if props and exports.qbx_core and exports.qbx_core.SetVehicleProperties then
+        exports.qbx_core:SetVehicleProperties(veh, props)
+    end
+
+    print(("[919ADMIN-Bridge] Vehicle spawned: %s"):format(model))
+end)
