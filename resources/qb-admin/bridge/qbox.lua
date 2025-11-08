@@ -294,3 +294,56 @@ RegisterNetEvent('919-admin:client:spawnVehicle', function(model, plate, props)
 
     print(("[919ADMIN-Bridge] Vehicle spawned: %s"):format(model))
 end)
+-- ============================================
+-- 919 Admin - Vehicle & Item Bridge for QBox
+-- ============================================
+
+RegisterNetEvent('QBCore:Command:SpawnVehicle', function(model)
+    local src = source
+    print(('[919ADMIN-Bridge] (QBox) SpawnVehicle Command -> %s'):format(model))
+    TriggerClientEvent('919-admin:client:spawnVehicle', src, model, "ADMIN", {})
+end)
+
+RegisterNetEvent('QBCore:Server:SpawnVehicle', function(model, plate, props)
+    local src = source
+    print(('[919ADMIN-Bridge] (QBox) SpawnVehicle Server -> %s'):format(model))
+    TriggerClientEvent('919-admin:client:spawnVehicle', src, model, plate or "ADMIN", props or {})
+end)
+
+RegisterNetEvent('919-admin:client:spawnVehicle', function(model, plate, props)
+    local ped = PlayerPedId()
+    local pos = GetEntityCoords(ped)
+    local heading = GetEntityHeading(ped)
+
+    if not IsModelInCdimage(model) or not IsModelAVehicle(model) then
+        print(("[919ADMIN-Bridge] Invalid model: %s"):format(model))
+        return
+    end
+
+    RequestModel(model)
+    while not HasModelLoaded(model) do Wait(0) end
+
+    local veh = CreateVehicle(model, pos.x + 3.0, pos.y, pos.z, heading, true, false)
+    SetPedIntoVehicle(ped, veh, -1)
+    SetVehicleNumberPlateText(veh, plate or "ADMIN")
+    SetEntityAsMissionEntity(veh, true, true)
+    SetModelAsNoLongerNeeded(model)
+
+    if props and next(props) and exports.qbx_core and exports.qbx_core.SetVehicleProperties then
+        exports.qbx_core:SetVehicleProperties(veh, props)
+    end
+
+    print(("[919ADMIN-Bridge] Vehicle spawned: %s"):format(model))
+end)
+
+RegisterNetEvent('QBCore:Server:AddItem', function(target, name, amount, slot, info)
+    local Player = exports.qbx_core:GetPlayer(tonumber(target))
+    if not Player then return end
+    local ok = Player.Functions.AddItem(name, tonumber(amount or 1), slot, info)
+    if ok then
+        TriggerClientEvent('inventory:client:ItemBox', Player.PlayerData.source, exports.qbx_core:GetItemsByName()[name], "add", tonumber(amount or 1))
+        print(('[919ADMIN-Bridge] Added %s x%s to player %s'):format(name, amount, target))
+    else
+        print(('[919ADMIN-Bridge] Failed giving %s x%s to %s'):format(name, amount, target))
+    end
+end)
