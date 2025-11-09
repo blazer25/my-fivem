@@ -1,15 +1,21 @@
--- Framework detection bridge for Qbox and QB-Core
+-- Framework detection bridge for Qbox / QB-Core
 
 local Framework = nil
 
+-- Check which framework is running
 if GetResourceState('qbx_core') == 'started' then
-    -- Use Qbox's global core (does not need export)
-    Framework = exports['qbx_core'] and exports['qbx_core']:GetCoreObject and exports['qbx_core']:GetCoreObject() or QBX
+    -- Qbox: It doesn't use the export GetCoreObject, so fallback to global QBX if available
+    if exports['qbx_core'] and exports['qbx_core'].GetCoreObject then
+        Framework = exports['qbx_core']:GetCoreObject()
+    elseif QBX then
+        Framework = QBX
+    else
+        print("^1[JPR Phone] qbx_core is started, but no usable core object found!^0")
+    end
 elseif GetResourceState('qb-core') == 'started' then
     Framework = exports['qb-core']:GetCoreObject()
 else
-    print('^1[JPR Phone] No valid framework found (qbx_core or qb-core). Using fallback mode.^0')
-    Framework = {}
+    print("^1[JPR Phone] No framework detected (qbx_core or qb-core)^0")
 end
 
 return Framework
