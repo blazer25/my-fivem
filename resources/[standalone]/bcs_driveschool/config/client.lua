@@ -103,8 +103,8 @@ return {
     setFuel = function(vehicle)
         if GetResourceState('ox_fuel') == 'started' then
             Entity(vehicle).state.fuel = 100
-        elseif GetResourceState('LegacyFuel') == 'started' then
-            exports["LegacyFuel"]:SetFuel(vehicle, 100)
+        elseif GetResourceState('cdn-fuel') == 'started' then
+            exports["cdn-fuel"]:SetFuel(vehicle, 100)
         end
     end
 }

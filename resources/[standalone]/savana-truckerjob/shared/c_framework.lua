@@ -68,8 +68,8 @@ function fuel(car)
     if GetResourceState('savana-fuel') == 'started' then
         return exports['savana-fuel']:SetFuel(car, 100.0)
     end
-    if GetResourceState('LegacyFuel') == 'started' then
-        return exports.LegacyFuel:SetFuel(car, 100.0)
+    if GetResourceState('cdn-fuel') == 'started' then
+        return exports.cdn-fuel:SetFuel(car, 100.0)
     end
     if GetResourceState('cdn-fuel') == 'started' then
         return exports['cdn-fuel']:SetFuel(car, 100.0)

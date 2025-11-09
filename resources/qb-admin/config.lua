@@ -43,7 +43,7 @@ Config.EnableNames                          = true                  -- Whether o
 Config.AllPlayersUseNames                   = false                 -- Wheter or not all players can use the overhead names
 Config.NamesOverSelfHead                    = true                  -- Whether or not your name and id should be over your own head or not
 
-Config.FuelScript                           = 'LegacyFuel'
+Config.FuelScript                           = 'cdn-fuel'
 
 Config.Permissions = {
     ["god"] = {
