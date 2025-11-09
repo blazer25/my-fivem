@@ -1,15 +1,22 @@
--- Qbox / QB-Core Auto Framework Bridge
+-- Qbox / QB-Core bridge for server functions
+local QBCore = nil
 
-local Framework = nil
-
--- Try to detect which core is running
 if GetResourceState('qbx_core') == 'started' then
-    Framework = exports['qbx_core']:GetCoreObject()
+    if QBX then
+        QBCore = QBX
+        print("^2[JPR Phone] Server Config using QBOX Core (qbx_core)^0")
+    else
+        print("^1[JPR Phone] qbx_core detected but QBX global missing!^0")
+    end
 elseif GetResourceState('qb-core') == 'started' then
-    Framework = exports['qb-core']:GetCoreObject()
+    QBCore = exports['qb-core']:GetCoreObject()
+    print("^2[JPR Phone] Server Config using QB-Core^0")
 else
-    print('^1[JPR Phone] Framework not found (qbx_core or qb-core missing!)^0')
+    print("^1[JPR Phone] No framework found for server config (qbx_core/qb-core)^0")
 end
+
+return QBCore
+
 
 -- Alias for backward compatibility (so the rest of the script works)
 QBCore = Framework
