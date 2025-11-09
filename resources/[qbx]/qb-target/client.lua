@@ -92,8 +92,8 @@ local function DrawTarget()
 				end
 
 				SetDrawOrigin(zone.center.x, zone.center.y, zone.center.z, 0)
-				if Config.HideEye true
-			else
+				if not Config or not Config.HideEye
+				then
 				DrawSprite('shared', 'emptydot_32', 0, 0, 0.01, 0.02, 0, r, g, b, a)
 				ClearDrawOrigin()
 			end
