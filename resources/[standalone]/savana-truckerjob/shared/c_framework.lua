@@ -63,6 +63,30 @@ loadVehicle = function(vehicle, coords, heading)
         return nil
     end
 
+    -- Fallback coords if missing
+    if not coords or not coords.x then
+        coords = vector4(-422.0, -2787.5, 6.0, 315.0) -- LS docks default
+    end
+
+    -- Create vehicle
+    local car = CreateVehicle(model, coords.x, coords.y, coords.z, coords.w or heading or 0.0, true, false)
+    SetEntityAsMissionEntity(car, true, true)
+    SetVehicleOnGroundProperly(car)
+    SetVehicleNumberPlateText(car, 'TRUCK')
+    TaskWarpPedIntoVehicle(PlayerPedId(), car, -1)
+    SetModelAsNoLongerNeeded(model)
+
+    -- Set fuel if resource exists
+    if GetResourceState('cdn-fuel') == 'started' then
+        exports['cdn-fuel']:SetFuel(car, 100.0)
+    elseif GetResourceState('LegacyFuel') == 'started' then
+        exports['LegacyFuel']:SetFuel(car, 100.0)
+    end
+
+    print('[TruckerJob]  Truck spawned successfully:', vehicle)
+    return car
+end
+
 function fuel(car)
     if GetResourceState('savana-fuel') == 'started' then
         return exports['savana-fuel']:SetFuel(car, 100.0)
