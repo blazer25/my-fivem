@@ -11,7 +11,10 @@ local maps = {
     'anarchy_LsCustoms',
     'jpr-casinosystem',
     'jpr-libs',
-    'DLCiplLoader'
+    'DLCiplLoader',
+    'vinewood_house',
+    'dip_hookies',
+    'dip_mechanic'
 }
 
 CreateThread(function()
