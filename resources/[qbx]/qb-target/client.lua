@@ -23,6 +23,7 @@ local HasEntityClearLosToEntity = HasEntityClearLosToEntity
 local currentResourceName = GetCurrentResourceName()
 local Config, Types, Players, Entities, Models, Zones, nuiData, sendData, sendDistance = Config, { {}, {}, {} }, {}, {},
 	{}, {}, {}, {}, {}
+	Config.ShowEye = false
 local playerPed, targetActive, hasFocus, success, pedsReady, allowTarget = PlayerPedId(), false, false, false, false,
 	true
 local screen = {}
@@ -81,16 +82,17 @@ local function DrawTarget()
 				r = zone.targetoptions.drawColor?[1] or Config.DrawColor[1]
 				g = zone.targetoptions.drawColor?[2] or Config.DrawColor[2]
 				b = zone.targetoptions.drawColor?[3] or Config.DrawColor[3]
-				a = 0
+				a = zone.targetoptions.drawColor?[4] or Config.DrawColor[4]
 
 				if zone.success then
 					r = zone.targetoptions.successDrawColor?[1] or Config.SuccessDrawColor[1]
 					g = zone.targetoptions.successDrawColor?[2] or Config.SuccessDrawColor[2]
 					b = zone.targetoptions.successDrawColor?[3] or Config.SuccessDrawColor[3]
-					a = 0
+					a = zone.targetoptions.successDrawColor?[4] or Config.SuccessDrawColor[4]
 				end
 
 				SetDrawOrigin(zone.center.x, zone.center.y, zone.center.z, 0)
+				if Config.ShowEye = false then
 				DrawSprite('shared', 'emptydot_32', 0, 0, 0.01, 0.02, 0, r, g, b, a)
 				ClearDrawOrigin()
 			end
