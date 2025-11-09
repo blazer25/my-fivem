@@ -1,1 +1,0 @@
-# To see our installation guide go to the follow link: https://github.com/MT-Scripts/MT-Mechanic-InstallGuide
