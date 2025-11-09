@@ -2,6 +2,7 @@ Framework = {}
 currentZone = nil
 
 
+
 if GetResourceState('qbx_core') == 'started' then
     shared.Framework = "qb"
 end
@@ -44,48 +45,78 @@ function Framework:SpawnClear(data,count)
     end
 end
 
-loadVehicle = function(vehicle, coords, heading)
-    local model = vehicle or 'mule' -- default truck model
-    if type(model) ~= 'number' then
-        model = GetHashKey(model)
-    end
+loadVehicle = function(modelName, coords, heading)
+    local model = modelName or 'mule'
+    if type(model) ~= 'number' then model = joaat(model) end
 
-    -- Load model
-    RequestModel(model)
-    local timeout = 0
-    while not HasModelLoaded(model) and timeout < 100 do
-        Wait(50)
-        timeout = timeout + 1
-    end
-
-    if not HasModelLoaded(model) then
-        print('[TruckerJob]  Failed to load model:', vehicle)
+    if not IsModelInCdimage(model) then
+        Framework:Notify('Invalid vehicle model: '..tostring(modelName), 'error')
+        print('[TruckerJob] Model not found:', modelName)
         return nil
     end
 
-    -- Fallback coords if missing
+    -- Qbox-safe model loading
+    if lib and lib.requestModel then
+        if not lib.requestModel(model, 10000) then
+            Framework:Notify('Failed to load model '..tostring(modelName), 'error')
+            return nil
+        end
+    else
+        RequestModel(model)
+        while not HasModelLoaded(model) do Wait(50) end
+    end
+
     if not coords or not coords.x then
-        coords = vector4(-422.0, -2787.5, 6.0, 315.0) -- LS docks default
+        coords = vec4(-422.0, -2787.5, 6.0, 315.0)
     end
 
     -- Create vehicle
-    local car = CreateVehicle(model, coords.x, coords.y, coords.z, coords.w or heading or 0.0, true, false)
-    SetEntityAsMissionEntity(car, true, true)
-    SetVehicleOnGroundProperly(car)
-    SetVehicleNumberPlateText(car, 'TRUCK')
-    TaskWarpPedIntoVehicle(PlayerPedId(), car, -1)
+    local veh = CreateVehicle(model, coords.x, coords.y, coords.z, coords.w or heading or 0.0, true, true)
+    local netId = NetworkGetNetworkIdFromEntity(veh)
+    SetNetworkIdCanMigrate(netId, true)
+    SetEntityAsMissionEntity(veh, true, true)
+    SetVehicleOnGroundProperly(veh)
+    SetVehicleNumberPlateText(veh, 'TRUCK')
+    SetVehicleDirtLevel(veh, 0.0)
+    TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
     SetModelAsNoLongerNeeded(model)
 
-    -- Set fuel if resource exists
+    -- Fuel support
     if GetResourceState('cdn-fuel') == 'started' then
-        exports['cdn-fuel']:SetFuel(car, 100.0)
+        exports['cdn-fuel']:SetFuel(veh, 100.0)
     elseif GetResourceState('LegacyFuel') == 'started' then
-        exports['LegacyFuel']:SetFuel(car, 100.0)
+        exports['LegacyFuel']:SetFuel(veh, 100.0)
+    elseif GetResourceState('ox_fuel') == 'started' then
+        Entity(veh).state.fuel = 100
     end
 
-    print('[TruckerJob]  Truck spawned successfully:', vehicle)
-    return car
+    Framework:Notify('Vehicle spawned: '..tostring(modelName), 'success')
+    print('[TruckerJob] Vehicle spawned successfully:', modelName)
+    return veh
 end
+
+RegisterNetEvent('trucker:spawnTruckAndTrailer', function(truckModel, trailerModel, startCoords, trailerCoords)
+    local ped = PlayerPedId()
+    local truck = loadVehicle(truckModel, startCoords)
+    if not truck then
+        Framework:Notify('Truck failed to spawn', 'error')
+        return
+    end
+
+    Wait(1500) -- short delay for physics
+
+    local trailer = loadVehicle(trailerModel, trailerCoords)
+    if not trailer then
+        Framework:Notify('Trailer failed to spawn', 'error')
+        return
+    end
+
+    Wait(1000)
+    AttachVehicleToTrailer(truck, trailer, 1.0)
+
+    Framework:Notify('Truck and trailer ready — drive safely!', 'success')
+    print('[TruckerJob] Truck + Trailer spawned and attached')
+end)
 
 function fuel(car)
     if GetResourceState('savana-fuel') == 'started' then
