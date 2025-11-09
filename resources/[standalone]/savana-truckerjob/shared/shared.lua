@@ -2,7 +2,7 @@ shared = {}
 shared.Locale = "en" -- "en" , "tr"
 shared.Framework = "auto" -- qb, qbold, esx, esxold, custom, auto
 shared.UseTarget = true
-shared.debug = false
+shared.debug = true
 shared.infoText = true
 shared.customKey = true -- Custom Vehicle Keys
 
