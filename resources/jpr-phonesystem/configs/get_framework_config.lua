@@ -1,0 +1,1 @@
+QBCore = exports[Config.CoreName]:GetCoreObject()

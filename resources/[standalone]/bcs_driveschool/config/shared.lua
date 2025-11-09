@@ -3,7 +3,7 @@ return {
     debug = true,
 
     ---@type string
-    licenseScript = "bcs_licensemanager",
+    licenseScript = "qbx_idcard",
     -- "bcs_licensemanager" / "qb-license" / "esx_license" / "qbx_idcard" / "qbx_license" / "cs_license" / "ak47_qb_idcardv2"
 
     ---@type string
