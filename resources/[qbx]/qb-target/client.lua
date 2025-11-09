@@ -91,7 +91,7 @@ local function DrawTarget()
 				end
 
 				SetDrawOrigin(zone.center.x, zone.center.y, zone.center.z, 0)
-				--DrawSprite('shared', 'emptydot_32', 0, 0, 0.01, 0.02, 0, r, g, b, a)
+				DrawSprite('shared', 'emptydot_32', 0, 0, 0.01, 0.02, 0, r, g, b, 0)
 				ClearDrawOrigin()
 			end
 			Wait(sleep)
