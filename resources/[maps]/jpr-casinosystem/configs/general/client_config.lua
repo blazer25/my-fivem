@@ -131,8 +131,9 @@ function OpenSlotsMenu(options)
 end
 
 function GetVehicleProperties(...)
-    return QBX.Functions.GetVehicleProperties(...)
+    return exports[Config.CoreName]:GetVehicleProperties(...)
 end
+
 
 function SpawnVehicle(vehInfo, coords, warp)
     local veh = CreateVehicle(vehInfo.vehicle, coords.x, coords.y, coords.z, coords.w, true, false)
