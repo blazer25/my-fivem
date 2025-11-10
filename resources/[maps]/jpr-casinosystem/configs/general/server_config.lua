@@ -108,6 +108,7 @@ function GetPlayer(source)
                     return exports['qbx_core']:GetCoreObject()
                 end)
                 if success and coreObj and coreObj.Functions then
+                    _G.QBX = coreObj
                     QBX = coreObj
                     _G.QBCore = coreObj
                     QBCore = coreObj
@@ -169,6 +170,7 @@ CreateThread(function()
                 return exports['qbx_core']:GetCoreObject()
             end)
             if success and coreObj and coreObj.Functions then
+                _G.QBX = coreObj
                 QBX = coreObj
                 _G.QBCore = coreObj
                 QBCore = coreObj

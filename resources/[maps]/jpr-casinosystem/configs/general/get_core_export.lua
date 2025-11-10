@@ -2,8 +2,9 @@ local Core = nil
 
 -- Initialize QBX and QBCore with safe placeholder structure to prevent nil errors
 -- This ensures they exist even if core isn't ready yet
-if not QBX then
-    QBX = {
+-- Set as globals immediately to prevent nil errors during script load
+if not _G.QBX then
+    _G.QBX = {
         Functions = {
             CreateCallback = function(...) 
                 print('^3[JPR Casino] WARNING: CreateCallback called before QBX initialized^0')
@@ -16,6 +17,9 @@ if not QBX then
         }
     }
 end
+-- Also set local QBX reference
+QBX = _G.QBX
+
 if not _G.QBCore then
     _G.QBCore = {}
 end
@@ -48,7 +52,8 @@ local function initQBXCore()
         if coreObj.Functions then
             Core = coreObj
             -- Only update if we got a valid core object
-            QBX = coreObj  -- Set global QBX (replaces placeholder)
+            _G.QBX = coreObj  -- Set global QBX (replaces placeholder)
+            QBX = coreObj     -- Also set local reference
             _G.QBCore = coreObj  -- ✅ backward-compatibility alias (explicit global)
             QBCore = coreObj     -- Also set without _G for compatibility
             print('^2[JPR Casino] Linked to QBOX Core via exports^0')
