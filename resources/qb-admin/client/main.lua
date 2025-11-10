@@ -185,8 +185,11 @@ end)
 
 RegisterNUICallback("GiveItem", function(data)
     DebugTrace("NUICallback: GiveItem - Item: " .. tostring(data.Item) .. ", Amount: " .. tostring(data.Amount) .. ", Id: " .. tostring(data.Id))
-    if data and data.Item and data.Amount then
-        TriggerServerEvent("919-admin:server:GiveItem", data.Id or "self", data.Item, data.Amount)
+    if data and data.Item then
+        -- Handle empty amount - default to 1 if not provided
+        local amount = tonumber(data.Amount) or 1
+        local targetId = data.Id or "self"
+        TriggerServerEvent("919-admin:server:GiveItem", targetId, data.Item, amount)
     else
         print("^1[919ADMIN] ERROR: GiveItem callback received invalid data^0")
         print("^1[919ADMIN] Data: " .. json.encode(data or {}))

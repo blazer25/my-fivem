@@ -46,6 +46,7 @@ shared_scripts {
     'config.lua',
     'compat/qbcore.lua', -- If using ESX uncomment line below & comment this line
     --'compat/esx18.lua', -- If using ESX comment line above & uncomment this line
+    'bridge/qbox.lua', -- QBox bridge (auto-loads if qbx_core is detected)
 }
 
 server_scripts {

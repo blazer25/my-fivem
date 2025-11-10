@@ -715,19 +715,29 @@ RegisterServerEvent("919-admin:server:GiveItem", function(targetId, item, amount
         end
         
         print("^3[919ADMIN] Permission check passed, giving item^0")
+        -- Validate amount
+        amount = tonumber(amount) or 1
+        if amount < 1 then amount = 1 end
+        
         -- Use Compat bridge for QBox, or QBCore directly for legacy QB
         if Compat and Compat.AddItem then
             print("^3[919ADMIN] Using Compat.AddItem (QBox)^0")
             -- Check if item exists using QBox exports
-            local items = exports.qbx_core:GetItemsByName()
-            if items and items[item] then
-                print("^3[919ADMIN] Item exists, calling Compat.AddItem^0")
+            local success, items = pcall(function()
+                return exports.qbx_core:GetItemsByName()
+            end)
+            
+            if success and items and items[item] then
+                print("^3[919ADMIN] Item exists, calling Compat.AddItem - Target: " .. tostring(targetId) .. ", Item: " .. tostring(item) .. ", Amount: " .. tostring(amount) .. "^0")
                 Compat.AddItem(tonumber(targetId), item, amount)
                 TriggerEvent("qb-log:server:CreateLog", "adminactions", "Give Item", "red", "**STAFF MEMBER " .. GetPlayerName(src) .. "** gave " .. item .. " (x" .. amount .. ") to " .. GetPlayerName(targetId), false)
                 TriggerClientEvent("919-admin:client:ShowPanelAlert", src, "success", "<strong>"..Lang:t("alerts.success").."</strong> "..Lang:t("alerts.gaveItem", {value = item}))
                 TriggerClientEvent("QBCore:Notify", targetId, Lang:t("notify.givenItem", {value = item}), "success")
             else
-                print("^1[919ADMIN] Item not found in items list: " .. tostring(item) .. "^0")
+                print("^1[919ADMIN] Item not found in items list or export failed: " .. tostring(item) .. "^0")
+                if not success then
+                    print("^1[919ADMIN] Error getting items: " .. tostring(items) .. "^0")
+                end
                 TriggerClientEvent("919-admin:client:ShowPanelAlert", src, "danger", "<strong>"..Lang:t("alerts.error").."</strong> "..Lang:t("alerts.invalidItem"))
             end
         elseif QBCore then

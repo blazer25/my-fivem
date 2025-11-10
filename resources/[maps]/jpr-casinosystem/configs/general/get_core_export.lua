@@ -72,10 +72,14 @@ if GetResourceState('qbx_core') == 'started' or GetResourceState('qbx_core') == 
     end
 end
 
--- If still not initialized, try qb-core
+-- Only try qb-core if qbx_core is not available at all
+-- Don't fall back to qb-core if qbx_core exists but just isn't ready yet
 if not initialized then
-    if GetResourceState('qb-core') == 'started' then
-        initialized = initQBCore()
+    if GetResourceState('qbx_core') ~= 'started' and GetResourceState('qbx_core') ~= 'starting' then
+        -- qbx_core doesn't exist, try qb-core as fallback
+        if GetResourceState('qb-core') == 'started' then
+            initialized = initQBCore()
+        end
     end
 end
 

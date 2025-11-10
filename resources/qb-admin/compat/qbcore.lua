@@ -1,4 +1,19 @@
-QBCore = exports["qb-core"]:GetCoreObject()
+-- Try to get QBCore from qbx_core first (QBox), then fall back to qb-core
+local qbcoreSuccess, qbcoreObj = pcall(function()
+    if GetResourceState('qbx_core') == 'started' then
+        return exports['qbx_core']:GetCoreObject()
+    elseif GetResourceState('qb-core') == 'started' then
+        return exports['qb-core']:GetCoreObject()
+    end
+    return nil
+end)
+
+if qbcoreSuccess and qbcoreObj then
+    QBCore = qbcoreObj
+else
+    -- Fallback: try qb-core directly
+    QBCore = exports["qb-core"]:GetCoreObject()
+end
 
 -- SERVER COMPATIBILITY LAYER
 if (IsDuplicityVersion()) then
