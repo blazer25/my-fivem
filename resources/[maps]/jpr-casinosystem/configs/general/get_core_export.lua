@@ -72,23 +72,30 @@ if not QBCore then
 end
 
 -- Function to initialize core from qbx_core
+-- Only works on server side (exports are server-only)
 local function initQBXCore()
+    -- Only run on server side
+    if not IsDuplicityVersion() then
+        return false
+    end
+    
     local resourceState = GetResourceState('qbx_core')
     if resourceState ~= 'started' then
         return false
     end
     
-    -- Check if export exists
-    local exportExists, exportCheck = pcall(function()
-        return exports['qbx_core'] ~= nil
-    end)
-    
-    if not exportExists then
-        return false
-    end
-    
     -- Try to get the core object
+    -- Note: qbx_core might not export GetCoreObject directly, but qb-core bridge does
     local success, coreObj = pcall(function()
+        -- Try qbx_core first (if it has the export)
+        if exports['qbx_core'] and type(exports['qbx_core']) == 'table' and exports['qbx_core'].GetCoreObject then
+            return exports['qbx_core']:GetCoreObject()
+        end
+        -- Try qb-core bridge (which re-exports it)
+        if GetResourceState('qb-core') == 'started' and exports['qb-core'] and exports['qb-core'].GetCoreObject then
+            return exports['qb-core']:GetCoreObject()
+        end
+        -- Last resort: try direct call (might work if export exists but isn't in table)
         return exports['qbx_core']:GetCoreObject()
     end)
     
@@ -148,18 +155,21 @@ end
 -- Only run on server side (shared scripts run on both client and server)
 local initialized = false
 if IsDuplicityVersion() then
-    local resourceState = GetResourceState('qbx_core')
-    if resourceState == 'started' or resourceState == 'starting' then
-        -- Wait a bit for the resource to fully initialize
-        Wait(1000)  -- Give qbx_core 1 second to fully initialize
+    local qbxState = GetResourceState('qbx_core')
+    local qbCoreState = GetResourceState('qb-core')
+    
+    -- Wait for both qbx_core and qb-core bridge to be ready
+    if (qbxState == 'started' or qbxState == 'starting') and (qbCoreState == 'started' or qbCoreState == 'starting') then
+        -- Wait a bit for the resources to fully initialize
+        Wait(2000)  -- Give resources 2 seconds to fully initialize and register exports
         
         -- Try a few times synchronously (with small waits) before going async
-        for i = 1, 10 do
+        for i = 1, 15 do
             if initQBXCore() then
                 initialized = true
                 break
             end
-            if i < 10 then
+            if i < 15 then
                 Wait(200)  -- Wait 200ms between attempts
             end
         end
@@ -182,7 +192,10 @@ end
 -- Only run on server side (shared scripts run on both client and server)
 if not initialized then
     if IsDuplicityVersion() then  -- Only run on server
-        if GetResourceState('qbx_core') == 'starting' or GetResourceState('qbx_core') == 'started' then
+        local qbxState = GetResourceState('qbx_core')
+        local qbCoreState = GetResourceState('qb-core')
+        
+        if (qbxState == 'starting' or qbxState == 'started') or (qbCoreState == 'starting' or qbCoreState == 'started') then
             CreateThread(function()
                 local attempts = 0
                 local maxAttempts = 100  -- Wait up to 10 seconds (100 * 100ms) - same as server_config
@@ -191,10 +204,23 @@ if not initialized then
                     Wait(100)  -- Use 100ms like server_config, not 500ms
                     attempts = attempts + 1
                     
+                    -- Wait for both resources to be started
+                    local qbxReady = GetResourceState('qbx_core') == 'started'
+                    local qbCoreReady = GetResourceState('qb-core') == 'started'
+                    
                     -- Actively try to initialize during the wait (like server_config does)
-                    if GetResourceState('qbx_core') == 'started' and (not _G.QBX or not _G.QBX.Functions) then
+                    -- Try both qbx_core and qb-core exports (bridge might provide it)
+                    if (qbxReady or qbCoreReady) and (not _G.QBX or not _G.QBX.Functions) then
                         local success, coreObj = pcall(function()
-                            return exports['qbx_core']:GetCoreObject()
+                            -- Try qbx_core first
+                            if exports['qbx_core'] and exports['qbx_core'].GetCoreObject then
+                                return exports['qbx_core']:GetCoreObject()
+                            end
+                            -- Fallback to qb-core bridge if available
+                            if GetResourceState('qb-core') == 'started' and exports['qb-core'] and exports['qb-core'].GetCoreObject then
+                                return exports['qb-core']:GetCoreObject()
+                            end
+                            return nil
                         end)
                         if success and coreObj and coreObj.Functions then
                             Core = coreObj
@@ -208,6 +234,8 @@ if not initialized then
                             print('^3[JPR Casino] Initialization attempt ' .. attempts .. ' failed: ' .. tostring(coreObj) .. '^0')
                         elseif success and coreObj and not coreObj.Functions and attempts % 20 == 0 then
                             print('^3[JPR Casino] Initialization attempt ' .. attempts .. ': Got object but no Functions^0')
+                        elseif success and not coreObj and attempts % 20 == 0 then
+                            print('^3[JPR Casino] Initialization attempt ' .. attempts .. ': Export returned nil^0')
                         end
                     end
                     
