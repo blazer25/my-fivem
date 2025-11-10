@@ -19,7 +19,7 @@ function CallBackFunction(...)
 end
 
 function NotifyServer(player, message, notifyType)
-    TriggerClientEvent('QBCore:Notify', player.PlayerData.source, message, notifyType)
+    TriggerClientEvent('QBX:Notify', player.PlayerData.source, message, notifyType)
 end
 
 function GetPlayer(source)
