@@ -19,7 +19,8 @@ local function initQBXCore()
             return exports['qbx_core']:GetCoreObject()
         end)
         
-        if success and coreObj then
+        -- Verify that coreObj exists and has Functions before considering it initialized
+        if success and coreObj and coreObj.Functions then
             Core = coreObj
             QBX = coreObj  -- Set global QBX
             _G.QBCore = coreObj  -- ✅ backward-compatibility alias (explicit global)
@@ -27,7 +28,11 @@ local function initQBXCore()
             print('^2[JPR Casino] Linked to QBOX Core via exports^0')
             return true
         else
-            print('^3[JPR Casino] Warning: qbx_core export not ready yet, will retry...^0')
+            if success and coreObj then
+                print('^3[JPR Casino] Warning: qbx_core object received but Functions not available yet^0')
+            else
+                print('^3[JPR Casino] Warning: qbx_core export not ready yet, will retry...^0')
+            end
             return false
         end
     end
@@ -79,20 +84,21 @@ if not initialized then
     if GetResourceState('qbx_core') == 'starting' or GetResourceState('qbx_core') == 'started' then
         CreateThread(function()
             local attempts = 0
-            local maxAttempts = 20  -- Try for up to 10 seconds (20 * 500ms)
+            local maxAttempts = 40  -- Try for up to 20 seconds (40 * 500ms)
             
             while attempts < maxAttempts do
                 Wait(500)
                 attempts = attempts + 1
                 
                 if initQBXCore() then
+                    print('^2[JPR Casino] Successfully initialized QBOX Core after ' .. attempts .. ' attempts^0')
                     return  -- Successfully initialized
                 end
             end
             
             -- If we still haven't initialized, keep placeholder structure
-            if not Core then
-                print('^1[JPR Casino] ERROR: Failed to initialize QBOX Core after retries^0')
+            if not Core or not Core.Functions then
+                print('^1[JPR Casino] ERROR: Failed to initialize QBOX Core after ' .. maxAttempts .. ' retries^0')
                 -- Keep the placeholder structure to prevent nil errors
                 Core = {}
             end

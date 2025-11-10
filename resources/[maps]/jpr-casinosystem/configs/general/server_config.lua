@@ -33,12 +33,25 @@ function GetPlayer(source)
     if not QBX or not QBX.Functions then
         -- Wait a bit and retry if QBX isn't ready
         local attempts = 0
-        while (not QBX or not QBX.Functions) and attempts < 10 do
+        local maxAttempts = 50  -- Wait up to 5 seconds (50 * 100ms)
+        while (not QBX or not QBX.Functions) and attempts < maxAttempts do
             Wait(100)
             attempts = attempts + 1
+            -- Try to re-initialize if we have the export available
+            if GetResourceState('qbx_core') == 'started' and not QBX.Functions then
+                local success, coreObj = pcall(function()
+                    return exports['qbx_core']:GetCoreObject()
+                end)
+                if success and coreObj and coreObj.Functions then
+                    QBX = coreObj
+                    _G.QBCore = coreObj
+                    QBCore = coreObj
+                    break
+                end
+            end
         end
         if not QBX or not QBX.Functions then
-            print('^1[JPR Casino] ERROR: QBX.Functions not available after wait^0')
+            print('^1[JPR Casino] ERROR: QBX.Functions not available after wait (attempts: ' .. attempts .. ')^0')
             return nil
         end
     end
