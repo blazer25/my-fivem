@@ -174,19 +174,36 @@ if not initialized then
 end
 
 -- If initialization failed, set up async retry mechanism
+-- Use the same approach as server_config.lua which successfully initializes
 if not initialized then
     if GetResourceState('qbx_core') == 'starting' or GetResourceState('qbx_core') == 'started' then
         CreateThread(function()
             local attempts = 0
-            local maxAttempts = 100  -- Try for up to 50 seconds (100 * 500ms)
-            local lastWarning = 0
+            local maxAttempts = 100  -- Wait up to 10 seconds (100 * 100ms) - same as server_config
             
-            while attempts < maxAttempts do
-                Wait(500)
+            while (not _G.QBX or not _G.QBX.Functions) and attempts < maxAttempts do
+                Wait(100)  -- Use 100ms like server_config, not 500ms
                 attempts = attempts + 1
                 
+                -- Actively try to initialize during the wait (like server_config does)
+                if GetResourceState('qbx_core') == 'started' and (not _G.QBX or not _G.QBX.Functions) then
+                    local success, coreObj = pcall(function()
+                        return exports['qbx_core']:GetCoreObject()
+                    end)
+                    if success and coreObj and coreObj.Functions then
+                        Core = coreObj
+                        _G.QBX = coreObj
+                        QBX = coreObj
+                        _G.QBCore = coreObj
+                        QBCore = coreObj
+                        print('^2[JPR Casino] Successfully initialized QBOX Core after ' .. attempts .. ' attempts^0')
+                        return  -- Successfully initialized
+                    end
+                end
+                
+                -- Also try using initQBXCore function
                 if initQBXCore() then
-                    print('^2[JPR Casino] Successfully initialized QBOX Core after ' .. attempts .. ' attempts^0')
+                    print('^2[JPR Casino] Successfully initialized QBOX Core via initQBXCore after ' .. attempts .. ' attempts^0')
                     return  -- Successfully initialized
                 end
                 
