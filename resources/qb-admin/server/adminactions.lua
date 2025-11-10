@@ -589,13 +589,19 @@ end)
 
 RegisterServerEvent("919-admin:server:RequestVehicleSpawn", function(modelName)
     local src = source
+    print("^3[919ADMIN] RequestVehicleSpawn received - Model: " .. tostring(modelName) .. ", Source: " .. tostring(src) .. "^0")
     if AdminPanel.HasPermission(src, "spawncar") then
+        print("^3[919ADMIN] Permission check passed, spawning vehicle^0")
         -- For QBox, trigger the client event directly (bridge handles it on client)
         if Compat and Compat.SpawnVehicle then
+            print("^3[919ADMIN] Using Compat.SpawnVehicle (QBox)^0")
             TriggerClientEvent('919-admin:client:spawnVehicle', src, modelName, "ADMIN", {})
         else
+            print("^3[919ADMIN] Using legacy QBCore spawn^0")
             TriggerClientEvent("QBCore:Command:SpawnVehicle", src, modelName)
         end
+    else
+        print("^1[919ADMIN] Permission check FAILED for source " .. tostring(src) .. "^0")
     end
 end)
 
@@ -702,21 +708,26 @@ end)
 
 RegisterServerEvent("919-admin:server:GiveItem", function(targetId, item, amount)
     local src = source
+    print("^3[919ADMIN] GiveItem received - Item: " .. tostring(item) .. ", Amount: " .. tostring(amount) .. ", TargetId: " .. tostring(targetId) .. ", Source: " .. tostring(src) .. "^0")
     if AdminPanel.HasPermission(src, "giveitem") then
         if targetId == "self" or targetId == nil or targetId == "" or targetId == " " then
             targetId = source
         end
         
+        print("^3[919ADMIN] Permission check passed, giving item^0")
         -- Use Compat bridge for QBox, or QBCore directly for legacy QB
         if Compat and Compat.AddItem then
+            print("^3[919ADMIN] Using Compat.AddItem (QBox)^0")
             -- Check if item exists using QBox exports
             local items = exports.qbx_core:GetItemsByName()
             if items and items[item] then
+                print("^3[919ADMIN] Item exists, calling Compat.AddItem^0")
                 Compat.AddItem(tonumber(targetId), item, amount)
                 TriggerEvent("qb-log:server:CreateLog", "adminactions", "Give Item", "red", "**STAFF MEMBER " .. GetPlayerName(src) .. "** gave " .. item .. " (x" .. amount .. ") to " .. GetPlayerName(targetId), false)
                 TriggerClientEvent("919-admin:client:ShowPanelAlert", src, "success", "<strong>"..Lang:t("alerts.success").."</strong> "..Lang:t("alerts.gaveItem", {value = item}))
                 TriggerClientEvent("QBCore:Notify", targetId, Lang:t("notify.givenItem", {value = item}), "success")
             else
+                print("^1[919ADMIN] Item not found in items list: " .. tostring(item) .. "^0")
                 TriggerClientEvent("919-admin:client:ShowPanelAlert", src, "danger", "<strong>"..Lang:t("alerts.error").."</strong> "..Lang:t("alerts.invalidItem"))
             end
         elseif QBCore then

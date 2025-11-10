@@ -184,11 +184,23 @@ RegisterNetEvent("919-admin:client:WarnPlayer", function(warnedBy, reason)
 end)
 
 RegisterNUICallback("GiveItem", function(data)
-    TriggerServerEvent("919-admin:server:GiveItem", data.Id, data.Item, data.Amount)
+    DebugTrace("NUICallback: GiveItem - Item: " .. tostring(data.Item) .. ", Amount: " .. tostring(data.Amount) .. ", Id: " .. tostring(data.Id))
+    if data and data.Item and data.Amount then
+        TriggerServerEvent("919-admin:server:GiveItem", data.Id or "self", data.Item, data.Amount)
+    else
+        print("^1[919ADMIN] ERROR: GiveItem callback received invalid data^0")
+        print("^1[919ADMIN] Data: " .. json.encode(data or {}))
+    end
 end)
 
 RegisterNUICallback("SpawnVehicle", function(data)
-    TriggerServerEvent("919-admin:server:RequestVehicleSpawn", data.Vehicle)
+    DebugTrace("NUICallback: SpawnVehicle - Vehicle: " .. tostring(data.Vehicle))
+    if data and data.Vehicle then
+        TriggerServerEvent("919-admin:server:RequestVehicleSpawn", data.Vehicle)
+    else
+        print("^1[919ADMIN] ERROR: SpawnVehicle callback received invalid data^0")
+        print("^1[919ADMIN] Data: " .. json.encode(data or {}))
+    end
 end)
 
 RegisterNUICallback("ReportReply", function(data)
@@ -1741,28 +1753,49 @@ function toggleNames()
     end)
     -- ✅ QBox-compatible vehicle spawn
 RegisterNetEvent('919-admin:client:spawnVehicle', function(model, plate, props)
+    print("^3[919ADMIN] Client: spawnVehicle event received - Model: " .. tostring(model) .. ", Plate: " .. tostring(plate) .. "^0")
     local ped = PlayerPedId()
     local pos = GetEntityCoords(ped)
     local heading = GetEntityHeading(ped)
 
-    if not IsModelInCdimage(model) or not IsModelAVehicle(model) then
-        print(("[919ADMIN][QBox Bridge] Invalid vehicle model: %s"):format(model))
+    if not model or model == "" then
+        print("^1[919ADMIN] ERROR: No model provided^0")
         return
     end
 
-    RequestModel(model)
-    while not HasModelLoaded(model) do Wait(0) end
-
-    local veh = CreateVehicle(model, pos.x + 2.5, pos.y, pos.z, heading, true, false)
-    SetPedIntoVehicle(ped, veh, -1)
-    SetVehicleNumberPlateText(veh, plate or "ADMIN")
-    SetEntityAsMissionEntity(veh, true, true)
-    SetModelAsNoLongerNeeded(model)
-
-    if props and next(props) and exports.qbx_core and exports.qbx_core.SetVehicleProperties then
-        exports.qbx_core:SetVehicleProperties(veh, props)
+    if not IsModelInCdimage(model) or not IsModelAVehicle(model) then
+        print(("^1[919ADMIN] Invalid vehicle model: %s"):format(model))
+        return
     end
 
-    print(("[919ADMIN][QBox Bridge] Vehicle spawned: %s"):format(model))
+    print("^3[919ADMIN] Requesting model: " .. tostring(model) .. "^0")
+    RequestModel(model)
+    local timeout = 0
+    while not HasModelLoaded(model) and timeout < 100 do
+        Wait(100)
+        timeout = timeout + 1
+    end
+
+    if not HasModelLoaded(model) then
+        print("^1[919ADMIN] ERROR: Failed to load model after timeout^0")
+        return
+    end
+
+    print("^3[919ADMIN] Model loaded, creating vehicle^0")
+    local veh = CreateVehicle(model, pos.x + 2.5, pos.y, pos.z, heading, true, false)
+    if veh and veh ~= 0 then
+        SetPedIntoVehicle(ped, veh, -1)
+        SetVehicleNumberPlateText(veh, plate or "ADMIN")
+        SetEntityAsMissionEntity(veh, true, true)
+        SetModelAsNoLongerNeeded(model)
+
+        if props and next(props) and exports.qbx_core and exports.qbx_core.SetVehicleProperties then
+            exports.qbx_core:SetVehicleProperties(veh, props)
+        end
+
+        print("^2[919ADMIN] Vehicle spawned successfully: " .. tostring(model) .. "^0")
+    else
+        print("^1[919ADMIN] ERROR: Failed to create vehicle entity^0")
+    end
 end)
 end
