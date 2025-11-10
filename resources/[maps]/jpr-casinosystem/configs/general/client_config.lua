@@ -35,10 +35,19 @@ function CreateTargetZone(zoneName, coords, options)
 end
 
 function RemoveTargetZone(zoneName)
-    if Config.TargetScript == "ox-target" or Config.TargetScript == "ox_target" then
-        exports[Config.TargetScript]:removeZone("casinoSystem-"..zoneName)
-    else
-        exports[Config.TargetScript]:RemoveZone("casinoSystem-"..zoneName)
+    if not zoneName then return end
+    
+    local success, err = pcall(function()
+        if Config.TargetScript == "ox-target" or Config.TargetScript == "ox_target" then
+            exports[Config.TargetScript]:removeZone("casinoSystem-"..zoneName)
+        else
+            exports[Config.TargetScript]:RemoveZone("casinoSystem-"..zoneName)
+        end
+    end)
+    
+    -- Silently ignore errors if zone doesn't exist
+    if not success then
+        -- Zone doesn't exist or other error, which is fine
     end
 end
 
@@ -371,6 +380,9 @@ function OpenPokerInteractions()
 end
 
 function table.contains(table, element)
+    if not table or type(table) ~= "table" then
+        return false
+    end
     for _, value in ipairs(table) do
         if value == element then
             return true
