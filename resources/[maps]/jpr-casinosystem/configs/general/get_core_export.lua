@@ -7,11 +7,55 @@ if not _G.QBX then
     _G.QBX = {
         Functions = {
             CreateCallback = function(...) 
-                print('^3[JPR Casino] WARNING: CreateCallback called before QBX initialized^0')
+                -- Wait a bit for initialization, then try again
+                local attempts = 0
+                local placeholder = _G.QBX  -- Store reference to check if it changed
+                while attempts < 20 do
+                    Wait(100)
+                    attempts = attempts + 1
+                    -- Check if real QBX is now available (it will be a different object)
+                    if _G.QBX and _G.QBX.Functions and _G.QBX.Functions.CreateCallback and _G.QBX ~= placeholder then
+                        return _G.QBX.Functions.CreateCallback(...)
+                    end
+                    -- Try to initialize if we can
+                    if GetResourceState('qbx_core') == 'started' then
+                        local success, coreObj = pcall(function()
+                            return exports['qbx_core']:GetCoreObject()
+                        end)
+                        if success and coreObj and coreObj.Functions then
+                            _G.QBX = coreObj
+                            QBX = coreObj
+                            return coreObj.Functions.CreateCallback(...)
+                        end
+                    end
+                end
+                print('^3[JPR Casino] WARNING: CreateCallback called before QBX initialized (after wait)^0')
                 return nil 
             end,
-            GetPlayer = function(...) 
-                print('^3[JPR Casino] WARNING: GetPlayer called before QBX initialized^0')
+            GetPlayer = function(source) 
+                -- Wait a bit for initialization, then try again
+                local attempts = 0
+                local placeholder = _G.QBX  -- Store reference to check if it changed
+                while attempts < 20 do
+                    Wait(100)
+                    attempts = attempts + 1
+                    -- Check if real QBX is now available (it will be a different object)
+                    if _G.QBX and _G.QBX.Functions and _G.QBX.Functions.GetPlayer and _G.QBX ~= placeholder then
+                        return _G.QBX.Functions.GetPlayer(source)
+                    end
+                    -- Try to initialize if we can
+                    if GetResourceState('qbx_core') == 'started' then
+                        local success, coreObj = pcall(function()
+                            return exports['qbx_core']:GetCoreObject()
+                        end)
+                        if success and coreObj and coreObj.Functions then
+                            _G.QBX = coreObj
+                            QBX = coreObj
+                            return coreObj.Functions.GetPlayer(source)
+                        end
+                    end
+                end
+                print('^3[JPR Casino] WARNING: GetPlayer called before QBX initialized (after wait) for source ' .. tostring(source) .. '^0')
                 return nil 
             end
         }
