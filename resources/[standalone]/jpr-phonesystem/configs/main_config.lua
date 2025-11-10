@@ -50,9 +50,9 @@ Config.UploadSystem = {
     FivemerrSystemTokenKey = "051a0e2341795080358deb35727065ce", -- your fivemerr TOKEN Key, follow: https://joaos-organization-3.gitbook.io/jpresources-documentation/installation/phone-system/installation-page/qbcore#using-fivemerr
 
     UseOtherUploadSystem = false, -- not recommended due to discord rules
-    PhotoWebhook = "https://discord.com/api/webhooks/1013060271574622278/-i1aqLpOPUtvF5gLmCY6Exaki1jKSgVZKBP_BaP25QkxSnEPRUSHxklRjK2sUGMUyGMm",
-    VideoWebhook = "https://discord.com/api/webhooks/1083154592726003722/ykrsc6TaDbHYhIjjYREP8Q5bepgYiWEon1LD_ICbvckyd3JB-h05qIOLKAU9gdL91ajp",
-    AudioWebhook = "https://discord.com/api/webhooks/1075515809952182335/lUlfAJ5sVCozSBFvXQs0aWSfXsyOlhyNPWDr83_mvksmhZJvoP5REZxeJ1R-V5gsGRFF"
+    PhotoWebhook = "https://discord.com/api/webhooks/1437468383183507456/4GRVx2MX3s0aRgrHo3t0Nq3sP-PT39zhZraSZtUKiM2Fw-DKQipHkJVwz4NhJoMd_ZG9",
+    VideoWebhook = "https://discord.com/api/webhooks/1437468383183507456/4GRVx2MX3s0aRgrHo3t0Nq3sP-PT39zhZraSZtUKiM2Fw-DKQipHkJVwz4NhJoMd_ZG9",
+    AudioWebhook = "https://discord.com/api/webhooks/1437468383183507456/4GRVx2MX3s0aRgrHo3t0Nq3sP-PT39zhZraSZtUKiM2Fw-DKQipHkJVwz4NhJoMd_ZG9"
 }
 
 Config.StartingWallPaper = "background3"
