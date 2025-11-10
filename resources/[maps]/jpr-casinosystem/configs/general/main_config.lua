@@ -1,5 +1,5 @@
 Config = {}
-Config.CoreName = "qbx-core"
+Config.CoreName = "qbx_core"
 Config.CasinoItemName = 'casinochips' 
 Config.TargetScript = "ox_target" 
 Config.MenuScript = "jpr-libsss"
