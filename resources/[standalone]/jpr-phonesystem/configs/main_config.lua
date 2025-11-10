@@ -49,7 +49,7 @@ Config.UploadSystem = {
     UseFivemerrSystem = true, -- recommended option too
     FivemerrSystemTokenKey = "051a0e2341795080358deb35727065ce", -- your fivemerr TOKEN Key, follow: https://joaos-organization-3.gitbook.io/jpresources-documentation/installation/phone-system/installation-page/qbcore#using-fivemerr
 
-    UseOtherUploadSystem = false, -- not recommended due to discord rules
+    UseOtherUploadSystem = true, -- not recommended due to discord rules
     PhotoWebhook = "https://discord.com/api/webhooks/1437468383183507456/4GRVx2MX3s0aRgrHo3t0Nq3sP-PT39zhZraSZtUKiM2Fw-DKQipHkJVwz4NhJoMd_ZG9",
     VideoWebhook = "https://discord.com/api/webhooks/1437468383183507456/4GRVx2MX3s0aRgrHo3t0Nq3sP-PT39zhZraSZtUKiM2Fw-DKQipHkJVwz4NhJoMd_ZG9",
     AudioWebhook = "https://discord.com/api/webhooks/1437468383183507456/4GRVx2MX3s0aRgrHo3t0Nq3sP-PT39zhZraSZtUKiM2Fw-DKQipHkJVwz4NhJoMd_ZG9"
