@@ -1,4 +1,4 @@
-local Core = module('configs.general.get_core_export')
+local Core = require('configs.general.get_core_export')
 local QBX = Core or _G.QBX or _G.QBCore
 local QBCore = QBX -- backwards compatibility for scripts expecting QBCore name
 
