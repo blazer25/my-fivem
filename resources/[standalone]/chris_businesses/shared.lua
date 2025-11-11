@@ -166,7 +166,14 @@ end
 
 -- Format currency
 function FormatCurrency(amount)
-    return ('$%s'):format(lib.math.groupDigits(amount))
+    if not amount then return '$0' end
+    local formatted = tostring(amount)
+    local k
+    while true do
+        formatted, k = string.gsub(formatted, '^(-?%d+)(%d%d%d)', '%1,%2')
+        if k == 0 then break end
+    end
+    return ('$%s'):format(formatted)
 end
 
 -- Validate business data

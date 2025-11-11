@@ -8,6 +8,18 @@ local currentBusinessId = nil
 local businessBlips = {}
 local businessZones = {}
 
+-- Helper: Format number with commas
+local function FormatNumber(num)
+    if not num then return '0' end
+    local formatted = tostring(num)
+    local k
+    while true do
+        formatted, k = string.gsub(formatted, '^(-?%d+)(%d%d%d)', '%1,%2')
+        if k == 0 then break end
+    end
+    return formatted
+end
+
 -- Initialize businesses on resource start
 CreateThread(function()
     Wait(2000)
@@ -224,7 +236,7 @@ exports('useBusinessLaptop', function()
                     description = string.format('ID: %s | Distance: %.1fm | Price: $%s', 
                         business.id, 
                         distance, 
-                        lib.math.groupDigits(business.price or 0)),
+                        FormatNumber(business.price or 0)),
                     onSelect = function()
                         OpenBusinessDashboard(business.id)
                     end
@@ -530,7 +542,7 @@ RegisterCommand('openbusiness', function(source, args)
                 description = string.format('ID: %s | Type: %s | Price: $%s | %s', 
                     business.id,
                     business.business_type or 'general',
-                    lib.math.groupDigits(business.price or 0),
+                    FormatNumber(business.price or 0),
                     business.for_sale and 'For Sale' or 'Owned'
                 ),
                 onSelect = function()
@@ -572,7 +584,7 @@ RegisterCommand('listbusinesses', function()
             business.coords and business.coords.x or 0,
             business.coords and business.coords.y or 0,
             business.coords and business.coords.z or 0,
-            lib.math.groupDigits(business.price or 0)
+            FormatNumber(business.price or 0)
         ))
     end
 end, false)
