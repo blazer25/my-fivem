@@ -11,30 +11,55 @@ import { closeNUI } from './utils/api'
 function App() {
   const [activeTab, setActiveTab] = useState('overview')
   const [business, setBusiness] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false) // Start as false, not true
   const [error, setError] = useState(null)
   const [isDark, setIsDark] = useState(true)
   const [modal, setModal] = useState(null)
+  const [isVisible, setIsVisible] = useState(false)
+
+  const handleClose = () => {
+    setIsVisible(false)
+    setBusiness(null)
+    closeNUI()
+  }
 
   useEffect(() => {
     // Listen for messages from FiveM
     const handleMessage = (event) => {
       if (event.data.action === 'openDashboard') {
-        setBusiness(event.data.data)
-        setLoading(false)
-        setError(null)
+        setIsVisible(true)
+        if (event.data.data) {
+          setBusiness(event.data.data)
+          setLoading(false)
+          setError(null)
+        } else {
+          setLoading(true)
+          // Try to get business data via callback
+          setTimeout(() => {
+            setLoading(false)
+            setError('No business data received')
+          }, 2000)
+        }
       } else if (event.data.action === 'closeDashboard') {
+        setIsVisible(false)
+        setBusiness(null)
         closeNUI()
       }
     }
 
     window.addEventListener('message', handleMessage)
 
-    // Request initial data
-    window.postMessage({ action: 'getBusiness' }, '*')
+    // Handle ESC key to close
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        handleClose()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
 
     return () => {
       window.removeEventListener('message', handleMessage)
+      window.removeEventListener('keydown', handleKeyDown)
     }
   }, [])
 
@@ -55,8 +80,9 @@ function App() {
     }
   }
 
-  const handleClose = () => {
-    closeNUI()
+  // Don't render anything if not visible
+  if (!isVisible) {
+    return null
   }
 
   if (loading && !business) {
@@ -64,7 +90,13 @@ function App() {
       <div className="flex items-center justify-center h-screen bg-slate-900">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
-          <p className="text-slate-400">Loading business data...</p>
+          <p className="text-slate-400 mb-4">Loading business data...</p>
+          <button
+            onClick={handleClose}
+            className="px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600"
+          >
+            Close (ESC)
+          </button>
         </div>
       </div>
     )
@@ -79,7 +111,7 @@ function App() {
             onClick={handleClose}
             className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
           >
-            Close
+            Close (ESC)
           </button>
         </div>
       </div>
@@ -91,11 +123,12 @@ function App() {
       <div className="flex items-center justify-center h-screen bg-slate-900">
         <div className="text-center">
           <p className="text-slate-400 mb-4">No business data available</p>
+          <p className="text-slate-500 text-sm mb-4">Make sure you're near a business or use /openbusiness [id]</p>
           <button
             onClick={handleClose}
             className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
           >
-            Close
+            Close (ESC)
           </button>
         </div>
       </div>

@@ -24,6 +24,9 @@ end
 CreateThread(function()
     Wait(2000)
     RefreshBusinesses()
+    
+    -- Ensure NUI is not focused on start
+    SetNuiFocus(false, false)
 end)
 
 -- Refresh all businesses from server
@@ -124,29 +127,28 @@ function OpenBusinessDashboard(businessId)
         return
     end
     
-    -- Check if player has laptop item (server-side check)
-    -- Client-side check removed as it should be validated server-side
-    
     -- Request business data from server
     local business = lib.callback.await('chris_businesses:getBusiness', false, businessId)
-    if not business then
-        lib.notify({
-            title = 'Business System',
-            description = 'Unable to load business data',
-            type = 'error'
-        })
-        return
-    end
     
     currentBusinessId = businessId
     isUIOpen = true
     
-    -- Open NUI
+    -- Open NUI (even if business is nil, so player can close it)
     SetNuiFocus(true, true)
     SendNUIMessage({
         action = 'openDashboard',
-        data = business
+        data = business -- Can be nil, React will handle it
     })
+    
+    -- If no business data, show error after a moment
+    if not business then
+        Wait(500)
+        lib.notify({
+            title = 'Business System',
+            description = 'Unable to load business data. Press ESC to close.',
+            type = 'error'
+        })
+    end
 end
 
 -- Close business dashboard
@@ -613,18 +615,29 @@ RegisterNetEvent('chris_businesses:client:businessRemoved', function(businessId)
     end
 end)
 
--- Handle ESC key to close UI
+-- Handle ESC key to close UI (ALWAYS allow ESC to close)
 CreateThread(function()
     while true do
         if isUIOpen then
             DisableControlAction(0, 322, true) -- ESC
             DisableControlAction(0, 177, true) -- Backspace
             
-            if IsDisabledControlJustPressed(0, 322) then
+            if IsDisabledControlJustPressed(0, 322) or IsControlJustPressed(0, 322) then
                 CloseBusinessDashboard()
             end
         end
         Wait(0)
+    end
+end)
+
+-- Safety: Auto-close if NUI focus is on but dashboard should be closed
+CreateThread(function()
+    while true do
+        Wait(1000)
+        if not isUIOpen and IsNuiFocused() then
+            -- NUI is focused but dashboard should be closed - release focus
+            SetNuiFocus(false, false)
+        end
     end
 end)
 
