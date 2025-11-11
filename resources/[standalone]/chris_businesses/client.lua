@@ -188,32 +188,64 @@ exports('useBusinessLaptop', function()
     if not businesses or #businesses == 0 then
         lib.notify({
             title = 'Business System',
-            description = 'No businesses found',
+            description = 'No businesses found in database. Add a business first!',
             type = 'error'
         })
         return
     end
     
-    -- Find nearest business
+    -- Find nearest business (increased distance to 50.0 units)
     local nearestBusiness = nil
     local nearestDistance = 999999.0
+    local nearestDistanceValue = 999999.0
     
     for _, business in pairs(businesses) do
-        local distance = #(playerCoords - vector3(business.coords.x, business.coords.y, business.coords.z))
-        if distance < nearestDistance and distance < 10.0 then
-            nearestDistance = distance
-            nearestBusiness = business
+        if business.coords and business.coords.x and business.coords.y and business.coords.z then
+            local distance = #(playerCoords - vector3(business.coords.x, business.coords.y, business.coords.z))
+            if distance < nearestDistanceValue then
+                nearestDistanceValue = distance
+                nearestBusiness = business
+                nearestDistance = distance
+            end
         end
     end
     
-    if nearestBusiness then
+    -- If within 50 units, open dashboard
+    if nearestBusiness and nearestDistance < 50.0 then
         OpenBusinessDashboard(nearestBusiness.id)
     else
-        lib.notify({
-            title = 'Business System',
-            description = 'You are not near any business',
-            type = 'error'
-        })
+        -- Show business selection menu if not near any
+        local options = {}
+        for _, business in pairs(businesses) do
+            if business.coords and business.coords.x then
+                local distance = #(playerCoords - vector3(business.coords.x, business.coords.y, business.coords.z))
+                table.insert(options, {
+                    title = business.label or business.name,
+                    description = string.format('ID: %s | Distance: %.1fm | Price: $%s', 
+                        business.id, 
+                        distance, 
+                        lib.math.groupDigits(business.price or 0)),
+                    onSelect = function()
+                        OpenBusinessDashboard(business.id)
+                    end
+                })
+            end
+        end
+        
+        if #options > 0 then
+            lib.registerContext({
+                id = 'business_list',
+                title = 'Business List',
+                options = options
+            })
+            lib.showContext('business_list')
+        else
+            lib.notify({
+                title = 'Business System',
+                description = string.format('No businesses found. Nearest is %.1fm away. Use /openbusiness [id] to open directly.', nearestDistance or 0),
+                type = 'error'
+            })
+        end
     end
 end)
 
@@ -480,15 +512,69 @@ end, false)
 RegisterCommand('openbusiness', function(source, args)
     local businessId = tonumber(args[1])
     if not businessId then
+        -- Show list of all businesses if no ID provided
+        local businesses = lib.callback.await('chris_businesses:getBusinesses', false)
+        if not businesses or #businesses == 0 then
+            lib.notify({
+                title = 'Business System',
+                description = 'No businesses found. Add a business to the database first!',
+                type = 'error'
+            })
+            return
+        end
+        
+        local options = {}
+        for _, business in pairs(businesses) do
+            table.insert(options, {
+                title = business.label or business.name,
+                description = string.format('ID: %s | Type: %s | Price: $%s | %s', 
+                    business.id,
+                    business.business_type or 'general',
+                    lib.math.groupDigits(business.price or 0),
+                    business.for_sale and 'For Sale' or 'Owned'
+                ),
+                onSelect = function()
+                    OpenBusinessDashboard(business.id)
+                end
+            })
+        end
+        
+        lib.registerContext({
+            id = 'business_list_cmd',
+            title = 'Select Business',
+            options = options
+        })
+        lib.showContext('business_list_cmd')
+        return
+    end
+    
+    OpenBusinessDashboard(businessId)
+end, false)
+
+-- Debug command to list all businesses
+RegisterCommand('listbusinesses', function()
+    local businesses = lib.callback.await('chris_businesses:getBusinesses', false)
+    if not businesses or #businesses == 0 then
+        print('^1[Business System]^7 No businesses found in database!')
         lib.notify({
             title = 'Business System',
-            description = 'Usage: /openbusiness [id]',
+            description = 'No businesses found. Add one to the database!',
             type = 'error'
         })
         return
     end
     
-    OpenBusinessDashboard(businessId)
+    print('^2[Business System]^7 Found ' .. #businesses .. ' business(es):')
+    for _, business in pairs(businesses) do
+        print(string.format('^3ID: %s^7 | ^2%s^7 | Coords: %.1f, %.1f, %.1f | Price: $%s', 
+            business.id,
+            business.label or business.name,
+            business.coords and business.coords.x or 0,
+            business.coords and business.coords.y or 0,
+            business.coords and business.coords.z or 0,
+            lib.math.groupDigits(business.price or 0)
+        ))
+    end
 end, false)
 
 -- Network Events

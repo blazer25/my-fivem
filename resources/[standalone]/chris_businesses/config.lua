@@ -30,6 +30,18 @@ Config.Webhook = {
 
 -- Business Types Configuration
 Config.BusinessTypes = {
+    -- Stores
+    ['247'] = {
+        label = '24/7 Store',
+        blip = {
+            sprite = 52,
+            color = 2,
+            scale = 0.8
+        },
+        defaultPrice = 40000,
+        maxEmployees = 3,
+        taxRate = 0.05
+    },
     ['general'] = {
         label = 'General Store',
         blip = {
@@ -41,6 +53,87 @@ Config.BusinessTypes = {
         maxEmployees = 5,
         taxRate = 0.05
     },
+    ['supermarket'] = {
+        label = 'Supermarket',
+        blip = {
+            sprite = 52,
+            color = 2,
+            scale = 0.9
+        },
+        defaultPrice = 75000,
+        maxEmployees = 6,
+        taxRate = 0.05
+    },
+    ['liquor'] = {
+        label = 'Liquor Store',
+        blip = {
+            sprite = 93,
+            color = 1,
+            scale = 0.8
+        },
+        defaultPrice = 60000,
+        maxEmployees = 4,
+        taxRate = 0.05
+    },
+    ['hardware'] = {
+        label = 'Hardware Store',
+        blip = {
+            sprite = 402,
+            color = 5,
+            scale = 0.8
+        },
+        defaultPrice = 80000,
+        maxEmployees = 5,
+        taxRate = 0.05
+    },
+    ['clothing'] = {
+        label = 'Clothing Store',
+        blip = {
+            sprite = 73,
+            color = 4,
+            scale = 0.8
+        },
+        defaultPrice = 70000,
+        maxEmployees = 4,
+        taxRate = 0.05
+    },
+    ['electronics'] = {
+        label = 'Electronics Store',
+        blip = {
+            sprite = 606,
+            color = 5,
+            scale = 0.8
+        },
+        defaultPrice = 90000,
+        maxEmployees = 5,
+        taxRate = 0.05
+    },
+    
+    -- Gas Stations
+    ['gas_station'] = {
+        label = 'Gas Station',
+        blip = {
+            sprite = 361,
+            color = 1,
+            scale = 0.9
+        },
+        defaultPrice = 150000,
+        maxEmployees = 6,
+        taxRate = 0.05
+    },
+    ['gas_station_large'] = {
+        label = 'Large Gas Station',
+        blip = {
+            sprite = 361,
+            color = 1,
+            scale = 1.0
+        },
+        defaultPrice = 250000,
+        maxEmployees = 8,
+        taxRate = 0.05
+    },
+    
+    -- Food & Drink
     ['restaurant'] = {
         label = 'Restaurant',
         blip = {
@@ -52,6 +145,41 @@ Config.BusinessTypes = {
         maxEmployees = 8,
         taxRate = 0.05
     },
+    ['fastfood'] = {
+        label = 'Fast Food',
+        blip = {
+            sprite = 93,
+            color = 1,
+            scale = 0.8
+        },
+        defaultPrice = 50000,
+        maxEmployees = 5,
+        taxRate = 0.05
+    },
+    ['coffee'] = {
+        label = 'Coffee Shop',
+        blip = {
+            sprite = 93,
+            color = 3,
+            scale = 0.7
+        },
+        defaultPrice = 45000,
+        maxEmployees = 4,
+        taxRate = 0.05
+    },
+    ['bar'] = {
+        label = 'Bar',
+        blip = {
+            sprite = 93,
+            color = 27,
+            scale = 0.8
+        },
+        defaultPrice = 80000,
+        maxEmployees = 6,
+        taxRate = 0.05
+    },
+    
+    -- Services
     ['mechanic'] = {
         label = 'Mechanic Shop',
         blip = {
@@ -61,17 +189,6 @@ Config.BusinessTypes = {
         },
         defaultPrice = 100000,
         maxEmployees = 6,
-        taxRate = 0.05
-    },
-    ['nightclub'] = {
-        label = 'Nightclub',
-        blip = {
-            sprite = 93,
-            color = 27,
-            scale = 0.9
-        },
-        defaultPrice = 200000,
-        maxEmployees = 10,
         taxRate = 0.05
     },
     ['tattoo'] = {
@@ -85,15 +202,96 @@ Config.BusinessTypes = {
         maxEmployees = 4,
         taxRate = 0.05
     },
-    ['247'] = {
-        label = '24/7 Store',
+    ['barber'] = {
+        label = 'Barber Shop',
         blip = {
-            sprite = 52,
+            sprite = 71,
+            color = 4,
+            scale = 0.8
+        },
+        defaultPrice = 55000,
+        maxEmployees = 3,
+        taxRate = 0.05
+    },
+    ['pharmacy'] = {
+        label = 'Pharmacy',
+        blip = {
+            sprite = 51,
             color = 2,
             scale = 0.8
         },
-        defaultPrice = 40000,
-        maxEmployees = 3,
+        defaultPrice = 85000,
+        maxEmployees = 4,
+        taxRate = 0.05
+    },
+    ['bank'] = {
+        label = 'Bank',
+        blip = {
+            sprite = 108,
+            color = 2,
+            scale = 0.9
+        },
+        defaultPrice = 500000,
+        maxEmployees = 10,
+        taxRate = 0.05
+    },
+    
+    -- Entertainment
+    ['nightclub'] = {
+        label = 'Nightclub',
+        blip = {
+            sprite = 93,
+            color = 27,
+            scale = 0.9
+        },
+        defaultPrice = 200000,
+        maxEmployees = 10,
+        taxRate = 0.05
+    },
+    ['casino'] = {
+        label = 'Casino',
+        blip = {
+            sprite = 679,
+            color = 1,
+            scale = 1.0
+        },
+        defaultPrice = 1000000,
+        maxEmployees = 15,
+        taxRate = 0.05
+    },
+    ['gym'] = {
+        label = 'Gym',
+        blip = {
+            sprite = 311,
+            color = 1,
+            scale = 0.8
+        },
+        defaultPrice = 120000,
+        maxEmployees = 5,
+        taxRate = 0.05
+    },
+    
+    -- Industrial
+    ['warehouse'] = {
+        label = 'Warehouse',
+        blip = {
+            sprite = 473,
+            color = 5,
+            scale = 0.9
+        },
+        defaultPrice = 300000,
+        maxEmployees = 8,
+        taxRate = 0.05
+    },
+    ['factory'] = {
+        label = 'Factory',
+        blip = {
+            sprite = 566,
+            color = 1,
+            scale = 1.0
+        },
+        defaultPrice = 500000,
+        maxEmployees = 12,
         taxRate = 0.05
     }
 }
