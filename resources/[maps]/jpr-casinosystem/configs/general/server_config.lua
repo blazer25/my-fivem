@@ -1,67 +1,67 @@
-local QBCore = require('configs.general.get_core_export')
+module(..., package.seeall)
+local QBCore = require 'configs.general.get_core_export'
+local ox_inventory = exports.ox_inventory
 
-if not QBCore or not QBCore.Functions then
-    error('[JPR Casino] QBCore core reference missing in server_config. Ensure get_core_export.lua loads successfully.')
+local function Notify(source, message, notifyType)
+    TriggerClientEvent('QBCore:Notify', source, message, notifyType or 'error')
 end
 
-local function getSource(Player)
-    if not Player or not Player.PlayerData then return nil end
-    return Player.PlayerData.source
-end
-
-function RemoveItem(Player, itemName, quantity)
-    local src = getSource(Player)
-    if not src then return false end
-    return exports.ox_inventory:RemoveItem(src, itemName, quantity)
-end
-
-function AddItem(Player, itemName, quantity)
-    local src = getSource(Player)
-    if not src then return false end
-    return exports.ox_inventory:AddItem(src, itemName, quantity)
-end
-
-function RemoveMoney(Player, moneyType, amount, reason)
-    Player.Functions.RemoveMoney(moneyType, amount, reason)
-end
-
-function AddMoney(Player, moneyType, amount, reason)
-    Player.Functions.AddMoney(moneyType, amount, reason)
-end
-
-function CallBackFunction(...)
-    return QBCore.Functions.CreateCallback(...)
-end
-
-function NotifyServer(player, message, notifyType)
-    TriggerClientEvent('QBCore:Notify', player.PlayerData.source, message, notifyType)
-end
-
-function GetPlayer(source)
+local function GetPlayer(source)
     return QBCore.Functions.GetPlayer(source)
 end
 
-function CheckMoney(source, amount)
-    local xPlayer = GetPlayer(source)
-    
-	if xPlayer.PlayerData.money.cash >= amount then
-        RemoveMoney(xPlayer, 'cash', amount, "Casino purchase")
-
-		return true, "cash"
-    elseif xPlayer.PlayerData.money.bank >= amount then
-        RemoveMoney(xPlayer, 'bank', amount, "Casino purchase")
-
-		return true, "bank"
-	else
-		return false
-	end
+function RemoveMoney(Player, account, amount, reason)
+    Player.Functions.RemoveMoney(account, amount, reason or 'Casino transaction')
 end
 
-RegisterNetEvent('jpr:server:casino:giveVehicle', function(Infos)
+function AddMoney(Player, account, amount, reason)
+    Player.Functions.AddMoney(account, amount, reason or 'Casino transaction')
+end
+
+function RemoveItem(Player, item, amount)
+    local src = Player.PlayerData.source
+    return ox_inventory:RemoveItem(src, item, amount)
+end
+
+function AddItem(Player, item, amount)
+    local src = Player.PlayerData.source
+    return ox_inventory:AddItem(src, item, amount)
+end
+
+function CheckMoney(source, amount)
     local Player = GetPlayer(source)
 
-    if Player and Infos.entity then
-        MySQL.Async.insert('INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, fuel, engine, body) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', 
-        {Player.PlayerData.license, Player.PlayerData.citizenid, Infos.vehicle, GetHashKey(Infos.vehicle), json.encode(Infos.props), Infos.plate, Infos.totalFuel, Infos.engineDamage, Infos.bodyDamage})
+    if Player.PlayerData.money.cash >= amount then
+        RemoveMoney(Player, 'cash', amount, 'Casino purchase')
+        return true, 'cash'
+    elseif Player.PlayerData.money.bank >= amount then
+        RemoveMoney(Player, 'bank', amount, 'Casino purchase')
+        return true, 'bank'
+    else
+        return false
     end
+end
+
+function NotifyServer(Player, message, notifyType)
+    Notify(Player.PlayerData.source, message, notifyType)
+end
+
+RegisterNetEvent('jpr:server:casino:giveVehicle', function(data)
+    local Player = GetPlayer(source)
+    if not Player or not data.entity then return end
+
+    MySQL.insert(
+        'INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, fuel, engine, body) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        {
+            Player.PlayerData.license,
+            Player.PlayerData.citizenid,
+            data.vehicle,
+            GetHashKey(data.vehicle),
+            json.encode(data.props),
+            data.plate,
+            data.totalFuel,
+            data.engineDamage,
+            data.bodyDamage
+        }
+    )
 end)
