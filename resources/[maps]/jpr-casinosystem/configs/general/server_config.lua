@@ -1,6 +1,7 @@
-module(..., package.seeall)
 local QBCore = require 'configs.general.get_core_export'
 local ox_inventory = exports.ox_inventory
+
+local M = {}
 
 local function Notify(source, message, notifyType)
     TriggerClientEvent('QBCore:Notify', source, message, notifyType or 'error')
@@ -10,39 +11,39 @@ local function GetPlayer(source)
     return QBCore.Functions.GetPlayer(source)
 end
 
-function RemoveMoney(Player, account, amount, reason)
+function M.RemoveMoney(Player, account, amount, reason)
     Player.Functions.RemoveMoney(account, amount, reason or 'Casino transaction')
 end
 
-function AddMoney(Player, account, amount, reason)
+function M.AddMoney(Player, account, amount, reason)
     Player.Functions.AddMoney(account, amount, reason or 'Casino transaction')
 end
 
-function RemoveItem(Player, item, amount)
+function M.RemoveItem(Player, item, amount)
     local src = Player.PlayerData.source
     return ox_inventory:RemoveItem(src, item, amount)
 end
 
-function AddItem(Player, item, amount)
+function M.AddItem(Player, item, amount)
     local src = Player.PlayerData.source
     return ox_inventory:AddItem(src, item, amount)
 end
 
-function CheckMoney(source, amount)
+function M.CheckMoney(source, amount)
     local Player = GetPlayer(source)
 
     if Player.PlayerData.money.cash >= amount then
-        RemoveMoney(Player, 'cash', amount, 'Casino purchase')
+        M.RemoveMoney(Player, 'cash', amount, 'Casino purchase')
         return true, 'cash'
     elseif Player.PlayerData.money.bank >= amount then
-        RemoveMoney(Player, 'bank', amount, 'Casino purchase')
+        M.RemoveMoney(Player, 'bank', amount, 'Casino purchase')
         return true, 'bank'
     else
         return false
     end
 end
 
-function NotifyServer(Player, message, notifyType)
+function M.NotifyServer(Player, message, notifyType)
     Notify(Player.PlayerData.source, message, notifyType)
 end
 
@@ -65,3 +66,5 @@ RegisterNetEvent('jpr:server:casino:giveVehicle', function(data)
         }
     )
 end)
+
+return M
