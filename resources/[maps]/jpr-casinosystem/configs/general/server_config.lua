@@ -1,9 +1,18 @@
+local function getSource(Player)
+    if not Player or not Player.PlayerData then return nil end
+    return Player.PlayerData.source
+end
+
 function RemoveItem(Player, itemName, quantity)
-    return Player.Functions.RemoveItem(itemName, quantity)
+    local src = getSource(Player)
+    if not src then return false end
+    return exports.ox_inventory:RemoveItem(src, itemName, quantity)
 end
 
 function AddItem(Player, itemName, quantity)
-    return Player.Functions.AddItem(itemName, quantity)
+    local src = getSource(Player)
+    if not src then return false end
+    return exports.ox_inventory:AddItem(src, itemName, quantity)
 end
 
 function RemoveMoney(Player, moneyType, amount, reason)
@@ -15,15 +24,15 @@ function AddMoney(Player, moneyType, amount, reason)
 end
 
 function CallBackFunction(...)
-    return QBCore.Functions.CreateCallback(...)
+    return QBX.Functions.CreateCallback(...)
 end
 
 function NotifyServer(player, message, notifyType)
-    TriggerClientEvent('QBCore:Notify', player.PlayerData.source, message, notifyType)
+    TriggerClientEvent('QBX:Notify', player.PlayerData.source, message, notifyType)
 end
 
 function GetPlayer(source)
-    return QBCore.Functions.GetPlayer(source)
+    return QBX.Functions.GetPlayer(source)
 end
 
 function CheckMoney(source, amount)
