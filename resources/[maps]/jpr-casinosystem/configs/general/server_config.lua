@@ -1,7 +1,5 @@
-local QBCore = require 'configs.general.get_core_export'
+local QBCore = exports[Config.CoreName]:GetCoreObject()
 local ox_inventory = exports.ox_inventory
-
-local M = {}
 
 local function Notify(source, message, notifyType)
     TriggerClientEvent('QBCore:Notify', source, message, notifyType or 'error')
@@ -11,45 +9,48 @@ local function GetPlayer(source)
     return QBCore.Functions.GetPlayer(source)
 end
 
-function M.RemoveMoney(Player, account, amount, reason)
+function RemoveMoney(Player, account, amount, reason)
     Player.Functions.RemoveMoney(account, amount, reason or 'Casino transaction')
 end
 
-function M.AddMoney(Player, account, amount, reason)
+function AddMoney(Player, account, amount, reason)
     Player.Functions.AddMoney(account, amount, reason or 'Casino transaction')
 end
 
-function M.RemoveItem(Player, item, amount)
-    local src = Player.PlayerData.source
-    return ox_inventory:RemoveItem(src, item, amount)
+function RemoveItem(Player, item, amount)
+    if not Player or not Player.PlayerData then return false end
+    return ox_inventory:RemoveItem(Player.PlayerData.source, item, amount)
 end
 
-function M.AddItem(Player, item, amount)
-    local src = Player.PlayerData.source
-    return ox_inventory:AddItem(src, item, amount)
+function AddItem(Player, item, amount)
+    if not Player or not Player.PlayerData then return false end
+    return ox_inventory:AddItem(Player.PlayerData.source, item, amount)
 end
 
-function M.CheckMoney(source, amount)
+function CheckMoney(source, amount)
     local Player = GetPlayer(source)
+    if not Player then return false end
 
     if Player.PlayerData.money.cash >= amount then
-        M.RemoveMoney(Player, 'cash', amount, 'Casino purchase')
+        RemoveMoney(Player, 'cash', amount, 'Casino purchase')
         return true, 'cash'
     elseif Player.PlayerData.money.bank >= amount then
-        M.RemoveMoney(Player, 'bank', amount, 'Casino purchase')
+        RemoveMoney(Player, 'bank', amount, 'Casino purchase')
         return true, 'bank'
     else
         return false
     end
 end
 
-function M.NotifyServer(Player, message, notifyType)
-    Notify(Player.PlayerData.source, message, notifyType)
+function NotifyServer(Player, message, notifyType)
+    if Player and Player.PlayerData then
+        Notify(Player.PlayerData.source, message, notifyType)
+    end
 end
 
 RegisterNetEvent('jpr:server:casino:giveVehicle', function(data)
     local Player = GetPlayer(source)
-    if not Player or not data.entity then return end
+    if not Player or not data or not data.entity then return end
 
     MySQL.insert(
         'INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, fuel, engine, body) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
@@ -66,5 +67,3 @@ RegisterNetEvent('jpr:server:casino:giveVehicle', function(data)
         }
     )
 end)
-
-return M
