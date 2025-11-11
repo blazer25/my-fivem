@@ -378,6 +378,44 @@ function table.contains(table, element)
     return false
 end
 
+local function OpenCasinoMenu(entries)
+    if not entries or #entries == 0 then return end
+
+    local contextId = ('casino-menu-%s'):format(GetGameTimer())
+    local title = 'Casino System'
+    local options = {}
+
+    for _, entry in ipairs(entries) do
+        if entry.isMenuHeader then
+            title = entry.header or title
+        else
+            local optionTitle = entry.header or entry.label or 'Option'
+            local description = entry.txt
+            options[#options + 1] = {
+                title = optionTitle,
+                description = description,
+                onSelect = function()
+                    local params = entry.params or {}
+                    if params.serverEvent then
+                        TriggerServerEvent(params.serverEvent, params.args)
+                    elseif params.event then
+                        TriggerEvent(params.event, params.args)
+                    end
+                end
+            }
+        end
+    end
+
+    if #options == 0 then return end
+
+    lib.registerContext({
+        id = contextId,
+        title = title,
+        options = options
+    })
+    lib.showContext(contextId)
+end
+
 RegisterNetEvent('jpr-casinosystem:client:useBar', function(args)
     local barMenu = {}
 
@@ -399,11 +437,11 @@ RegisterNetEvent('jpr-casinosystem:client:useBar', function(args)
         end
     end
 
-    exports[Config.MenuScript]:openMenu(barMenu)
+    OpenCasinoMenu(barMenu)
 end)
 
 RegisterNetEvent('jpr-casinosystem:client:exchange',function()
-    exports[Config.MenuScript]:openMenu({
+    OpenCasinoMenu({
         {
             id = 1,
             header = Config.Locales["104"],
@@ -448,7 +486,7 @@ RegisterNetEvent('jpr-casinosystem:client:memberships',function()
         end
     end
 
-    exports[Config.MenuScript]:openMenu(memberMenu)
+    OpenCasinoMenu(memberMenu)
 end)
 
 RegisterNetEvent('jpr-casinosystem:client:exchangeChips',function()
