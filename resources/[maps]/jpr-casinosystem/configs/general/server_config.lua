@@ -1,4 +1,21 @@
-local QBCore = exports[Config.CoreName]:GetCoreObject()
+local function fetchCore(name)
+    local resourceState = GetResourceState(name)
+    if resourceState ~= 'started' and resourceState ~= 'starting' then return nil end
+
+    local ok, core = pcall(function()
+        return exports[name]:GetCoreObject()
+    end)
+
+    if ok then return core end
+    return nil
+end
+
+local QBCore = fetchCore(Config.CoreName) or fetchCore('qb-core')
+
+if not QBCore or not QBCore.Functions then
+    error('[JPR Casino] Unable to fetch core object in server_config. Ensure qbx_core or qb-core is running.')
+end
+
 local ox_inventory = exports.ox_inventory
 
 local function Notify(source, message, notifyType)
