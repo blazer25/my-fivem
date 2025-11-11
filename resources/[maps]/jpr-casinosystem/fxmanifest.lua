@@ -1,6 +1,8 @@
 fx_version 'cerulean'
 game 'gta5'
 
+shared_script '@ox_lib/init.lua'
+
 shared_scripts {
     'configs/general/main_config.lua',
     'configs/general/*.lua',

@@ -2,7 +2,7 @@ Config = {}
 Config.CoreName = "qbx_core"
 Config.CasinoItemName = 'casinochips' 
 Config.TargetScript = "ox_target" 
-Config.MenuScript = "jpr-libsss"
+Config.MenuScript = "ox_lib"
 Config.UseTargetSystem = true
 
 Config.CasinoCoords = vector3(946.26, 39.56, 71.43)

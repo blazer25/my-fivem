@@ -1,3 +1,80 @@
+local function TriggerCasinoMenuAction(entry)
+    if not entry then return end
+    local params = entry.params or {}
+    local eventName = params.event
+    local serverEvent = params.serverEvent
+    local args = params.args
+
+    if serverEvent then
+        if args ~= nil then
+            TriggerServerEvent(serverEvent, args)
+        else
+            TriggerServerEvent(serverEvent)
+        end
+        return
+    end
+
+    if not eventName then return end
+
+    if args ~= nil then
+        TriggerEvent(eventName, args)
+    else
+        TriggerEvent(eventName)
+    end
+end
+
+local function OpenCasinoMenu(entries)
+    if not entries or #entries == 0 then return end
+
+    local menuId = ('casino-menu-%s'):format(GetGameTimer())
+    local title = 'Casino System'
+    local options = {}
+
+    for _, entry in ipairs(entries) do
+        if entry.isMenuHeader then
+            title = entry.header or title
+        else
+            local optionTitle = entry.header or entry.label or 'Option'
+            local description = entry.txt
+
+            table.insert(options, {
+                title = optionTitle,
+                description = description,
+                onSelect = function()
+                    TriggerCasinoMenuAction(entry)
+                end
+            })
+        end
+    end
+
+    if #options == 0 then return end
+
+    lib.registerContext({
+        id = menuId,
+        title = title,
+        options = options
+    })
+    lib.showContext(menuId)
+end
+
+local function ShowCasinoNumberInput(prompt, defaultValue)
+    local dialog = lib.inputDialog(prompt or 'Casino Input', {
+        {
+            type = 'number',
+            label = prompt or 'Amount',
+            default = defaultValue or 1,
+            min = 1
+        }
+    })
+
+    if not dialog then return nil end
+
+    local amount = tonumber(dialog[1])
+    if not amount then return nil end
+
+    return { number = amount }
+end
+
 function CreateTargetZone(zoneName, coords, options)
     RemoveTargetZone(zoneName)
     
@@ -52,7 +129,7 @@ function RemoveTargetZone(zoneName)
 end
 
 function DrawText3Ds(x, y, z, text)
-	SetTextScale(0.35, 0.35)
+    SetTextScale(0.35, 0.35)
     SetTextFont(4)
     SetTextProportional(1)
     SetTextColour(255, 255, 255, 215)
@@ -75,10 +152,10 @@ function RequestAnimDictCasino(anim)
 end
 
 function RequestTheModel(model)
-	RequestModel(model)
-	while not HasModelLoaded(model) do
-		Wait(0)
-	end
+    RequestModel(model)
+    while not HasModelLoaded(model) do
+        Wait(0)
+    end
 end
 
 function GetItemCount(item)
@@ -207,7 +284,7 @@ function OpenBlackJackInteractions(time, bet, amount)
 end
             
 function HitStandMenu()
-    exports[Config.MenuScript]:openMenu({
+    OpenCasinoMenu({
         {
             id = 1,
             header = "Casino System",
@@ -234,7 +311,7 @@ function HitStandMenu()
 end
 
 function HitStandDoubleMenu()
-    exports[Config.MenuScript]:openMenu({
+    OpenCasinoMenu({
         {
             id = 1,
             header = "Casino System",
@@ -269,7 +346,7 @@ function HitStandDoubleMenu()
 end
 
 function HitSplitMenu()
-    exports[Config.MenuScript]:openMenu({
+    OpenCasinoMenu({
         {
             id = 1,
             header = "Casino System",
@@ -412,11 +489,11 @@ RegisterNetEvent('jpr-casinosystem:client:useBar', function(args)
         end
     end
 
-    exports[Config.MenuScript]:openMenu(barMenu)
+    OpenCasinoMenu(barMenu)
 end)
 
 RegisterNetEvent('jpr-casinosystem:client:exchange',function()
-    exports[Config.MenuScript]:openMenu({
+    OpenCasinoMenu({
         {
             id = 1,
             header = Config.Locales["104"],
@@ -461,7 +538,7 @@ RegisterNetEvent('jpr-casinosystem:client:memberships',function()
         end
     end
 
-    exports[Config.MenuScript]:openMenu(memberMenu)
+    OpenCasinoMenu(memberMenu)
 end)
 
 RegisterNetEvent('jpr-casinosystem:client:exchangeChips',function()
@@ -493,19 +570,9 @@ RegisterNetEvent('jpr-casinosystem:client:buyCasinoExtra', function(v)
 end)
 
 RegisterNetEvent('jpr-casinosystem:client:buyChips',function()
-    local number = exports["jpr-libs"]:ShowInput({
-        header = Config.Locales["110"],
-        inputs = {
-            {
-                type = 'number',
-                isRequired = true,
-                name = 'number',
-                text = "1"
-            }
-        }
-    })
+    local number = ShowCasinoNumberInput(Config.Locales["110"], 1)
 
-    if number and tonumber(number.number) > 0 then
+    if number and tonumber(number.number) and tonumber(number.number) > 0 then
         TriggerServerEvent("jpr-casinosystem:server:buyCasinoCoins", number, Config.ChipsExchange.pedID)
     else
         Notify(Config.Locales["114"], "error")
