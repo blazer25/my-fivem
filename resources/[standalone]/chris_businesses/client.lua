@@ -1,0 +1,537 @@
+-- ============================================
+-- Chris Businesses - Client Logic
+-- Dynamic Player-Owned Business System
+-- ============================================
+
+local isUIOpen = false
+local currentBusinessId = nil
+local businessBlips = {}
+local businessZones = {}
+
+-- Initialize businesses on resource start
+CreateThread(function()
+    Wait(2000)
+    RefreshBusinesses()
+end)
+
+-- Refresh all businesses from server
+function RefreshBusinesses()
+    local businesses = lib.callback.await('chris_businesses:getBusinesses', false)
+    if not businesses then return end
+    
+    -- Remove old blips and zones
+    for id, blip in pairs(businessBlips) do
+        if DoesBlipExist(blip) then
+            RemoveBlip(blip)
+        end
+    end
+    businessBlips = {}
+    
+    for id, zone in pairs(businessZones) do
+        exports.ox_target:removeZone(zone)
+    end
+    businessZones = {}
+    
+    -- Create blips and zones for each business
+    for _, business in pairs(businesses) do
+        if Config.UseBlips then
+            CreateBusinessBlip(business)
+        end
+        CreateBusinessZones(business)
+    end
+end
+
+-- Create business blip
+function CreateBusinessBlip(business)
+    local blip = AddBlipForCoord(business.coords.x, business.coords.y, business.coords.z)
+    SetBlipSprite(blip, business.blip_sprite or 52)
+    SetBlipColour(blip, business.blip_color or 2)
+    SetBlipScale(blip, 0.8)
+    SetBlipAsShortRange(blip, true)
+    BeginTextCommandSetBlipName('STRING')
+    AddTextComponentSubstringPlayerName(business.label)
+    EndTextCommandSetBlipName(blip)
+    businessBlips[business.id] = blip
+end
+
+-- Create business interaction zones
+function CreateBusinessZones(business)
+    local coords = business.coords
+    
+    -- Laptop/Management Zone
+    local laptopZone = exports.ox_target:addBoxZone({
+        coords = vector3(coords.x, coords.y, coords.z),
+        size = vector3(1.5, 1.5, 2.0),
+        rotation = 0,
+        debug = Config.Debug,
+        options = {
+            {
+                name = 'business_laptop_' .. business.id,
+                icon = Config.Interactions.laptop.icon,
+                label = Config.Interactions.laptop.label,
+                distance = Config.Interactions.laptop.distance,
+                onSelect = function()
+                    OpenBusinessDashboard(business.id)
+                end
+            }
+        }
+    })
+    businessZones['laptop_' .. business.id] = laptopZone
+    
+    -- Shop Zone (if business is open and has owner)
+    if business.owner_identifier and business.is_open then
+        local shopZone = exports.ox_target:addBoxZone({
+            coords = vector3(coords.x, coords.y, coords.z),
+            size = vector3(2.0, 2.0, 2.0),
+            rotation = 0,
+            debug = Config.Debug,
+            options = {
+                {
+                    name = 'business_shop_' .. business.id,
+                    icon = Config.Interactions.shop.icon,
+                    label = Config.Interactions.shop.label,
+                    distance = Config.Interactions.shop.distance,
+                    onSelect = function()
+                        OpenBusinessShop(business.id)
+                    end
+                }
+            }
+        })
+        businessZones['shop_' .. business.id] = shopZone
+    end
+end
+
+-- Open business dashboard
+function OpenBusinessDashboard(businessId)
+    if isUIOpen then
+        lib.notify({
+            title = 'Business System',
+            description = 'Dashboard is already open',
+            type = 'error'
+        })
+        return
+    end
+    
+    -- Check if player has laptop item (server-side check)
+    -- Client-side check removed as it should be validated server-side
+    
+    -- Request business data from server
+    local business = lib.callback.await('chris_businesses:getBusiness', false, businessId)
+    if not business then
+        lib.notify({
+            title = 'Business System',
+            description = 'Unable to load business data',
+            type = 'error'
+        })
+        return
+    end
+    
+    currentBusinessId = businessId
+    isUIOpen = true
+    
+    -- Open NUI
+    SetNuiFocus(true, true)
+    SendNUIMessage({
+        action = 'openDashboard',
+        data = business
+    })
+end
+
+-- Close business dashboard
+function CloseBusinessDashboard()
+    if not isUIOpen then return end
+    
+    isUIOpen = false
+    currentBusinessId = nil
+    SetNuiFocus(false, false)
+    
+    SendNUIMessage({
+        action = 'closeDashboard'
+    })
+end
+
+-- Open business shop (for customers)
+function OpenBusinessShop(businessId)
+    local business = lib.callback.await('chris_businesses:getBusiness', false, businessId)
+    if not business then
+        lib.notify({
+            title = 'Business System',
+            description = 'Unable to load business data',
+            type = 'error'
+        })
+        return
+    end
+    
+    if not business.is_open then
+        lib.notify({
+            title = 'Business System',
+            description = 'This business is currently closed',
+            type = 'error'
+        })
+        return
+    end
+    
+    -- Open shop NUI (simplified - would need separate shop UI)
+    lib.notify({
+        title = 'Business System',
+        description = 'Shop interface coming soon',
+        type = 'info'
+    })
+end
+
+-- Handle business laptop item usage
+exports('useBusinessLaptop', function()
+    -- Get nearby businesses
+    local playerCoords = GetEntityCoords(cache.ped)
+    local businesses = lib.callback.await('chris_businesses:getBusinesses', false)
+    
+    if not businesses or #businesses == 0 then
+        lib.notify({
+            title = 'Business System',
+            description = 'No businesses found',
+            type = 'error'
+        })
+        return
+    end
+    
+    -- Find nearest business
+    local nearestBusiness = nil
+    local nearestDistance = 999999.0
+    
+    for _, business in pairs(businesses) do
+        local distance = #(playerCoords - vector3(business.coords.x, business.coords.y, business.coords.z))
+        if distance < nearestDistance and distance < 10.0 then
+            nearestDistance = distance
+            nearestBusiness = business
+        end
+    end
+    
+    if nearestBusiness then
+        OpenBusinessDashboard(nearestBusiness.id)
+    else
+        lib.notify({
+            title = 'Business System',
+            description = 'You are not near any business',
+            type = 'error'
+        })
+    end
+end)
+
+-- NUI Callbacks
+RegisterNUICallback('closeDashboard', function(data, cb)
+    CloseBusinessDashboard()
+    cb('ok')
+end)
+
+RegisterNUICallback('getBusiness', function(data, cb)
+    local businessId = data.businessId or currentBusinessId
+    if not businessId then
+        cb({success = false, error = 'No business ID provided'})
+        return
+    end
+    
+    local business = lib.callback.await('chris_businesses:getBusiness', false, businessId)
+    cb({success = true, data = business})
+end)
+
+RegisterNUICallback('purchaseBusiness', function(data, cb)
+    local businessId = data.businessId
+    if not businessId then
+        cb({success = false, error = 'No business ID provided'})
+        return
+    end
+    
+    local success, message = lib.callback.await('chris_businesses:purchaseBusiness', false, businessId)
+    if success then
+        lib.notify({
+            title = 'Business System',
+            description = message,
+            type = 'success'
+        })
+        RefreshBusinesses()
+    else
+        lib.notify({
+            title = 'Business System',
+            description = message,
+            type = 'error'
+        })
+    end
+    
+    cb({success = success, message = message})
+end)
+
+RegisterNUICallback('sellBusiness', function(data, cb)
+    local businessId = data.businessId
+    local price = data.price
+    
+    if not businessId then
+        cb({success = false, error = 'No business ID provided'})
+        return
+    end
+    
+    local success, message = lib.callback.await('chris_businesses:sellBusiness', false, businessId, price)
+    if success then
+        lib.notify({
+            title = 'Business System',
+            description = message,
+            type = 'success'
+        })
+        RefreshBusinesses()
+    else
+        lib.notify({
+            title = 'Business System',
+            description = message,
+            type = 'error'
+        })
+    end
+    
+    cb({success = success, message = message})
+end)
+
+RegisterNUICallback('hireEmployee', function(data, cb)
+    local businessId = data.businessId
+    local citizenid = data.citizenid
+    local role = data.role or 'employee'
+    
+    if not businessId or not citizenid then
+        cb({success = false, error = 'Missing required data'})
+        return
+    end
+    
+    local success, message = lib.callback.await('chris_businesses:hireEmployee', false, businessId, citizenid, role)
+    if success then
+        lib.notify({
+            title = 'Business System',
+            description = message,
+            type = 'success'
+        })
+    else
+        lib.notify({
+            title = 'Business System',
+            description = message,
+            type = 'error'
+        })
+    end
+    
+    cb({success = success, message = message})
+end)
+
+RegisterNUICallback('fireEmployee', function(data, cb)
+    local businessId = data.businessId
+    local citizenid = data.citizenid
+    
+    if not businessId or not citizenid then
+        cb({success = false, error = 'Missing required data'})
+        return
+    end
+    
+    local success, message = lib.callback.await('chris_businesses:fireEmployee', false, businessId, citizenid)
+    if success then
+        lib.notify({
+            title = 'Business System',
+            description = message,
+            type = 'success'
+        })
+    else
+        lib.notify({
+            title = 'Business System',
+            description = message,
+            type = 'error'
+        })
+    end
+    
+    cb({success = success, message = message})
+end)
+
+RegisterNUICallback('updateSettings', function(data, cb)
+    local businessId = data.businessId
+    local settings = data.settings
+    
+    if not businessId or not settings then
+        cb({success = false, error = 'Missing required data'})
+        return
+    end
+    
+    local success, message = lib.callback.await('chris_businesses:updateSettings', false, businessId, settings)
+    if success then
+        lib.notify({
+            title = 'Business System',
+            description = message,
+            type = 'success'
+        })
+        RefreshBusinesses()
+    else
+        lib.notify({
+            title = 'Business System',
+            description = message,
+            type = 'error'
+        })
+    end
+    
+    cb({success = success, message = message})
+end)
+
+RegisterNUICallback('depositMoney', function(data, cb)
+    local businessId = data.businessId
+    local amount = tonumber(data.amount)
+    
+    if not businessId or not amount or amount <= 0 then
+        cb({success = false, error = 'Invalid amount'})
+        return
+    end
+    
+    local success, message = lib.callback.await('chris_businesses:depositMoney', false, businessId, amount)
+    if success then
+        lib.notify({
+            title = 'Business System',
+            description = message,
+            type = 'success'
+        })
+    else
+        lib.notify({
+            title = 'Business System',
+            description = message,
+            type = 'error'
+        })
+    end
+    
+    cb({success = success, message = message})
+end)
+
+RegisterNUICallback('withdrawMoney', function(data, cb)
+    local businessId = data.businessId
+    local amount = tonumber(data.amount)
+    
+    if not businessId or not amount or amount <= 0 then
+        cb({success = false, error = 'Invalid amount'})
+        return
+    end
+    
+    local success, message = lib.callback.await('chris_businesses:withdrawMoney', false, businessId, amount)
+    if success then
+        lib.notify({
+            title = 'Business System',
+            description = message,
+            type = 'success'
+        })
+    else
+        lib.notify({
+            title = 'Business System',
+            description = message,
+            type = 'error'
+        })
+    end
+    
+    cb({success = success, message = message})
+end)
+
+-- Commands
+RegisterCommand('buybusiness', function(source, args)
+    local businessId = tonumber(args[1])
+    if not businessId then
+        lib.notify({
+            title = 'Business System',
+            description = 'Usage: /buybusiness [id]',
+            type = 'error'
+        })
+        return
+    end
+    
+    OpenBusinessDashboard(businessId)
+end, false)
+
+RegisterCommand('sellbusiness', function(source, args)
+    local businessId = tonumber(args[1])
+    local price = tonumber(args[2])
+    
+    if not businessId then
+        lib.notify({
+            title = 'Business System',
+            description = 'Usage: /sellbusiness [id] [price]',
+            type = 'error'
+        })
+        return
+    end
+    
+    if price and price > 0 then
+        local success, message = lib.callback.await('chris_businesses:sellBusiness', false, businessId, price)
+        if success then
+            lib.notify({
+                title = 'Business System',
+                description = message,
+                type = 'success'
+            })
+        else
+            lib.notify({
+                title = 'Business System',
+                description = message,
+                type = 'error'
+            })
+        end
+    else
+        lib.notify({
+            title = 'Business System',
+            description = 'Please provide a valid price',
+            type = 'error'
+        })
+    end
+end, false)
+
+RegisterCommand('openbusiness', function(source, args)
+    local businessId = tonumber(args[1])
+    if not businessId then
+        lib.notify({
+            title = 'Business System',
+            description = 'Usage: /openbusiness [id]',
+            type = 'error'
+        })
+        return
+    end
+    
+    OpenBusinessDashboard(businessId)
+end, false)
+
+-- Network Events
+RegisterNetEvent('chris_businesses:client:businessUpdated', function(businessId)
+    RefreshBusinesses()
+end)
+
+RegisterNetEvent('chris_businesses:client:businessRemoved', function(businessId)
+    if businessBlips[businessId] then
+        if DoesBlipExist(businessBlips[businessId]) then
+            RemoveBlip(businessBlips[businessId])
+        end
+        businessBlips[businessId] = nil
+    end
+    
+    if businessZones['laptop_' .. businessId] then
+        exports.ox_target:removeZone(businessZones['laptop_' .. businessId])
+        businessZones['laptop_' .. businessId] = nil
+    end
+    
+    if businessZones['shop_' .. businessId] then
+        exports.ox_target:removeZone(businessZones['shop_' .. businessId])
+        businessZones['shop_' .. businessId] = nil
+    end
+end)
+
+-- Handle ESC key to close UI
+CreateThread(function()
+    while true do
+        if isUIOpen then
+            DisableControlAction(0, 322, true) -- ESC
+            DisableControlAction(0, 177, true) -- Backspace
+            
+            if IsDisabledControlJustPressed(0, 322) then
+                CloseBusinessDashboard()
+            end
+        end
+        Wait(0)
+    end
+end)
+
+-- Export functions
+exports('OpenBusinessDashboard', OpenBusinessDashboard)
+exports('CloseBusinessDashboard', CloseBusinessDashboard)
+exports('RefreshBusinesses', RefreshBusinesses)
+
