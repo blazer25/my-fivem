@@ -1,9 +1,7 @@
-local Core = require('configs.general.get_core_export')
-local QBX = Core or _G.QBX or _G.QBCore
-local QBCore = QBX -- backwards compatibility for scripts expecting QBCore name
+local QBCore = require('configs.general.get_core_export')
 
-if not QBX or not QBX.Functions then
-    error('[JPR Casino] QBX core reference missing in server_config. Ensure get_core_export.lua loads successfully.')
+if not QBCore or not QBCore.Functions then
+    error('[JPR Casino] QBCore core reference missing in server_config. Ensure get_core_export.lua loads successfully.')
 end
 
 local function getSource(Player)
@@ -32,15 +30,15 @@ function AddMoney(Player, moneyType, amount, reason)
 end
 
 function CallBackFunction(...)
-    return QBX.Functions.CreateCallback(...)
+    return QBCore.Functions.CreateCallback(...)
 end
 
 function NotifyServer(player, message, notifyType)
-    TriggerClientEvent('QBX:Notify', player.PlayerData.source, message, notifyType)
+    TriggerClientEvent('QBCore:Notify', player.PlayerData.source, message, notifyType)
 end
 
 function GetPlayer(source)
-    return QBX.Functions.GetPlayer(source)
+    return QBCore.Functions.GetPlayer(source)
 end
 
 function CheckMoney(source, amount)
