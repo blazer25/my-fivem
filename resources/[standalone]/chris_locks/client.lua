@@ -17,6 +17,44 @@ local AdminUIOpen = false
 local DoorSelectActive = false
 local DoorSelectEntity = 0
 
+local function rotationToDirection(rotation)
+    local radX = math.rad(rotation.x)
+    local radZ = math.rad(rotation.z)
+    local cosX = math.cos(radX)
+    return vec3(-math.sin(radZ) * cosX, math.cos(radZ) * cosX, math.sin(radX))
+end
+
+local function cameraRaycast(flags, distance)
+    if lib and lib.raycast and lib.raycast.cam then
+        return lib.raycast.cam(flags, distance)
+    end
+
+    local camCoord = GetGameplayCamCoord()
+    local direction = rotationToDirection(GetGameplayCamRot(2))
+    local range = distance or 10.0
+    local destination = vec3(
+        camCoord.x + direction.x * range,
+        camCoord.y + direction.y * range,
+        camCoord.z + direction.z * range
+    )
+
+    local rayFlags = flags or (1 | 16)
+    local rayHandle = StartShapeTestRay(
+        camCoord.x, camCoord.y, camCoord.z,
+        destination.x, destination.y, destination.z,
+        rayFlags,
+        PlayerPedId(),
+        7
+    )
+
+    local retval, hit, endCoords, surfaceNormal, entityHit = GetShapeTestResult(rayHandle)
+    if retval ~= 1 then
+        return false, 0, endCoords, surfaceNormal
+    end
+
+    return hit == 1, entityHit, endCoords, surfaceNormal
+end
+
 local function clientNotify(message, type)
     if Utils.resourceActive('ox_lib') and lib and lib.notify then
         lib.notify({
@@ -330,10 +368,7 @@ CreateThread(function()
             DisableControlAction(0, 142, true)
             DisableControlAction(0, 257, true)
 
-            local hit, entity, hitCoords = false, 0, nil
-            if lib and lib.raycast and lib.raycast.cam then
-                hit, entity, hitCoords = lib.raycast.cam(1 | 16)
-            end
+            local hit, entity, hitCoords = cameraRaycast(1 | 16, 8.0)
             if DoorSelectEntity ~= entity then
                 if DoorSelectEntity and DoorSelectEntity ~= 0 then
                     SetEntityDrawOutline(DoorSelectEntity, false)
