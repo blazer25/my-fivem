@@ -18,6 +18,7 @@ local DoorSelectActive = false
 local DoorSelectEntity = 0
 local DoorSelectDouble = false
 local DoorSelectQueue = {}
+local CustomDoors = {}
 
 local function rotationToDirection(rotation)
     local radX = math.rad(rotation.x)
@@ -395,6 +396,62 @@ RegisterNetEvent('chris_locks:client:setLocks', function(data)
     handleLocksUpdate(data)
 end)
 
+local function getCustomDoorHash(lockId, index)
+    return GetHashKey(('chris_locks_%s_%s'):format(lockId, index))
+end
+
+RegisterNetEvent('chris_locks:client:registerCustomDoor', function(lockId, data, locked)
+    if CustomDoors[lockId] and CustomDoors[lockId].doors then
+        for i = 1, #CustomDoors[lockId].doors do
+            local hash = getCustomDoorHash(lockId, i)
+            RemoveDoorFromSystem(hash)
+        end
+    end
+
+    CustomDoors[lockId] = data or {}
+
+    if not data or not data.doors then return end
+
+    for i = 1, #data.doors do
+        local door = data.doors[i]
+        local coords = door.coords or {}
+        local model = door.model
+        if type(model) == 'string' then
+            model = GetHashKey(model)
+        else
+            model = tonumber(model) or 0
+        end
+        local hash = getCustomDoorHash(lockId, i)
+
+        AddDoorToSystem(hash, model, coords.x or 0.0, coords.y or 0.0, coords.z or 0.0, false, false, false)
+        DoorSystemSetDoorState(hash, 4, false, false)
+        DoorSystemSetAutomaticRate(hash, 10.0, false, false)
+        DoorSystemSetDoorState(hash, locked and 1 or 0, false, false)
+    end
+end)
+
+RegisterNetEvent('chris_locks:client:setCustomDoorState', function(lockId, locked)
+    local data = CustomDoors[lockId]
+    if not data or not data.doors then return end
+    local state = locked and 1 or 0
+    for i = 1, #data.doors do
+        local hash = getCustomDoorHash(lockId, i)
+        DoorSystemSetDoorState(hash, 4, false, false)
+        DoorSystemSetDoorState(hash, state, false, false)
+    end
+end)
+
+RegisterNetEvent('chris_locks:client:removeCustomDoor', function(lockId)
+    local data = CustomDoors[lockId]
+    if data and data.doors then
+        for i = 1, #data.doors do
+            local hash = getCustomDoorHash(lockId, i)
+            RemoveDoorFromSystem(hash)
+        end
+    end
+    CustomDoors[lockId] = nil
+end)
+
 RegisterNetEvent('chris_locks:client:doorSelectResult', function(payload)
     stopDoorSelection(true)
     if payload and payload.error then
@@ -554,5 +611,14 @@ AddEventHandler('onResourceStop', function(resource)
     if AdminUIOpen then
         closeAdminUI()
     end
+    for lockId, data in pairs(CustomDoors) do
+        if data.doors then
+            for i = 1, #data.doors do
+                local hash = getCustomDoorHash(lockId, i)
+                RemoveDoorFromSystem(hash)
+            end
+        end
+    end
+    CustomDoors = {}
     stopDoorSelection(false)
 end)

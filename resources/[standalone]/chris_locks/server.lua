@@ -310,6 +310,11 @@ end
 local function broadcastLocks(target)
     if target then
         TriggerClientEvent('chris_locks:client:setLocks', target, SanitizedLocks)
+        for _, lock in pairs(Locks) do
+            if lock.doorData then
+                syncCustomDoor(lock, target)
+            end
+        end
     else
         TriggerClientEvent('chris_locks:client:setLocks', -1, SanitizedLocks)
     end
@@ -462,7 +467,8 @@ end
 
 local function saveLock(lock)
     if lock.static then return end
-    MySQL.insert('REPLACE INTO chris_locks (id, type, coords, radius, password, item, job, owner_identifier, targetDoorId, hidden, unlockDuration) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', {
+    local doorPayload = lock.doorData and prepareDoorDataForNetwork(lock.doorData)
+    MySQL.insert('REPLACE INTO chris_locks (id, type, coords, radius, password, item, job, owner_identifier, targetDoorId, doorData, hidden, unlockDuration) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', {
         lock.id,
         lock.type,
         json.encode({ x = lock.coords.x, y = lock.coords.y, z = lock.coords.z }),
@@ -472,6 +478,7 @@ local function saveLock(lock)
         lock.data.jobs and json.encode(lock.data.jobs) or nil,
         lock.data.ownerIdentifier,
         lock.targetDoorId,
+        doorPayload and json.encode(doorPayload) or nil,
         lock.hidden,
         lock.unlockDuration
     })
@@ -484,9 +491,18 @@ end
 local function registerLock(lock)
     mergeLockData(lock)
     lock.locked = true
+    if lock.doorData then
+        lock.coords = ensureVector(lock.doorData.center or lock.coords)
+        if (not lock.radius or lock.radius <= 0) and lock.doorData.suggestedRadius then
+            lock.radius = lock.doorData.suggestedRadius
+        end
+    end
     Locks[lock.id] = lock
     prepareSanitized(lock)
     saveLock(lock)
+    if lock.doorData then
+        syncCustomDoor(lock)
+    end
     setDoorState(lock, true)
     broadcastLocks()
 end
@@ -494,6 +510,9 @@ end
 local function removeLock(lockId)
     local lock = Locks[lockId]
     if not lock then return false end
+    if lock.doorData then
+        removeCustomDoor(lockId)
+    end
     Locks[lockId] = nil
     SanitizedLocks[lockId] = nil
     deleteLock(lockId)
@@ -541,18 +560,37 @@ local function createLockFromData(source, data)
     end
 
     local targetDoorId = data.targetDoorId
-    if not targetDoorId or targetDoorId == '' then
+    local newDoorPayload = data.newDoor
+    if (not targetDoorId or targetDoorId == '') and not newDoorPayload then
         return false, _('command_usage_addlock')
     end
 
     local coords = data.coords
-    if Utils.resourceActive('ox_doorlock') then
+    local sanitizedDoor
+
+    if newDoorPayload then
+        local ok, result = sanitizeNewDoorData(id, newDoorPayload)
+        if not ok then
+            return false, result or _('admin_select_door_fail')
+        end
+        sanitizedDoor = result
+        coords = sanitizedDoor.center
+        if not targetDoorId or targetDoorId == '' then
+            targetDoorId = ('custom:%s'):format(id)
+        end
+        if not data.radius and sanitizedDoor.suggestedRadius then
+            data.radius = sanitizedDoor.suggestedRadius
+        end
+    elseif Utils.resourceActive('ox_doorlock') and targetDoorId and targetDoorId ~= '' then
         local door = exports.ox_doorlock:getDoor(targetDoorId)
         if not door then
             return false, _('door_not_registered', targetDoorId)
         end
         coords = door.coords
         targetDoorId = door.id
+        if not data.radius and door.distance then
+            data.radius = door.distance
+        end
     end
 
     if not coords then
@@ -563,11 +601,12 @@ local function createLockFromData(source, data)
         id = id,
         type = lockType,
         coords = ensureVector(coords),
-        radius = tonumber(data.radius) or 2.5,
+        radius = tonumber(data.radius) or (sanitizedDoor and sanitizedDoor.suggestedRadius) or 2.5,
         hidden = data.hidden ~= false,
         targetDoorId = targetDoorId,
         unlockDuration = tonumber(data.unlockDuration) or Config.DefaultUnlockDuration,
         data = {},
+        doorData = sanitizedDoor,
     }
 
     local credential = data.credential
@@ -758,8 +797,23 @@ lib.callback.register('chris_locks:canManage', function(source)
 end)
 
 lib.callback.register('chris_locks:getDoorInfo', function(source, doorId)
-    if not doorId or not Utils.resourceActive('ox_doorlock') then return nil end
-    return exports.ox_doorlock:getDoor(doorId)
+    if not doorId or doorId == '' then return nil end
+    for _, lock in pairs(Locks) do
+        if lock.targetDoorId == doorId and lock.doorData then
+            local payload = prepareDoorDataForNetwork(lock.doorData)
+            return {
+                id = doorId,
+                label = ('Custom door (%s)'):format(lock.id),
+                coords = cloneCoordsTable(lock.doorData.center or lock.coords),
+                doors = payload and payload.doors or nil,
+                distance = lock.radius
+            }
+        end
+    end
+    if Utils.resourceActive('ox_doorlock') then
+        return exports.ox_doorlock:getDoor(doorId)
+    end
+    return nil
 end)
 
 lib.callback.register('chris_locks:createLock', function(source, data)

@@ -603,7 +603,13 @@ function AdminPanel({ visible, doorSelection }) {
                       <div className="door-summary">
                         <strong>Captured:</strong>{' '}
                         {form.newDoor.double ? 'Double door' : 'Single door'} · Model{' '}
-                        {form.newDoor.doors?.map((door) => door.model).join(', ')}
+                        {form.newDoor.doors
+                          ?.map((door) =>
+                            typeof door.model === 'number'
+                              ? `0x${door.model.toString(16).toUpperCase()}`
+                              : String(door.model)
+                          )
+                          .join(', ')}
                       </div>
                     )}
                   </div>
