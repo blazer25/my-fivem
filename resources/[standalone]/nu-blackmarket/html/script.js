@@ -940,6 +940,7 @@ class BlackmarketUI {
             'magazine': 'nui://ox_inventory/web/images/weapon_magazine.png',
             'extended_mag': 'nui://ox_inventory/web/images/weapon_magazine.png',
             'drum_mag': 'nui://ox_inventory/web/images/weapon_magazine.png',
+            'extended_clip': 'nui://ox_inventory/web/images/at_clip_extended.png',
             'weapon_stock': 'nui://ox_inventory/web/images/weapon_stock.png',
             'stock': 'nui://ox_inventory/web/images/weapon_stock.png',
             'weapon_barrel': 'nui://ox_inventory/web/images/weapon_barrel.png',
@@ -948,6 +949,7 @@ class BlackmarketUI {
             'muzzle': 'nui://ox_inventory/web/images/weapon_muzzle.png',
             'compensator': 'nui://ox_inventory/web/images/weapon_muzzle.png',
             'muzzle_brake': 'nui://ox_inventory/web/images/weapon_muzzle.png',
+            'flashlight_attachment': 'nui://ox_inventory/web/images/flashlight_attachment.png',
             
             // Materials & Components
             'metalscrap': 'nui://ox_inventory/web/images/metalscrap.png',
@@ -962,9 +964,12 @@ class BlackmarketUI {
             'ephedrine': 'nui://ox_inventory/web/images/ephedrine.png',
             'hydrochloricacid': 'nui://ox_inventory/web/images/hydrochloricacid.png',
             'meth_tray': 'nui://ox_inventory/web/images/meth_tray.png',
+            'door_override_chip': 'nui://ox_inventory/web/images/tunerchip.png',
             'electronics': 'nui://ox_inventory/web/images/electronics.png',
             'advancedlockpick': 'nui://ox_inventory/web/images/advancedlockpick.png',
             'lockpick': 'nui://ox_inventory/web/images/lockpick.png',
+            'keycard_scrambler': 'nui://ox_inventory/web/images/security_card_01.png',
+            'thermite': 'nui://ox_inventory/web/images/thermite.png',
             'screwdriverset': 'nui://ox_inventory/web/images/screwdriverset.png',
             'trojan_usb': 'nui://ox_inventory/web/images/trojan_usb.png',
             
@@ -979,6 +984,14 @@ class BlackmarketUI {
             'chip': 'nui://ox_inventory/web/images/chip.png',
             'vpn': 'nui://ox_inventory/web/images/vpn.png',
             'cryptostick': 'nui://ox_inventory/web/images/cryptostick.png',
+            'credit_cloner': 'nui://ox_inventory/web/images/usb.png',
+            'burner_phone': 'nui://ox_inventory/web/images/phone.png',
+            'vpn_device': 'nui://ox_inventory/web/images/cryptostick.png',
+            'illegal_radio': 'nui://ox_inventory/web/images/radio.png',
+            'jammer': 'nui://ox_inventory/web/images/radiojammer.png',
+            'emp_device': 'nui://ox_inventory/web/images/ammo-emp.png',
+            'c4_charge': 'nui://ox_inventory/web/images/WEAPON_STICKYBOMB.png',
+            'handcuff_keys': 'nui://ox_inventory/web/images/WEAPON_HANDCUFFS.PNG',
             
             // Food & Drinks
             'bread': 'nui://ox_inventory/web/images/bread.png',
@@ -1048,6 +1061,10 @@ class BlackmarketUI {
             'certificate': 'nui://ox_inventory/web/images/certificate.png',
             'diploma': 'nui://ox_inventory/web/images/diploma.png',
             'contract': 'nui://ox_inventory/web/images/contract.png',
+            'fake_id': 'nui://ox_inventory/web/images/id_card.png',
+            'forged_pass': 'nui://ox_inventory/web/images/passport.png',
+            'blackmarket_pass': 'nui://ox_inventory/web/images/certificate.png',
+            'forged_license': 'nui://ox_inventory/web/images/driver_license.png',
             
             // Tools & Equipment
             'wrench': 'nui://ox_inventory/web/images/wrench.png',
@@ -1061,6 +1078,7 @@ class BlackmarketUI {
             'rope': 'nui://ox_inventory/web/images/rope.png',
             'handcuffs': 'nui://ox_inventory/web/images/handcuffs.png',
             'zipties': 'nui://ox_inventory/web/images/zipties.png',
+            'silencer_kit': 'nui://ox_inventory/web/images/at_suppressor.png',
             
             // Miscellaneous
             'cigarette': 'nui://ox_inventory/web/images/cigarette.png',
@@ -1076,6 +1094,11 @@ class BlackmarketUI {
             'parachute': 'nui://ox_inventory/web/images/parachute.png',
             'jerry_can': 'nui://ox_inventory/web/images/jerry_can.png',
             'petrol_can': 'nui://ox_inventory/web/images/jerry_can.png',
+            'stolen_art': 'nui://ox_inventory/web/images/painting.png',
+            'mystery_package': 'nui://ox_inventory/web/images/antiquevase.png',
+            'reinforced_armor_vest': 'nui://ox_inventory/web/images/armor.png',
+            'nightvision_goggles': 'nui://ox_inventory/web/images/helmet.png',
+            'custom_ammo': 'nui://ox_inventory/web/images/ammo-9.png',
         };
 
         return itemImages[itemName.toLowerCase()] || null;

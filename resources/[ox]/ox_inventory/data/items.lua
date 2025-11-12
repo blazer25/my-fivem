@@ -990,5 +990,247 @@ return {
         },
         description = 'A small bag of meth ready for street deals.'
     },
+    ['extended_clip'] = {
+        label = 'Extended Magazine',
+        weight = 250,
+        stack = true,
+        close = true,
+        consume = 0,
+        description = 'High-capacity magazine compatible with most black market builds.',
+        client = {
+            image = 'at_clip_extended.png'
+        }
+    },
+    ['suppressor'] = {
+        label = 'Threaded Suppressor',
+        weight = 200,
+        stack = true,
+        close = true,
+        consume = 0,
+        description = 'Reduces muzzle flash and sound signature on supported firearms.',
+        client = {
+            image = 'at_suppressor.png'
+        }
+    },
+    ['flashlight_attachment'] = {
+        label = 'Weapon Flashlight',
+        weight = 180,
+        stack = true,
+        close = true,
+        consume = 0,
+        description = 'Rail-mounted flashlight for low-light engagements.',
+        client = {
+            image = 'flashlight_attachment.png'
+        }
+    },
+    ['keycard_scrambler'] = {
+        label = 'Keycard Scrambler',
+        weight = 150,
+        stack = false,
+        close = true,
+        consume = 0,
+        description = 'Temporary bypass tool for magnetic keycard readers.',
+        client = {
+            image = 'security_card_01.png'
+        }
+    },
+    ['door_override_chip'] = {
+        label = 'Door Override Chip',
+        weight = 80,
+        stack = false,
+        close = true,
+        consume = 0,
+        description = 'Single-use microchip that convinces smart locks to open.',
+        client = {
+            image = 'tunerchip.png'
+        }
+    },
+    ['fake_id'] = {
+        label = 'Forged ID',
+        weight = 10,
+        stack = true,
+        close = true,
+        consume = 0,
+        description = 'A convincing fake identification card.',
+        client = {
+            image = 'id_card.png'
+        }
+    },
+    ['credit_cloner'] = {
+        label = 'Credit Cloner',
+        weight = 200,
+        stack = false,
+        close = true,
+        consume = 0,
+        description = 'Portable skimmer for duplicating payment cards.',
+        client = {
+            image = 'usb.png'
+        }
+    },
+    ['burner_phone'] = {
+        label = 'Burner Phone',
+        weight = 150,
+        stack = false,
+        close = true,
+        consume = 0,
+        description = 'Disposable phone with wiped IMEI and prepaid minutes.',
+        client = {
+            image = 'phone.png'
+        }
+    },
+    ['vpn_device'] = {
+        label = 'Encrypted VPN Hub',
+        weight = 120,
+        stack = false,
+        close = true,
+        consume = 0,
+        description = 'Allows access to darknet marketplaces and secure comms.',
+        client = {
+            image = 'cryptostick.png'
+        }
+    },
+    ['forged_pass'] = {
+        label = 'Forged Access Pass',
+        weight = 12,
+        stack = true,
+        close = true,
+        consume = 0,
+        description = 'Spoofs restricted door access until revoked.',
+        client = {
+            image = 'passport.png'
+        }
+    },
+    ['blackmarket_pass'] = {
+        label = 'Blackmarket Credential',
+        weight = 8,
+        stack = false,
+        close = true,
+        consume = 0,
+        description = 'Proof of membership for underground suppliers.',
+        client = {
+            image = 'certificate.png'
+        }
+    },
+    ['forged_license'] = {
+        label = 'Forged Business License',
+        weight = 8,
+        stack = true,
+        close = true,
+        consume = 0,
+        description = 'Lets the holder masquerade as a legitimate enterprise.',
+        client = {
+            image = 'driver_license.png'
+        }
+    },
+    ['stolen_art'] = {
+        label = 'Stolen Artwork',
+        weight = 3200,
+        stack = false,
+        close = true,
+        consume = 0,
+        description = 'Priceless art piece fenced on the black market.',
+        client = {
+            image = 'painting.png'
+        }
+    },
+    ['mystery_package'] = {
+        label = 'Mystery Package',
+        weight = 600,
+        stack = true,
+        close = true,
+        consume = 0,
+        description = 'Sealed crate containing a random illicit good.',
+        client = {
+            image = 'antiquevase.png'
+        }
+    },
+    ['reinforced_armor_vest'] = {
+        label = 'Reinforced Armor Vest',
+        weight = 6500,
+        stack = false,
+        close = true,
+        consume = 0,
+        description = 'Up-armored tactical vest offering extended durability.',
+        client = {
+            image = 'armor.png'
+        }
+    },
+    ['illegal_radio'] = {
+        label = 'Encrypted Radio',
+        weight = 500,
+        stack = false,
+        close = true,
+        consume = 0,
+        description = 'Radio tuned to encrypted underworld frequencies.',
+        client = {
+            image = 'radio.png'
+        }
+    },
+    ['nightvision_goggles'] = {
+        label = 'Night Vision Goggles',
+        weight = 900,
+        stack = false,
+        close = true,
+        consume = 0,
+        description = 'Helmet-mounted NVG rig for low-light operations.',
+        client = {
+            image = 'helmet.png'
+        }
+    },
+    ['silencer_kit'] = {
+        label = 'Silencer Fabrication Kit',
+        weight = 220,
+        stack = true,
+        close = true,
+        consume = 0,
+        description = 'Includes jigs and baffles to craft custom suppressors.',
+        client = {
+            image = 'at_suppressor.png'
+        }
+    },
+    ['custom_ammo'] = {
+        label = 'Custom Ammunition',
+        weight = 160,
+        stack = true,
+        close = true,
+        consume = 0,
+        description = 'Armor-piercing or specialty rounds, limited batches.',
+        client = {
+            image = 'ammo-9.png'
+        }
+    },
+    ['c4_charge'] = {
+        label = 'C4 Charge',
+        weight = 1400,
+        stack = false,
+        close = true,
+        consume = 0,
+        description = 'Remote-detonated explosive charge for breaching.',
+        client = {
+            image = 'WEAPON_STICKYBOMB.png'
+        }
+    },
+    ['emp_device'] = {
+        label = 'EMP Device',
+        weight = 900,
+        stack = false,
+        close = true,
+        consume = 0,
+        description = 'Short-range electromagnetic pulse emitter.',
+        client = {
+            image = 'ammo-emp.png'
+        }
+    },
+    ['handcuff_keys'] = {
+        label = 'Handcuff Keys',
+        weight = 40,
+        stack = true,
+        close = true,
+        consume = 0,
+        description = 'Universal cuffs key for quick escapes.',
+        client = {
+            image = 'WEAPON_HANDCUFFS.PNG'
+        }
+    },
 }
 
