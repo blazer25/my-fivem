@@ -72,6 +72,26 @@ local function ensureVector(value)
     return vector3(0.0, 0.0, 0.0)
 end
 
+local function adminSerializeLock(lock)
+    return {
+        id = lock.id,
+        type = lock.type,
+        coords = { x = lock.coords.x, y = lock.coords.y, z = lock.coords.z },
+        radius = lock.radius,
+        hidden = lock.hidden,
+        targetDoorId = lock.targetDoorId,
+        unlockDuration = lock.unlockDuration,
+        static = lock.static or false,
+        password = lock.data and lock.data.password or nil,
+        item = lock.data and lock.data.item or nil,
+        jobs = lock.data and lock.data.jobs or {},
+        gangs = lock.data and lock.data.gangs or {},
+        ownerIdentifier = lock.data and lock.data.ownerIdentifier or nil,
+        authorizedPlayers = lock.data and lock.data.authorizedPlayers or {},
+        locked = lock.locked,
+    }
+end
+
 local LockTypes = {}
 
 LockTypes.password = {
@@ -599,6 +619,47 @@ lib.callback.register('chris_locks:createLock', function(source, data)
     return success, message
 end)
 
+lib.callback.register('chris_locks:admin:listLocks', function(source)
+    if not canUseCommand(source) then
+        return { error = _('notify_not_authorized') }
+    end
+    local list = {}
+    for _, lock in pairs(Locks) do
+        list[#list + 1] = adminSerializeLock(lock)
+    end
+    table.sort(list, function(a, b)
+        return tostring(a.id) < tostring(b.id)
+    end)
+    return { locks = list }
+end)
+
+lib.callback.register('chris_locks:admin:updatePassword', function(source, data)
+    if not canUseCommand(source) then
+        return false, _('notify_not_authorized')
+    end
+    local id = data and data.id
+    if not id or id == '' then
+        return false, _('notify_invalid_lock')
+    end
+    local lock = Locks[id]
+    if not lock then
+        return false, _('notify_invalid_lock')
+    end
+    if lock.type ~= 'password' then
+        return false, _('notify_invalid_lock')
+    end
+    local password = data.password
+    if password and password ~= '' then
+        lock.data.password = password
+    else
+        lock.data.password = nil
+    end
+    saveLock(lock)
+    prepareSanitized(lock)
+    broadcastLocks()
+    return true, _('notify_saved')
+end)
+
 lib.callback.register('chris_locks:removeLock', function(source, data)
     if not canUseCommand(source) then
         return false, _('notify_not_authorized')
@@ -615,6 +676,24 @@ lib.callback.register('chris_locks:removeLock', function(source, data)
         return true, _('notify_removed', id)
     end
     return false, _('notify_invalid_lock')
+end)
+
+RegisterNetEvent('chris_locks:admin:teleport', function(lockId)
+    local src = source
+    if not canUseCommand(src) then
+        notify(src, _('notify_not_authorized'), 'error')
+        return
+    end
+    local lock = Locks[lockId]
+    if not lock then
+        notify(src, _('notify_invalid_lock'), 'error')
+        return
+    end
+    TriggerClientEvent('chris_locks:client:teleportToCoords', src, {
+        x = lock.coords.x,
+        y = lock.coords.y,
+        z = lock.coords.z
+    })
 end)
 
 local function splitList(value)

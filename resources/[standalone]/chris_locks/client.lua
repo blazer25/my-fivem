@@ -13,6 +13,22 @@ local Locks = {}
 local DebugEnabled = Config.Debug or false
 local IsPasswordOpen = false
 local ActiveLockId = nil
+local AdminUIOpen = false
+
+local function clientNotify(message, type)
+    if Utils.resourceActive('ox_lib') and lib and lib.notify then
+        lib.notify({
+            title = 'Locks',
+            description = message,
+            type = type or 'inform'
+        })
+    else
+        BeginTextCommandThefeedPost('STRING')
+        AddTextComponentSubstringPlayerName(message)
+        EndTextCommandThefeedPostMessagetext('CHAR_DEFAULT', 'CHAR_DEFAULT', false, 4, 'Locks', '')
+        EndTextCommandThefeedPostTicker(false, false)
+    end
+end
 
 local function requestLocks()
     TriggerServerEvent('chris_locks:server:requestLocks')
@@ -57,6 +73,20 @@ local function closePasswordNUI()
     SendNUIMessage({ action = 'close' })
     IsPasswordOpen = false
     ActiveLockId = nil
+end
+
+local function openAdminUI()
+    if AdminUIOpen then return end
+    AdminUIOpen = true
+    SetNuiFocus(true, true)
+    SendNUIMessage({ action = 'openAdmin' })
+end
+
+local function closeAdminUI()
+    if not AdminUIOpen then return end
+    AdminUIOpen = false
+    SetNuiFocus(false, false)
+    SendNUIMessage({ action = 'closeAdmin' })
 end
 
 local function openPasswordNUI(lock)
@@ -115,6 +145,49 @@ RegisterNUICallback('cancelPassword', function(_, cb)
     closePasswordNUI()
 end)
 
+RegisterNUICallback('locksAdmin:close', function(_, cb)
+    cb(1)
+    closeAdminUI()
+end)
+
+RegisterNUICallback('locksAdmin:getLocks', function(_, cb)
+    local response = lib.callback.await('chris_locks:admin:listLocks', false) or {}
+    cb(response)
+end)
+
+RegisterNUICallback('locksAdmin:updatePassword', function(data, cb)
+    local success, message = lib.callback.await('chris_locks:admin:updatePassword', false, data)
+    cb({ success = success, message = message })
+end)
+
+RegisterNUICallback('locksAdmin:createLock', function(data, cb)
+    local success, message = lib.callback.await('chris_locks:createLock', false, data)
+    cb({ success = success, message = message })
+end)
+
+RegisterNUICallback('locksAdmin:removeLock', function(data, cb)
+    local success, message = lib.callback.await('chris_locks:removeLock', false, data)
+    cb({ success = success, message = message })
+end)
+
+RegisterNUICallback('locksAdmin:getDoorInfo', function(data, cb)
+    local result = lib.callback.await('chris_locks:getDoorInfo', false, data and data.doorId) or {}
+    if result and result.coords then
+        result.coords = {
+            x = result.coords.x or 0.0,
+            y = result.coords.y or 0.0,
+            z = result.coords.z or 0.0
+        }
+    end
+    cb(result)
+end)
+
+RegisterNUICallback('locksAdmin:teleport', function(data, cb)
+    cb(1)
+    if not data or not data.id then return end
+    TriggerServerEvent('chris_locks:admin:teleport', data.id)
+end)
+
 RegisterCommand('chrisLocks:interact', function()
     if IsPauseMenuActive() or IsPlayerDead(PlayerId()) then return end
     handleInteraction()
@@ -122,20 +195,18 @@ end, false)
 
 RegisterKeyMapping('chrisLocks:interact', 'Interact with hidden locks', 'keyboard', Config.InteractionKey or 'E')
 
-local function clientNotify(message, type)
-    if Utils.resourceActive('ox_lib') and lib and lib.notify then
-        lib.notify({
-            title = 'Locks',
-            description = message,
-            type = type or 'inform'
-        })
-    else
-        BeginTextCommandThefeedPost('STRING')
-        AddTextComponentSubstringPlayerName(message)
-        EndTextCommandThefeedPostMessagetext('CHAR_DEFAULT', 'CHAR_DEFAULT', false, 4, 'Locks', '')
-        EndTextCommandThefeedPostTicker(false, false)
+RegisterCommand('locksadmin', function()
+    if AdminUIOpen then
+        closeAdminUI()
+        return
     end
-end
+    local allowed = lib.callback.await('chris_locks:canManage', false)
+    if not allowed then
+        clientNotify(_('notify_not_authorized'), 'error')
+        return
+    end
+    openAdminUI()
+end, false)
 
 RegisterCommand('lockdebug', function()
     TriggerServerEvent('chris_locks:toggleDebug')
@@ -144,6 +215,18 @@ end, false)
 RegisterNetEvent('chris_locks:client:setDebug', function(state)
     DebugEnabled = state
     clientNotify(_('command_usage_debug', tostring(DebugEnabled)), 'inform')
+end)
+
+RegisterNetEvent('chris_locks:client:teleportToCoords', function(coords)
+    if not coords or not coords.x then return end
+    local ped = PlayerPedId()
+    DoScreenFadeOut(500)
+    while not IsScreenFadedOut() do
+        Wait(0)
+    end
+    SetEntityCoords(ped, coords.x, coords.y, coords.z, false, false, false, true)
+    Wait(100)
+    DoScreenFadeIn(500)
 end)
 
 RegisterNetEvent('chris_locks:client:setLocks', function(data)
@@ -178,5 +261,8 @@ AddEventHandler('onResourceStop', function(resource)
     if resource ~= GetCurrentResourceName() then return end
     if IsPasswordOpen then
         closePasswordNUI()
+    end
+    if AdminUIOpen then
+        closeAdminUI()
     end
 end)
