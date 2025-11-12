@@ -67,7 +67,7 @@ const LoadingScreenConfig = {
     news: [
         {
             date: "07/11/25",
-            title: "still fixing and building server 
+            title: "still fixing and building server",
             excerpt: "development stage."
         },
     ],
@@ -126,7 +126,7 @@ const LoadingScreenConfig = {
             // Use either: an mp4 path (string), an object with formats { mp4, webm }, or a YouTube link via `youtube`
             url: "assets/video/background.mp4",
             //youtube: "https://www.youtube.com/watch?v=f1MAEDPcUC0",
-            fallbackImage: "assets/background.jpg"
+            fallbackImage: "assets/bakcground.jpg"
         },
         animations: {
             enabled: true,
