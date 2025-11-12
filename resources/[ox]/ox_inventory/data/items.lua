@@ -960,5 +960,35 @@ return {
         stack = true,
         consume = 0,
     },
+    ['weed_smallbag'] = {
+        label = 'Weed Baggie',
+        weight = 100,
+        stack = true,
+        consume = 0,
+        client = {
+            image = 'weed_baggy.png',
+        },
+        description = 'A small bag of cannabis ready for street deals.'
+    },
+    ['coke_smallbag'] = {
+        label = 'Cocaine Baggie',
+        weight = 100,
+        stack = true,
+        consume = 0,
+        client = {
+            image = 'cocaine_baggy.png',
+        },
+        description = 'A small bag of cocaine ready for street deals.'
+    },
+    ['meth_smallbag'] = {
+        label = 'Meth Baggie',
+        weight = 100,
+        stack = true,
+        consume = 0,
+        client = {
+            image = 'meth_baggy.png',
+        },
+        description = 'A small bag of meth ready for street deals.'
+    },
 }
 
