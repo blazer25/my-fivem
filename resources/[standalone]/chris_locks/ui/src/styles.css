@@ -1,0 +1,106 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+:root {
+  font-family: 'Inter', sans-serif;
+  color: #f5f7ff;
+}
+
+body {
+  margin: 0;
+  background: transparent;
+  overflow: hidden;
+}
+
+.lock-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(6px);
+  background: rgba(4, 7, 15, 0.6);
+  animation: fadeIn 0.2s ease-out;
+  z-index: 999;
+}
+
+.lock-modal {
+  width: 320px;
+  padding: 32px 28px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(26, 34, 53, 0.95), rgba(17, 23, 39, 0.95));
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(88, 105, 189, 0.35);
+}
+
+.lock-modal h1 {
+  margin: 0 0 20px;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #98b4ff;
+}
+
+.lock-modal input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(79, 99, 168, 0.4);
+  background: rgba(13, 20, 35, 0.85);
+  color: #f0f4ff;
+  font-size: 15px;
+  outline: none;
+  transition: border 0.2s ease;
+}
+
+.lock-modal input:focus {
+  border-color: #6d8dff;
+}
+
+.lock-modal .buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.lock-modal button {
+  flex: 1;
+  padding: 12px 0;
+  border-radius: 10px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.lock-modal button.primary {
+  background: linear-gradient(135deg, #6c8dff, #7d5bff);
+  color: white;
+  box-shadow: 0 10px 30px rgba(108, 141, 255, 0.35);
+}
+
+.lock-modal button.primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(108, 141, 255, 0.45);
+}
+
+.lock-modal button:not(.primary) {
+  background: rgba(17, 28, 49, 0.85);
+  color: rgba(175, 193, 255, 0.9);
+  border: 1px solid rgba(79, 99, 168, 0.3);
+}
+
+.lock-modal button:not(.primary):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(17, 28, 49, 0.35);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
