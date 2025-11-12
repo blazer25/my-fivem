@@ -39,189 +39,134 @@ Config.UI = {
 
 -- Black Market Items Configuration
 Config.Items = {
-    -- Weapons Category
     {
-        category = "weapons",
-        categoryLabel = "Weapons",
-        categoryIcon = "fas fa-gun",
+        category = "supplies",
+        categoryLabel = "Chemicals & Packaging",
+        categoryIcon = "fas fa-flask",
         items = {
             {
-                name = "weapon_pistol",
-                label = "Pistol",
-                description = "A standard 9mm pistol",
-                price = 10,
-                image = "pistol.png", -- Image should be in ox_inventory/web/images/
-                stock = 5, -- Available stock (-1 for unlimited)
-                metadata = {
-                    durability = 100,
-                    ammo = 0
-                }
+                name = "empty_weed_bag",
+                label = "Empty Baggies",
+                description = "Packaging to portion street-ready product.",
+                price = 65,
+                image = "weed_baggy_empty.png",
+                stock = 200,
+                maxQuantity = 50
             },
             {
-                name = "weapon_switchblade",
-                label = "Switchblade",
-                description = "A sharp folding knife",
-                price = 5,
-                image = "switchblade.png",
-                stock = 10,
-                metadata = {
-                    durability = 100
-                }
+                name = "meth_tray",
+                label = "Crystal Drying Trays",
+                description = "Reusable trays for drying and cutting meth batches.",
+                price = 350,
+                image = "meth_tray.png",
+                stock = 35,
+                maxQuantity = 5
             },
             {
-                name = "weapon_knuckle",
-                label = "Brass Knuckles",
-                description = "Metal knuckle dusters",
-                price = 2,
-                image = "knuckle.png",
-                stock = 8,
-                metadata = {
-                    durability = 100
-                }
+                name = "acetone",
+                label = "Industrial Acetone",
+                description = "Solvent used for cooking high-grade product.",
+                price = 140,
+                image = "acetone.png",
+                stock = 80,
+                maxQuantity = 10
+            },
+            {
+                name = "ephedrine",
+                label = "Ephedrine Powder",
+                description = "Key precursor for crystal meth production.",
+                price = 260,
+                image = "ephedrine.png",
+                stock = 60,
+                maxQuantity = 8
+            },
+            {
+                name = "hydrochloricacid",
+                label = "Hydrochloric Acid",
+                description = "Used to stabilize narcotic compounds.",
+                price = 190,
+                image = "hydrochloricacid.png",
+                stock = 75,
+                maxQuantity = 8
+            },
+            {
+                name = "weed_nutrition",
+                label = "Plant Nutrients",
+                description = "Premium nutrition boost for hydro grows.",
+                price = 95,
+                image = "weed_nutrition.png",
+                stock = 120,
+                maxQuantity = 15
             }
         }
     },
-    
-    -- Ammunition Category
     {
-        category = "ammo",
-        categoryLabel = "Ammunition",
-        categoryIcon = "fas fa-bullets",
-        items = {
-            {
-                name = "pistol_ammo",
-                label = "Pistol Ammo",
-                description = "9mm ammunition",
-                price = 5,
-                image = "pistol_ammo.png",
-                stock = 100,
-                maxQuantity = 50 -- Max quantity per purchase
-            },
-            {
-                name = "rifle_ammo",
-                label = "Rifle Ammo",
-                description = "High caliber rifle ammunition",
-                price = 10,
-                image = "rifle_ammo.png",
-                stock = 50,
-                maxQuantity = 30
-            }
-        }
-    },
-    
-    -- Drugs Category
-    {
-        category = "drugs",
-        categoryLabel = "Narcotics",
-        categoryIcon = "fas fa-pills",
+        category = "bulk",
+        categoryLabel = "Bulk Product",
+        categoryIcon = "fas fa-boxes-stacked",
         items = {
             {
                 name = "weed_brick",
                 label = "Weed Brick",
-                description = "Compressed cannabis brick",
-                price = 500,
+                description = "Compressed cannabis ready for cutting.",
+                price = 2400,
                 image = "weed_brick.png",
-                stock = 20,
-                maxQuantity = 5
+                stock = 18,
+                maxQuantity = 2
+            },
+            {
+                name = "coke_small_brick",
+                label = "Kilo of Cocaine",
+                description = "Refined cocaine block, perfect for distribution.",
+                price = 3100,
+                image = "coke_small_brick.png",
+                stock = 12,
+                maxQuantity = 1
             },
             {
                 name = "coke_brick",
-                label = "Cocaine Brick",
-                description = "Pure cocaine brick",
-                price = 1500,
+                label = "Pressed Cocaine Brick",
+                description = "High-purity brick sourced from overseas.",
+                price = 5400,
                 image = "coke_brick.png",
-                stock = 10,
+                stock = 6,
+                maxQuantity = 1
+            },
+            {
+                name = "meth",
+                label = "Crystal Meth",
+                description = "Uncut crystals ready to be bagged.",
+                price = 1150,
+                image = "meth.png",
+                stock = 40,
+                maxQuantity = 6
+            },
+            {
+                name = "meth_baggy",
+                label = "Vacuum-Sealed Meth",
+                description = "Bulk-ready methamphetamine pouches.",
+                price = 1850,
+                image = "meth_baggy.png",
+                stock = 24,
                 maxQuantity = 3
             },
             {
-                name = "meth_bag",
-                label = "Meth Bag",
-                description = "Crystal methamphetamine",
-                price = 800,
-                image = "meth_bag.png",
-                stock = 15,
+                name = "crack_baggy",
+                label = "Cooked Crack Rocks",
+                description = "Cooked, cooled, and ready for the block.",
+                price = 950,
+                image = "crack_baggy.png",
+                stock = 30,
                 maxQuantity = 5
-            }
-        }
-    },
-    
-    -- Tools Category
-    {
-        category = "tools",
-        categoryLabel = "Tools",
-        categoryIcon = "fas fa-tools",
-        items = {
-            {
-                name = "lockpick",
-                label = "Lockpick",
-                description = "For bypassing simple locks",
-                price = 50,
-                image = "lockpick.png",
-                stock = 50,
-                maxQuantity = 10
             },
             {
-                name = "thermite",
-                label = "Thermite",
-                description = "Explosive compound for cutting",
-                price = 1000,
-                image = "thermite.png",
-                stock = 5,
-                maxQuantity = 2
-            },
-            {
-                name = "drill",
-                label = "Drill",
-                description = "Heavy duty drill",
-                price = 750,
-                image = "drill.png",
-                stock = 8,
-                maxQuantity = 1
-            },
-            {
-                name = "vpn",
-                label = "VPN",
-                description = "Virtual private network access",
-                price = 200,
-                image = "vpn.png",
-                stock = 20,
-                maxQuantity = 5
-            }
-        }
-    },
-    
-    -- Electronics Category
-    {
-        category = "electronics",
-        categoryLabel = "Electronics",
-        categoryIcon = "fas fa-microchip",
-        items = {
-            {
-                name = "phone",
-                label = "Burner Phone",
-                description = "Untraceable mobile phone",
-                price = 300,
-                image = "phone.png",
-                stock = 25,
-                maxQuantity = 2
-            },
-            {
-                name = "radio",
-                label = "Encrypted Radio",
-                description = "Secure communication device",
-                price = 400,
-                image = "radio.png",
-                stock = 15,
-                maxQuantity = 2
-            },
-            {
-                name = "laptop",
-                label = "Hacking Laptop",
-                description = "Modified laptop for hacking",
-                price = 2000,
-                image = "laptop.png",
-                stock = 3,
-                maxQuantity = 1
+                name = "xtcbaggy",
+                label = "Press Tabs (XTC)",
+                description = "Designer tablets sourced from Europe.",
+                price = 1250,
+                image = "xtc_baggy.png",
+                stock = 28,
+                maxQuantity = 4
             }
         }
     }

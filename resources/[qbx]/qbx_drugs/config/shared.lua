@@ -1,8 +1,8 @@
 local defaultProducts = {
     [1] = {
         name = 'weed_smallbag',
-        price = 250,
-        amount = 150,
+        price = 320,
+        amount = 80,
         info = {},
         type = 'item',
         slot = 1,
@@ -10,48 +10,21 @@ local defaultProducts = {
     },
     [2] = {
         name = 'coke_smallbag',
-        price = 450,
-        amount = 120,
+        price = 560,
+        amount = 55,
         info = {},
         type = 'item',
         slot = 2,
-        minrep = 50
+        minrep = 80
     },
     [3] = {
         name = 'meth_smallbag',
-        price = 600,
-        amount = 90,
+        price = 710,
+        amount = 40,
         info = {},
         type = 'item',
         slot = 3,
-        minrep = 100
-    },
-    [4] = {
-        name = 'weed_brick',
-        price = 2500,
-        amount = 25,
-        info = {},
-        type = 'item',
-        slot = 4,
-        minrep = 125
-    },
-    [5] = {
-        name = 'coke_brick',
-        price = 4200,
-        amount = 15,
-        info = {},
-        type = 'item',
-        slot = 5,
-        minrep = 175
-    },
-    [6] = {
-        name = 'meth_brick',
-        price = 5200,
-        amount = 10,
-        info = {},
-        type = 'item',
-        slot = 6,
-        minrep = 225
+        minrep = 150
     }
 }
 
@@ -78,19 +51,19 @@ return {
     },
     deliveryItems = {
         {
-            item = 'weed_brick',
+            item = 'weed_smallbag',
             minrep = 0,
-            payout = 1250
+            payout = 480
         },
         {
-            item = 'coke_brick',
-            minrep = 50,
-            payout = 2000
+            item = 'coke_smallbag',
+            minrep = 90,
+            payout = 720
         },
         {
-            item = 'meth_brick',
-            minrep = 150,
-            payout = 2750
+            item = 'meth_smallbag',
+            minrep = 160,
+            payout = 940
         },
     }
 }

@@ -13,13 +13,13 @@ local defaultDealerProducts = deepCopy(shared.dealers[1].products or {})
 
 return {
     useMarkedBills = true,
-    policeCallChance = 25,
-    policeDeliveryModifier = 0.05,
-    deliveryRepGain = 2,
-    deliveryRepLoss = 1,
-    wrongAmountFee = 2,
-    overdueDeliveryFee = 3,
-    scamChance = 20,
+    policeCallChance = 30,
+    policeDeliveryModifier = 0.06,
+    deliveryRepGain = 3,
+    deliveryRepLoss = 2,
+    wrongAmountFee = 2.5,
+    overdueDeliveryFee = 3.5,
+    scamChance = 18,
     products = defaultDealerProducts,
     cornerSellingDrugsList = {
         'weed_smallbag',
@@ -27,9 +27,9 @@ return {
         'meth_smallbag'
     },
     cornerSellingDrugsPrice = {
-        weed_smallbag = { min = 200, max = 275 },
-        coke_smallbag = { min = 425, max = 575 },
-        meth_smallbag = { min = 520, max = 700 },
+        weed_smallbag = { min = 340, max = 430 },
+        coke_smallbag = { min = 600, max = 780 },
+        meth_smallbag = { min = 720, max = 910 },
     }
 }
 
