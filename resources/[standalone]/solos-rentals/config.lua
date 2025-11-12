@@ -16,6 +16,14 @@ config.locations = {
         ped = true, -- if false uses boxzone (below)
 
         coords = vector4(-1035.0924, -2733.2678, 20.1693, 157.2091),
+
+        blip = {
+            sprite = 227,
+            colour = 2,
+            scale = 0.8,
+            shortRange = true,
+            label = 'Vehicle Rentals'
+        },
         
         -------- boxzone (only used if ped is false) --------
 

@@ -2,9 +2,30 @@ local QBCore = GetResourceState('qb-core') == 'started' and exports['qb-core']:G
 local ESX = GetResourceState('es_extended') == 'started' and exports.es_extended:getSharedObject()
 
 local ped = {}
+local blips = {}
+
+local function createBlip(location)
+    if not location.blip then return end
+
+    local coords = location.blip.coords or location.coords
+    if not coords then return end
+
+    local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
+    SetBlipSprite(blip, location.blip.sprite or 227)
+    SetBlipColour(blip, location.blip.colour or 2)
+    SetBlipScale(blip, location.blip.scale or 0.8)
+    SetBlipAsShortRange(blip, location.blip.shortRange ~= nil and location.blip.shortRange or true)
+
+    BeginTextCommandSetBlipName('STRING')
+    AddTextComponentString(location.blip.label or 'Vehicle Rentals')
+    EndTextCommandSetBlipName(blip)
+
+    blips[#blips + 1] = blip
+end
 
 Citizen.CreateThread(function()
     for k, v in pairs(config.locations) do 
+        createBlip(v)
         if v.ped then 
             RequestModel(config.pedmodel)
             while not HasModelLoaded(config.pedmodel) do
@@ -14,7 +35,7 @@ Citizen.CreateThread(function()
             if config.scenario then 
                 TaskStartScenarioInPlace(ped[k], config.scenario, 0, true)
             end
-            SetEntityCoordsNoOffset(ped[k], v.coords.x, v.coords.y, v.coords.z, false, false, false, true)
+            SetEntityCoordsNoOffset(ped[k], v.coords.x, v.coords.y, v.coords.z, false, false, false)
             Wait(100)
             FreezeEntityPosition(ped[k], true)
             SetEntityInvincible(ped[k], true)
@@ -133,7 +154,7 @@ RegisterNetEvent('solos-rentals:client:SpawnVehicle', function(vehiclename, loca
     local plate = GetVehicleNumberPlateText(rental)
     SetVehicleOnGroundProperly(rental)
     TaskWarpPedIntoVehicle(player, rental, -1) 
-    SetVehicleEngineOn(vehicle, true, true)
+    SetVehicleEngineOn(vehicle, true, true, false)
     TriggerServerEvent('solos-rentals:server:RentVehicle', vehiclename, plate)
 
     -- give keys 
