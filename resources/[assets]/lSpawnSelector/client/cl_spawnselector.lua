@@ -23,5 +23,10 @@ RegisterNetEvent('CORE.UI:spawnselector:spawn', function(data)
     if spawn.position then
         TriggerEvent("CORE.UI:Close")
         TeleportToWp(pPed, spawn.position, spawn.position.w)
+        Wait(1000)
+        TriggerServerEvent('QBCore:Server:OnPlayerLoaded')
+        TriggerEvent('QBCore:Client:OnPlayerLoaded')
+        TriggerServerEvent('qb-houses:server:SetInsideMeta', 0, false)
+        TriggerServerEvent('qb-apartments:server:SetInsideMeta', 0, 0, false)
     end
 end)
