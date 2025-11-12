@@ -12,10 +12,10 @@ config.pedmodel = 'a_m_m_prolhost_01' -- ped model hash
 config.scenario = 'WORLD_HUMAN_CLIPBOARD' -- scenario for ped to play, false to disable
 
 config.locations = {
-    ['legion'] = {
+    ['airport'] = {
         ped = true, -- if false uses boxzone (below)
 
-        coords = vector4(1038.0, -2738.0, 20.0, 330.0),
+        coords = vector4(-1035.0924, -2733.2678, 20.1693, 157.2091),
         
         -------- boxzone (only used if ped is false) --------
 
@@ -50,7 +50,7 @@ config.locations = {
 
         },
 
-        vehiclespawncoords = vector4(212.64, -797.12, 30.87, 339.09), -- where vehicle spawns when rented
+        vehiclespawncoords = vector4(-1029.6068, -2724.4490, 20.1663, 240.0500), -- where vehicle spawns when rented
 
     },
 
