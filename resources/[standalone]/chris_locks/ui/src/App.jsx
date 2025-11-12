@@ -31,7 +31,7 @@ const initialForm = {
   radius: '2.5',
   unlockDuration: '300',
   hidden: true,
-  useDoor: true,
+  useDoor: false,
   doubleDoor: false,
   newDoor: null
 }
@@ -274,7 +274,7 @@ function AdminPanel({ visible, doorSelection }) {
 
   const handleDoorLookup = async () => {
     if (!form.targetDoorId.trim()) {
-      notify('error', 'Door ID is required.')
+      notify('error', 'Enter a door ID or uncheck "Use door coordinates" to create a standalone lock.')
       return
     }
     const result = await fetchNui('locksAdmin:getDoorInfo', { doorId: form.targetDoorId.trim() })
@@ -307,19 +307,13 @@ function AdminPanel({ visible, doorSelection }) {
       notify('error', 'Lock type is required.')
       return
     }
-    if (form.useDoor) {
-      const hasDoorId = !!form.targetDoorId.trim()
-      if (!hasDoorId && !form.newDoor) {
-        notify('error', 'Select or enter a door before creating the lock.')
-        return
-      }
-    }
-    if (!form.useDoor) {
-      const { x, y, z } = form.coords
-      if (![x, y, z].every((v) => v !== '')) {
-        notify('error', 'Provide X, Y, and Z coordinates.')
-        return
-      }
+    const hasDoorId = !!form.targetDoorId.trim()
+    const hasCustomDoor = !!form.newDoor
+    const coordsFilled = ['x', 'y', 'z'].every((axis) => form.coords[axis] !== '')
+    const usingDoorData = form.useDoor && (hasDoorId || hasCustomDoor)
+    if (!usingDoorData && !coordsFilled) {
+      notify('error', 'Provide coordinates or select a door before creating the lock.')
+      return
     }
     const radius = parseFloat(form.radius)
     const unlockDuration = parseInt(form.unlockDuration, 10)
@@ -327,21 +321,25 @@ function AdminPanel({ visible, doorSelection }) {
       id: form.id.trim(),
       type: form.type,
       credential: form.credential.trim(),
-      targetDoorId: form.useDoor ? form.targetDoorId.trim() : '',
       radius: Number.isFinite(radius) ? radius : undefined,
       unlockDuration: Number.isFinite(unlockDuration) ? unlockDuration : undefined,
-      hidden: form.hidden,
-      useDoor: form.useDoor,
-      doubleDoor: form.doubleDoor
+      hidden: form.hidden
     }
-    if (!form.useDoor) {
+    if (usingDoorData) {
+      if (hasDoorId) {
+        payload.targetDoorId = form.targetDoorId.trim()
+      }
+      if (hasCustomDoor) {
+        payload.newDoor = form.newDoor
+      }
+    } else {
       payload.coords = {
         x: parseFloat(form.coords.x),
         y: parseFloat(form.coords.y),
         z: parseFloat(form.coords.z)
       }
-    } else if (form.newDoor) {
-      payload.newDoor = form.newDoor
+      payload.useDoor = false
+      payload.targetDoorId = undefined
     }
     setCreating(true)
     const result = await fetchNui('locksAdmin:createLock', payload)
@@ -365,6 +363,7 @@ function AdminPanel({ visible, doorSelection }) {
   }
 
   const typeMeta = lockTypeOptions.find((option) => option.value === form.type) || lockTypeOptions[0]
+  const shouldShowCoords = !form.useDoor || (!form.targetDoorId.trim() && !form.newDoor)
 
   if (!visible) return null
 
@@ -613,7 +612,7 @@ function AdminPanel({ visible, doorSelection }) {
                       </div>
                     )}
                   </div>
-                  {!form.useDoor && (
+                  {shouldShowCoords && (
                     <div className="form-item coordinates">
                       <label>Coordinates</label>
                       <div className="coord-grid">

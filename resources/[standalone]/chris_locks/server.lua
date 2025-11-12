@@ -89,6 +89,13 @@ local function cloneCoordsTable(value)
     }
 end
 
+local function normalizeDoorId(value)
+    if not value or value == '' then
+        return nil
+    end
+    return value
+end
+
 local function prepareDoorDataForNetwork(doorData)
     if not doorData or not doorData.doors then return nil end
     local payload = {
@@ -373,7 +380,7 @@ local function ensureSchema()
         `item` VARCHAR(64) NULL,
         `job` VARCHAR(128) NULL,
         `owner_identifier` VARCHAR(60) NULL,
-        `targetDoorId` VARCHAR(64) NOT NULL,
+        `targetDoorId` VARCHAR(64) NULL,
         `doorData` LONGTEXT NULL,
         `hidden` BOOLEAN DEFAULT TRUE,
         `unlockDuration` INT DEFAULT 300,
@@ -382,6 +389,10 @@ local function ensureSchema()
     local hasDoorColumn = MySQL.query.await("SHOW COLUMNS FROM `chris_locks` LIKE 'doorData'")
     if not hasDoorColumn or #hasDoorColumn == 0 then
         MySQL.query('ALTER TABLE `chris_locks` ADD COLUMN `doorData` LONGTEXT NULL')
+    end
+    local doorIdColumn = MySQL.query.await("SHOW COLUMNS FROM `chris_locks` LIKE 'targetDoorId'")
+    if doorIdColumn and doorIdColumn[1] and doorIdColumn[1].Null == 'NO' then
+        MySQL.query('ALTER TABLE `chris_locks` MODIFY `targetDoorId` VARCHAR(64) NULL')
     end
 end
 
@@ -407,7 +418,7 @@ local function loadLocksFromDatabase()
             coords = ensureVector(coordTable),
             radius = row.radius or 2.5,
             hidden = row.hidden ~= 0,
-            targetDoorId = row.targetDoorId,
+            targetDoorId = normalizeDoorId(row.targetDoorId),
             unlockDuration = row.unlockDuration or Config.DefaultUnlockDuration,
             locked = true,
             data = {
@@ -446,7 +457,7 @@ local function integrateStaticLocks()
                 coords = ensureVector(entry.coords),
                 radius = entry.radius or 2.5,
                 hidden = entry.hidden ~= false,
-                targetDoorId = entry.targetDoorId,
+                targetDoorId = normalizeDoorId(entry.targetDoorId),
                 unlockDuration = entry.unlockDuration or Config.DefaultUnlockDuration,
                 locked = true,
                 data = {
@@ -477,7 +488,7 @@ local function saveLock(lock)
         lock.data.item,
         lock.data.jobs and json.encode(lock.data.jobs) or nil,
         lock.data.ownerIdentifier,
-        lock.targetDoorId,
+        normalizeDoorId(lock.targetDoorId),
         doorPayload and json.encode(doorPayload) or nil,
         lock.hidden,
         lock.unlockDuration
@@ -490,6 +501,7 @@ end
 
 local function registerLock(lock)
     mergeLockData(lock)
+    lock.targetDoorId = normalizeDoorId(lock.targetDoorId)
     lock.locked = true
     if lock.doorData then
         lock.coords = ensureVector(lock.doorData.center or lock.coords)
@@ -561,11 +573,10 @@ local function createLockFromData(source, data)
 
     local targetDoorId = data.targetDoorId
     local newDoorPayload = data.newDoor
-    if (not targetDoorId or targetDoorId == '') and not newDoorPayload then
-        return false, _('command_usage_addlock')
+    local coords = nil
+    if data.coords then
+        coords = ensureVector(data.coords)
     end
-
-    local coords = data.coords
     local sanitizedDoor
 
     if newDoorPayload then
@@ -586,7 +597,7 @@ local function createLockFromData(source, data)
         if not door then
             return false, _('door_not_registered', targetDoorId)
         end
-        coords = door.coords
+        coords = ensureVector(door.coords)
         targetDoorId = door.id
         if not data.radius and door.distance then
             data.radius = door.distance
@@ -596,6 +607,8 @@ local function createLockFromData(source, data)
     if not coords then
         return false, _('command_usage_addlock')
     end
+
+    targetDoorId = normalizeDoorId(targetDoorId)
 
     local lock = {
         id = id,
