@@ -46,7 +46,12 @@ local function getIdentifier(source)
 end
 
 local function setDoorState(lock, locked)
-    Framework.setDoorStateAll(lock.targetDoorId, locked)
+    if lock.doorData then
+        TriggerClientEvent('chris_locks:client:setCustomDoorState', -1, lock.id, locked)
+    end
+    if lock.targetDoorId and not lock.targetDoorId:find('custom:', 1, true) then
+        Framework.setDoorStateAll(lock.targetDoorId, locked)
+    end
 end
 
 local function sanitizeLock(lock)
@@ -59,6 +64,7 @@ local function sanitizeLock(lock)
         targetDoorId = lock.targetDoorId,
         unlockDuration = lock.unlockDuration,
         locked = lock.locked,
+        customDoor = lock.doorData ~= nil,
     }
 end
 
@@ -70,6 +76,129 @@ local function ensureVector(value)
         return vector3(value.x or 0.0, value.y or 0.0, value.z or 0.0)
     end
     return vector3(0.0, 0.0, 0.0)
+end
+
+local function cloneCoordsTable(value)
+    if not value then
+        return { x = 0.0, y = 0.0, z = 0.0 }
+    end
+    return {
+        x = tonumber(value.x) or 0.0,
+        y = tonumber(value.y) or 0.0,
+        z = tonumber(value.z) or 0.0,
+    }
+end
+
+local function prepareDoorDataForNetwork(doorData)
+    if not doorData or not doorData.doors then return nil end
+    local payload = {
+        double = doorData.double or (#doorData.doors > 1),
+        suggestedRadius = doorData.suggestedRadius,
+        center = cloneCoordsTable(doorData.center or {}),
+        doors = {}
+    }
+
+    for i = 1, #doorData.doors do
+        local entry = doorData.doors[i]
+        payload.doors[i] = {
+            model = entry.model,
+            heading = entry.heading,
+            coords = cloneCoordsTable(entry.coords)
+        }
+    end
+
+    return payload
+end
+
+local function rehydrateDoorData(data)
+    if not data or not data.doors then return nil end
+    local doors = {}
+
+    for i = 1, #data.doors do
+        local entry = data.doors[i]
+        if entry then
+            doors[i] = {
+                model = tonumber(entry.model),
+                heading = tonumber(entry.heading) or 0.0,
+                coords = cloneCoordsTable(entry.coords)
+            }
+        end
+    end
+
+    if #doors == 0 then return nil end
+
+    local centerSource = data.center or doors[1].coords
+
+    return {
+        double = data.double or (#doors > 1),
+        doors = doors,
+        center = ensureVector(centerSource),
+        suggestedRadius = data.suggestedRadius and tonumber(data.suggestedRadius) or nil
+    }
+end
+
+local function sanitizeNewDoorData(lockId, newDoor)
+    if type(newDoor) ~= 'table' then
+        return false, _('admin_select_door_fail')
+    end
+
+    local doorsInput = newDoor.doors
+    if type(doorsInput) ~= 'table' or #doorsInput == 0 then
+        return false, _('admin_select_door_fail')
+    end
+
+    local sanitized = {
+        double = newDoor.double and true or false,
+        doors = {}
+    }
+
+    local sumX, sumY, sumZ = 0.0, 0.0, 0.0
+
+    for i = 1, #doorsInput do
+        local entry = doorsInput[i]
+        if type(entry) ~= 'table' or not entry.coords then
+            return false, _('admin_select_door_fail')
+        end
+        local coords = cloneCoordsTable(entry.coords)
+        local model = tonumber(entry.model)
+        if not model then
+            return false, _('admin_select_door_fail')
+        end
+
+        sanitized.doors[i] = {
+            model = model,
+            heading = tonumber(entry.heading) or 0.0,
+            coords = coords
+        }
+
+        sumX = sumX + coords.x
+        sumY = sumY + coords.y
+        sumZ = sumZ + coords.z
+    end
+
+    local count = #sanitized.doors
+    local center = newDoor.center and cloneCoordsTable(newDoor.center) or {
+        x = sumX / count,
+        y = sumY / count,
+        z = sumZ / count
+    }
+
+    sanitized.center = ensureVector(center)
+    sanitized.double = sanitized.double or count > 1
+    sanitized.suggestedRadius = newDoor.suggestedRadius and tonumber(newDoor.suggestedRadius) or nil
+
+    return true, sanitized
+end
+
+local function syncCustomDoor(lock, target)
+    if not lock.doorData then return end
+    local payload = prepareDoorDataForNetwork(lock.doorData)
+    if not payload then return end
+    TriggerClientEvent('chris_locks:client:registerCustomDoor', target or -1, lock.id, payload, lock.locked ~= false)
+end
+
+local function removeCustomDoor(lockId, target)
+    TriggerClientEvent('chris_locks:client:removeCustomDoor', target or -1, lockId)
 end
 
 local function adminSerializeLock(lock)
@@ -89,6 +218,7 @@ local function adminSerializeLock(lock)
         ownerIdentifier = lock.data and lock.data.ownerIdentifier or nil,
         authorizedPlayers = lock.data and lock.data.authorizedPlayers or {},
         locked = lock.locked,
+        customDoor = lock.doorData ~= nil,
     }
 end
 
@@ -239,10 +369,15 @@ local function ensureSchema()
         `job` VARCHAR(128) NULL,
         `owner_identifier` VARCHAR(60) NULL,
         `targetDoorId` VARCHAR(64) NOT NULL,
+        `doorData` LONGTEXT NULL,
         `hidden` BOOLEAN DEFAULT TRUE,
         `unlockDuration` INT DEFAULT 300,
         `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )]])
+    local hasDoorColumn = MySQL.query.await("SHOW COLUMNS FROM `chris_locks` LIKE 'doorData'")
+    if not hasDoorColumn or #hasDoorColumn == 0 then
+        MySQL.query('ALTER TABLE `chris_locks` ADD COLUMN `doorData` LONGTEXT NULL')
+    end
 end
 
 local function decodeJSON(value, default)
@@ -278,9 +413,22 @@ local function loadLocksFromDatabase()
                 ownerIdentifier = row.owner_identifier,
             }
         }
+        local doorData = rehydrateDoorData(decodeJSON(row.doorData, nil))
+        if doorData then
+            lock.doorData = doorData
+            lock.coords = ensureVector(doorData.center or lock.coords)
+            if (not lock.radius or lock.radius <= 0) and doorData.suggestedRadius then
+                lock.radius = doorData.suggestedRadius
+            end
+        end
         mergeLockData(lock)
         Locks[lock.id] = lock
         prepareSanitized(lock)
+    end
+    for _, lock in pairs(Locks) do
+        if lock.doorData then
+            syncCustomDoor(lock)
+        end
     end
 end
 
