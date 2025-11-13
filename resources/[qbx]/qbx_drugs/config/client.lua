@@ -8,24 +8,24 @@ return {
     minimumDrugSalePolice = 2,
     deliveryLocations = {
         {
-            label = 'Little Seoul Apartments',
-            coords = vec3(-713.43, -853.76, 23.82),
+            label = 'Innocence Boulevard Lot',
+            coords = vec3(42.65, -1004.72, 29.28),
         },
         {
-            label = 'Popular Street',
-            coords = vec3(938.27, -1803.65, 31.24),
+            label = 'Popular Street Garage',
+            coords = vec3(831.76, -810.55, 26.33),
         },
         {
-            label = 'Mirror Park',
-            coords = vec3(1031.11, -774.38, 57.2),
+            label = 'Mirror Park Cul-de-sac',
+            coords = vec3(1261.92, -566.37, 68.49),
         },
         {
-            label = 'Weazel News',
-            coords = vec3(-580.45, -928.21, 23.88),
+            label = 'Del Perro Pier Parking',
+            coords = vec3(-1615.47, -1083.63, 13.02),
         },
         {
-            label = 'Sisyphus Theater',
-            coords = vec3(683.92, 571.53, 129.43),
+            label = 'Vinewood Bowl Lot',
+            coords = vec3(681.81, 566.28, 129.24),
         },
         {
             label = 'Grapeseed Barn',
