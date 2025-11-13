@@ -119,7 +119,8 @@ local function removeDealerTarget(ped, name)
         exports.ox_target:removeLocalEntity(ped, 'dealer_open_shop_' .. name)
         exports.ox_target:removeLocalEntity(ped, 'dealer_request_delivery_' .. name)
     elseif GetResourceState('qb-target') == 'started' then
-        exports['qb-target']:RemoveTargetEntity(ped, { 'dealer_open_shop_' .. name, 'dealer_request_delivery_' .. name })
+        exports['qb-target']:RemoveTargetEntity(ped, 'dealer_open_shop_' .. name)
+        exports['qb-target']:RemoveTargetEntity(ped, 'dealer_request_delivery_' .. name)
     end
 end
 
@@ -180,7 +181,7 @@ local function getClosestDealer()
 end
 
 ---@todo Move to ox_inventory Shop
-local function openDealerShop()
+openDealerShop = function()
     getClosestDealer()
     local repItems = {}
     repItems.label = sharedConfig.dealers[currentDealer].name
@@ -260,7 +261,7 @@ local function randomDeliveryItemOnRep()
     return availableItems[math.random(1, #availableItems)]
 end
 
-local function requestDelivery()
+requestDelivery = function()
     if not waitingDelivery then
         getClosestDealer()
         local location = math.random(1, #config.deliveryLocations)
