@@ -187,6 +187,10 @@ end
 ---@todo Move to ox_inventory Shop
 openDealerShop = function()
     getClosestDealer()
+    if not currentDealer or not sharedConfig.dealers[currentDealer] then
+        exports.qbx_core:Notify(locale('error.dealer_not_exists'), 'error')
+        return
+    end
     local repItems = {}
     repItems.label = sharedConfig.dealers[currentDealer].name
     repItems.items = {}
@@ -268,6 +272,10 @@ end
 requestDelivery = function()
     if not waitingDelivery then
         getClosestDealer()
+        if not currentDealer or not sharedConfig.dealers[currentDealer] then
+            exports.qbx_core:Notify(locale('error.dealer_not_exists'), 'error')
+            return
+        end
         local location = math.random(1, #config.deliveryLocations)
         local amount = math.random(1, 3)
         local item = randomDeliveryItemOnRep()
@@ -283,6 +291,7 @@ requestDelivery = function()
 
         exports.qbx_core:Notify(locale('info.sending_delivery_email'), 'success')
         TriggerServerEvent('qb-drugs:server:giveDeliveryItems', waitingDelivery)
+        TriggerEvent('qb-drugs:client:setLocation', waitingDelivery)
         SetTimeout(2000, function()
             TriggerServerEvent('qb-phone:server:sendNewMail', {
                 sender = sharedConfig.dealers[currentDealer].name,
