@@ -9,6 +9,7 @@ local waitingKeyPress = false
 local dealerCombo = false
 local drugDeliveryZone
 local dealerPeds = {}
+local openDealerShop, requestDelivery
 
 ---@diagnostic disable-next-line: param-type-mismatch
 AddStateBagChangeHandler('isLoggedIn', nil, function(_, _, value)
@@ -21,6 +22,73 @@ AddStateBagChangeHandler('isLoggedIn', nil, function(_, _, value)
         if not config.useTarget and dealerCombo then dealerCombo:destroy() end
     end
 end)
+
+local function addDealerTarget(ped, name, data)
+    if not config.useTarget then return end
+    local openOption = {
+        name = 'dealer_open_shop_' .. name,
+        icon = 'fas fa-user-secret',
+        label = locale('info.target_openshop'),
+        onSelect = function()
+            currentDealer = name
+            openDealerShop()
+        end,
+        canInteract = function()
+            local hours = GetClockHours()
+            local min = data.time.min
+            local max = data.time.max
+            if max < min then
+                return hours <= max or hours >= min
+            end
+            return hours >= min and hours <= max
+        end
+    }
+
+    local deliveryOption = {
+        name = 'dealer_request_delivery_' .. name,
+        icon = 'fas fa-box',
+        label = locale('info.target_request'),
+        onSelect = function()
+            currentDealer = name
+            requestDelivery()
+        end,
+        canInteract = function()
+            if waitingDelivery then return false end
+            local hours = GetClockHours()
+            local min = data.time.min
+            local max = data.time.max
+            if max < min then
+                return hours <= max or hours >= min
+            end
+            return hours >= min and hours <= max
+        end
+    }
+
+    if GetResourceState('ox_target') == 'started' then
+        exports.ox_target:addLocalEntity(ped, {
+            openOption,
+            deliveryOption
+        })
+    elseif GetResourceState('qb-target') == 'started' then
+        exports['qb-target']:AddTargetEntity(ped, {
+            options = {
+                openOption,
+                deliveryOption
+            },
+            distance = 1.5
+        })
+    end
+end
+
+local function removeDealerTarget(ped, name)
+    if not config.useTarget or not DoesEntityExist(ped) then return end
+    if GetResourceState('ox_target') == 'started' then
+        exports.ox_target:removeLocalEntity(ped, 'dealer_open_shop_' .. name)
+        exports.ox_target:removeLocalEntity(ped, 'dealer_request_delivery_' .. name)
+    elseif GetResourceState('qb-target') == 'started' then
+        exports['qb-target']:RemoveTargetEntity(ped, { 'dealer_open_shop_' .. name, 'dealer_request_delivery_' .. name })
+    end
+end
 
 local function spawnDealerPed(name, data)
     if dealerPeds[name] and DoesEntityExist(dealerPeds[name]) then return end
@@ -46,6 +114,7 @@ local function spawnDealerPed(name, data)
         TaskStartScenarioInPlace(ped, pedData.scenario, 0, true)
     end
 
+    addDealerTarget(ped, name, data)
     dealerPeds[name] = ped
 end
 
@@ -59,6 +128,7 @@ end
 function deleteDealerPeds()
     for name, ped in pairs(dealerPeds) do
         if DoesEntityExist(ped) then
+            removeDealerTarget(ped, name)
             DeleteEntity(ped)
         end
         dealerPeds[name] = nil
@@ -267,75 +337,7 @@ end
 
 function InitZones()
     if config.useTarget then
-        for k, v in pairs(sharedConfig.dealers) do
-            ---@todo Move to ox_target
-
-            exports['qb-target']:AddBoxZone('dealer_'..k, vector3(v.coords.x, v.coords.y, v.coords.z), 1.5, 1.5, {
-                name = 'dealer_'..k,
-                heading = v.heading,
-                minZ = v.coords.z - 1,
-                maxZ = v.coords.z + 1,
-                debugPoly = false,
-            }, {
-                options = {
-                    {
-                        icon = 'fas fa-user-secret',
-                        label = locale('info.target_request'),
-                        action = function()
-                            requestDelivery()
-                        end,
-                        canInteract = function()
-                            getClosestDealer()
-                            local hours = GetClockHours()
-                            local min = sharedConfig.dealers[currentDealer].time.min
-                            local max = sharedConfig.dealers[currentDealer].time.max
-                            if max < min then
-                                if hours <= max then
-                                    if not waitingDelivery then
-                                        return true
-                                    end
-                                elseif hours >= min then
-                                    if not waitingDelivery then
-                                        return true
-                                    end
-                                end
-                            else
-                                if hours >= min and hours <= max then
-                                    if not waitingDelivery then
-                                        return true
-                                    end
-                                end
-                            end
-                        end
-                    },
-                    {
-                        icon = 'fas fa-user-secret',
-                        label = locale('info.target_openshop'),
-                        action = function()
-                            openDealerShop()
-                        end,
-                        canInteract = function()
-                            getClosestDealer()
-                            local hours = GetClockHours()
-                            local min = sharedConfig.dealers[currentDealer].time.min
-                            local max = sharedConfig.dealers[currentDealer].time.max
-                            if max < min then
-                                if hours <= max then
-                                    return true
-                                elseif hours >= min then
-                                    return true
-                                end
-                            else
-                                if hours >= min and hours <= max then
-                                    return true
-                                end
-                            end
-                        end
-                    }
-                },
-                distance = 1.5
-            })
-        end
+        return
     else
         ---@TODO Move to ox_lib Zoning
 
