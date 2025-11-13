@@ -191,6 +191,10 @@ openDealerShop = function()
         exports.qbx_core:Notify(locale('error.dealer_not_exists'), 'error')
         return
     end
+    lib.print.info(('[qbx_drugs] Opening dealer shop: %s (%s)'):format(
+        sharedConfig.dealers[currentDealer].label,
+        tostring(currentDealer)
+    ))
     local repItems = {}
     repItems.label = sharedConfig.dealers[currentDealer].name
     repItems.items = {}
@@ -200,6 +204,10 @@ openDealerShop = function()
             repItems.items[k] = sharedConfig.dealers[currentDealer].products[k]
         end
     end
+    lib.print.info(('[qbx_drugs] Rep %.2f items %s'):format(
+        QBX.PlayerData.metadata.dealerrep or 0,
+        json.encode(repItems.items)
+    ))
     TriggerServerEvent('inventory:server:OpenInventory', 'shop', 'Dealer_'..sharedConfig.dealers[currentDealer].name, repItems)
 end
 
