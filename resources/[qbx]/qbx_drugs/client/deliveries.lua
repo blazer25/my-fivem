@@ -218,8 +218,10 @@ local function knockDoorAnim(home)
     if home then
         TriggerServerEvent('InteractSound_SV:PlayOnSource', 'knock_door', 0.2)
         Wait(100)
+        ---@diagnostic disable-next-line: param-type-mismatch
         lib.playAnim(cache.ped, knockAnimLib, knockAnim, 3.0, 3.0, -1, 1, 0, false, false, false )
         Wait(3500)
+        ---@diagnostic disable-next-line: param-type-mismatch
         lib.playAnim(cache.ped, knockAnimLib, 'exit', 3.0, 3.0, -1, 1, 0, false, false, false)
         Wait(1000)
         dealerIsHome = true
@@ -236,8 +238,10 @@ local function knockDoorAnim(home)
     else
         TriggerServerEvent('InteractSound_SV:PlayOnSource', 'knock_door', 0.2)
         Wait(100)
+        ---@diagnostic disable-next-line: param-type-mismatch
         lib.playAnim(cache.ped, knockAnimLib, knockAnim, 3.0, 3.0, -1, 1, 0, false, false, false )
         Wait(3500)
+        ---@diagnostic disable-next-line: param-type-mismatch
         lib.playAnim(cache.ped, knockAnimLib, 'exit', 3.0, 3.0, -1, 1, 0, false, false, false)
         Wait(1000)
         exports.qbx_core:Notify(locale('info.no_one_home'), 'error')
@@ -344,14 +348,32 @@ local function deliverStuff()
             activeDelivery = nil
             if config.useTarget then
                 exports.ox_target:removeZone('drugDeliveryZone')
+                if drugDeliveryZone then
+                    drugDeliveryZone:destroy()
+                    drugDeliveryZone = nil
+                end
             else
-                drugDeliveryZone:destroy()
+                if drugDeliveryZone then
+                    drugDeliveryZone:destroy()
+                    drugDeliveryZone = nil
+                end
             end
         else
             ClearPedTasks(cache.ped)
         end
     else
         TriggerServerEvent('qb-drugs:server:successDelivery', activeDelivery, false)
+        activeDelivery = nil
+        if config.useTarget then
+            exports.ox_target:removeZone('drugDeliveryZone')
+            if drugDeliveryZone then
+                drugDeliveryZone:destroy()
+                drugDeliveryZone = nil
+            end
+        elseif drugDeliveryZone then
+            drugDeliveryZone:destroy()
+            drugDeliveryZone = nil
+        end
     end
     deliveryTimeout = 0
 end
@@ -463,7 +485,7 @@ RegisterNetEvent('qb-drugs:client:setLocation', function(locationData)
             coords = vec3(activeDelivery.coords.x, activeDelivery.coords.y, activeDelivery.coords.z),
             size = vec3(1.5, 1.5, 2.0),
             rotation = 0.0,
-            debug = true,
+            debug = false,
             options = {
                 {
                     icon = 'fas fa-user-secret',
@@ -478,10 +500,42 @@ RegisterNetEvent('qb-drugs:client:setLocation', function(locationData)
                 }
             }
         })
+
+        local inDeliveryZone = false
+        if drugDeliveryZone then
+            drugDeliveryZone:destroy()
+            drugDeliveryZone = nil
+        end
+        drugDeliveryZone = lib.zones.box({
+            coords = vec3(activeDelivery.coords.x, activeDelivery.coords.y, activeDelivery.coords.z),
+            size = vec3(1.5, 1.5, 2.0),
+            rotation = 0.0,
+            debug = false,
+            onEnter = function()
+                inDeliveryZone = true
+                lib.showTextUI(locale('info.deliver_items_button', activeDelivery.amount, exports.ox_inventory:Items()[activeDelivery.itemData.item].label), {
+                    position = 'left-center'
+                })
+                CreateThread(function()
+                    while inDeliveryZone do
+                        if IsControlJustPressed(0, 38) then
+                            deliverStuff()
+                            waitingDelivery = nil
+                            break
+                        end
+                        Wait(0)
+                    end
+                end)
+            end,
+            onExit = function()
+                inDeliveryZone = false
+                lib.hideTextUI()
+            end
+        })
     else
         local inDeliveryZone = false
         drugDeliveryZone = lib.zones.box({
-            coords = vec3(activeDelivery.coords.xyz),
+            coords = vec3(activeDelivery.coords.x, activeDelivery.coords.y, activeDelivery.coords.z),
             size = vec3(1.5, 1.5, 2.0),
             rotation = 0.0,
             debug = false,
