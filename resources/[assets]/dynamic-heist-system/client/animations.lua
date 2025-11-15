@@ -1,0 +1,2 @@
+-- client/animations.lua
+-- Client-side logic for animations.

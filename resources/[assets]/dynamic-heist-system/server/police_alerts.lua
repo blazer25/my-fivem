@@ -1,0 +1,2 @@
+-- server/police_alerts.lua
+-- Server-side logic for police_alerts.

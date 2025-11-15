@@ -1,0 +1,8 @@
+# Ignore unnecessary files
+*.log
+*.tmp
+__pycache__/
+.DS_Store
+.env
+.cache
+*.zip
