@@ -21,7 +21,7 @@ end
 
 local jsonDir = normaliseRelativePath(Config.Storage.JsonDirectory)
 local absoluteDir = ('%s/%s'):format(resourcePath, jsonDir)
-local isWindows = package.config:sub(1, 1) == '\\'
+local isWindows = resourcePath:find('\\', 1, true) ~= nil
 local isUsingJson = Config.Storage.Mode == 'json'
 local jsonPrepared = false
 
