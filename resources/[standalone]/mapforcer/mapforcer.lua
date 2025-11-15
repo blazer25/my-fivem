@@ -15,8 +15,7 @@ local maps = {
     'vinewood_house',
     'dip_hookies',
     'dip_mechanic',
-    'forest_mansion',
-    'Mirror-Park-Clubhouse'
+    'forest_mansion'
 }
 
 CreateThread(function()
