@@ -8,15 +8,16 @@ author 'Future Engineer'
 version '1.1.0'
 
 client_scripts {
-    'client/main.lua',
     'client/ui.lua',
-    'client/animations.lua'
+    'client/animations.lua',
+    'client/main.lua'
 }
 
 server_scripts {
-    'server/main.lua',
     'server/heist_logic.lua',
-    'server/police_alerts.lua'
+    'server/police_alerts.lua',
+    'server/main.lua',
+    'server/admin.lua'
 }
 
 shared_script 'config/config.lua'
