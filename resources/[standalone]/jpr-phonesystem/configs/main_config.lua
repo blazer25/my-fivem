@@ -263,7 +263,7 @@ Config.AppStoreApps = {
     {name = "racing", label = "Racing", backColor = "rgba(255, 0, 0, 0.178)", time = 4250, rate = 4.0, age = 18, image = "./img/apps/racing.png", category = "Racing", description = "See what races exists, leaderboards, create new races and enjoy with your car guys friends.", banner = "./img/appstore/racing.jpg"},
 }
 
-Config.DefaultApps = '{"appstore":8,"phone":1,"imessage":2,"contactos":3,"camara":4,"definicoes":5,"galeria":7,"dicas":6}'
+Config.DefaultApps = '{"appstore":8,"phone":1,"imessage":2,"contactos":3,"camara":4,"definicoes":5,"galeria":7,"dicas":6,"emprego":9}'
 Config.AppLabels = {
     ["calculadora"] = "Calculator",
     ["garagem"] = "Garage",
