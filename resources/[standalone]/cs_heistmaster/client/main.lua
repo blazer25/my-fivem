@@ -727,58 +727,81 @@ local function handleSmashAction(heistId, heist, step, stepIndex)
         return false
     end
     
-    -- For store heists, require crowbar in inventory or equipped
+    -- For store heists, require a melee weapon/tool (realistic - use what player has)
+    local smashWeapon = nil
+    local smashWeaponHash = nil
+    local weaponLabel = "tool"
+    
     if heist.heistType == 'store' then
-        local hasCrowbarItem = false
+        -- List of suitable melee weapons/tools for smashing
+        local suitableWeapons = {
+            { hash = joaat('WEAPON_CROWBAR'), name = 'crowbar', label = 'Crowbar' },
+            { hash = joaat('WEAPON_HAMMER'), name = 'hammer', label = 'Hammer' },
+            { hash = joaat('WEAPON_WRENCH'), name = 'wrench', label = 'Wrench' },
+            { hash = joaat('WEAPON_BAT'), name = 'bat', label = 'Bat' },
+            { hash = joaat('WEAPON_HATCHET'), name = 'hatchet', label = 'Hatchet' },
+            { hash = joaat('WEAPON_MACHETE'), name = 'machete', label = 'Machete' },
+            { hash = joaat('WEAPON_NIGHTSTICK'), name = 'nightstick', label = 'Nightstick' },
+        }
         
-        -- First check if player has crowbar weapon equipped (in hand)
-        if HasPedGotWeapon(ped, joaat('WEAPON_CROWBAR'), false) then
-            hasCrowbarItem = true
-            debugPrint('Crowbar check: Found equipped weapon')
-        else
-            -- Check inventory systems
-            if exports['ox_inventory'] then
-                -- ox_inventory - try multiple methods
-                local searchResult = exports['ox_inventory']:Search('count', 'crowbar')
-                if searchResult then
-                    if type(searchResult) == 'number' then
-                        hasCrowbarItem = searchResult > 0
-                    elseif type(searchResult) == 'table' then
-                        if searchResult['crowbar'] then
-                            hasCrowbarItem = searchResult['crowbar'] > 0
-                        end
-                    end
-                end
-                
-                -- Fallback: try GetItemCount
-                if not hasCrowbarItem then
-                    local count = exports['ox_inventory']:GetItemCount('crowbar')
-                    hasCrowbarItem = count and count > 0 or false
-                end
-                
-                debugPrint(('Crowbar check (ox_inventory): %s'):format(tostring(hasCrowbarItem)))
-            elseif exports['qb-core'] then
-                -- QBCore inventory
-                local QBCore = exports['qb-core']:GetCoreObject()
-                if QBCore and QBCore.Functions then
-                    local hasItem = QBCore.Functions.HasItem('crowbar')
-                    hasCrowbarItem = hasItem or false
-                    debugPrint(('Crowbar check (qb-core): %s'):format(tostring(hasCrowbarItem)))
-                end
-            elseif exports['qbx_core'] then
-                -- QBX inventory
-                local hasItem = exports.qbx_core:HasItem('crowbar')
-                hasCrowbarItem = hasItem or false
-                debugPrint(('Crowbar check (qbx_core): %s'):format(tostring(hasCrowbarItem)))
-            else
-                debugPrint('Crowbar check: No inventory system detected')
+        -- First check what weapon is currently equipped
+        local currentWeaponHash = GetSelectedPedWeapon(ped)
+        for _, weapon in ipairs(suitableWeapons) do
+            if currentWeaponHash == weapon.hash then
+                smashWeapon = weapon
+                smashWeaponHash = weapon.hash
+                weaponLabel = weapon.label
+                debugPrint(('Smash weapon: Found equipped %s'):format(weapon.name))
+                break
             end
         end
         
-        if not hasCrowbarItem then
+        -- If no suitable weapon equipped, check inventory
+        if not smashWeapon then
+            for _, weapon in ipairs(suitableWeapons) do
+                local hasWeapon = false
+                
+                -- Check if player has weapon in inventory
+                if exports['ox_inventory'] then
+                    local searchResult = exports['ox_inventory']:Search('count', weapon.name)
+                    if searchResult then
+                        if type(searchResult) == 'number' then
+                            hasWeapon = searchResult > 0
+                        elseif type(searchResult) == 'table' then
+                            if searchResult[weapon.name] then
+                                hasWeapon = searchResult[weapon.name] > 0
+                            end
+                        end
+                    end
+                    
+                    -- Fallback: try GetItemCount
+                    if not hasWeapon then
+                        local count = exports['ox_inventory']:GetItemCount(weapon.name)
+                        hasWeapon = count and count > 0 or false
+                    end
+                elseif exports['qb-core'] then
+                    local QBCore = exports['qb-core']:GetCoreObject()
+                    if QBCore and QBCore.Functions then
+                        hasWeapon = QBCore.Functions.HasItem(weapon.name) or false
+                    end
+                elseif exports['qbx_core'] then
+                    hasWeapon = exports.qbx_core:HasItem(weapon.name) or false
+                end
+                
+                if hasWeapon then
+                    smashWeapon = weapon
+                    smashWeaponHash = weapon.hash
+                    weaponLabel = weapon.label
+                    debugPrint(('Smash weapon: Found in inventory %s'):format(weapon.name))
+                    break
+                end
+            end
+        end
+        
+        if not smashWeapon then
             lib.notify({
-                title = 'Missing Item',
-                description = 'You need a crowbar to smash this!',
+                title = 'Missing Tool',
+                description = 'You need a tool (crowbar, hammer, wrench, etc.) to smash this!',
                 type = 'error'
             })
             return false
@@ -790,25 +813,43 @@ local function handleSmashAction(heistId, heist, step, stepIndex)
     
     -- Store current weapon to restore later
     local currentWeapon = GetSelectedPedWeapon(ped)
-    local hasCrowbar = HasPedGotWeapon(ped, joaat('WEAPON_CROWBAR'), false)
+    local weaponWasEquipped = smashWeaponHash and (currentWeapon == smashWeaponHash) or false
     
-    -- Give player crowbar weapon if they don't have it equipped (but they have it in inventory)
-    if not hasCrowbar then
-        GiveWeaponToPed(ped, joaat('WEAPON_CROWBAR'), 1, false, true)
+    -- Equip the smash weapon if not already equipped (for store heists)
+    if smashWeaponHash and not weaponWasEquipped then
+        -- Check if player has the weapon (don't give it if they don't have it)
+        if HasPedGotWeapon(ped, smashWeaponHash, false) then
+            SetCurrentPedWeapon(ped, smashWeaponHash, true)
+        else
+            -- If they have it in inventory but not as weapon, give it temporarily
+            GiveWeaponToPed(ped, smashWeaponHash, 1, false, true)
+            SetCurrentPedWeapon(ped, smashWeaponHash, true)
+        end
     end
     
-    -- Equip crowbar
-    SetCurrentPedWeapon(ped, joaat('WEAPON_CROWBAR'), true)
+    -- Use appropriate animation based on weapon type
+    local animDict = 'melee@large_wpn@streamed_core'
+    local animName = 'ground_attack_on_spot'
     
-    -- Use crowbar forced entry animation (heavy swinging motion)
-    RequestAnimDict('melee@large_wpn@streamed_core')
-    while not HasAnimDictLoaded('melee@large_wpn@streamed_core') do Wait(0) end
+    -- Different animations for different weapon types (if weapon detected)
+    if smashWeaponHash then
+        if smashWeaponHash == joaat('WEAPON_HAMMER') then
+            animDict = 'amb@world_human_hammering@male@base'
+            animName = 'base'
+        elseif smashWeaponHash == joaat('WEAPON_WRENCH') then
+            animDict = 'amb@world_human_welding@male@base'
+            animName = 'base'
+        end
+    end
     
-    TaskPlayAnim(ped, 'melee@large_wpn@streamed_core', 'ground_attack_on_spot', 8.0, -8.0, step.time or 4000, 1, 0.0, false, false, false)
+    RequestAnimDict(animDict)
+    while not HasAnimDictLoaded(animDict) do Wait(0) end
+    
+    TaskPlayAnim(ped, animDict, animName, 8.0, -8.0, step.time or 4000, 1, 0.0, false, false, false)
     
     local progressResult = lib.progressCircle({
         duration = step.time or 4000,
-        label = step.label or 'Prying with crowbar...',
+        label = step.label or ('Smashing with ' .. weaponLabel:lower() .. '...'),
         position = 'bottom',
         useWhileDead = false,
         canCancel = true,
@@ -817,25 +858,23 @@ local function handleSmashAction(heistId, heist, step, stepIndex)
     
     ClearPedTasks(ped)
     
-    -- Restore previous weapon (don't remove crowbar if player has it in inventory)
-    if not hasCrowbar then
-        -- Only remove if it was a temporary weapon (player didn't have it before)
-        -- For store heists, player must have crowbar in inventory, so we keep it equipped
-        if heist.heistType ~= 'store' then
-            RemoveWeaponFromPed(ped, joaat('WEAPON_CROWBAR'))
+    -- Restore previous weapon (for store heists with detected weapon)
+    if smashWeaponHash and not weaponWasEquipped then
+        -- Only remove if we gave it temporarily (player didn't have it before)
+        if not HasPedGotWeapon(ped, smashWeaponHash, false) then
+            -- We gave it temporarily, but if player has it in inventory, keep it
+            -- Otherwise restore previous weapon
             if currentWeapon ~= 0 then
                 SetCurrentPedWeapon(ped, currentWeapon, true)
             else
                 SetCurrentPedWeapon(ped, joaat('WEAPON_UNARMED'), true)
             end
         else
-            -- For store heists, restore previous weapon but keep crowbar available
-            if currentWeapon ~= 0 then
+            -- Player has the weapon, restore their previous weapon
+            if currentWeapon ~= 0 and currentWeapon ~= smashWeaponHash then
                 SetCurrentPedWeapon(ped, currentWeapon, true)
             end
         end
-    else
-        SetCurrentPedWeapon(ped, currentWeapon, true)
     end
     
     if not progressResult then
