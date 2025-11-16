@@ -719,6 +719,31 @@ local function handleSmashAction(heistId, heist, step, stepIndex)
         return false
     end
     
+    -- For store heists, require crowbar in inventory
+    if heist.heistType == 'store' then
+        local hasCrowbarItem = false
+        
+        if exports['ox_inventory'] then
+            local searchResult = exports['ox_inventory']:Search('count', 'crowbar')
+            if type(searchResult) == 'number' then
+                hasCrowbarItem = searchResult > 0
+            elseif type(searchResult) == 'table' then
+                if searchResult['crowbar'] then
+                    hasCrowbarItem = searchResult['crowbar'] > 0
+                end
+            end
+        end
+        
+        if not hasCrowbarItem then
+            lib.notify({
+                title = 'Missing Item',
+                description = 'You need a crowbar to smash this!',
+                type = 'error'
+            })
+            return false
+        end
+    end
+    
     -- Trigger alert/alarm
     handleStepAlert(heistId, heist, step)
     
@@ -726,7 +751,7 @@ local function handleSmashAction(heistId, heist, step, stepIndex)
     local currentWeapon = GetSelectedPedWeapon(ped)
     local hasCrowbar = HasPedGotWeapon(ped, joaat('WEAPON_CROWBAR'), false)
     
-    -- Give player crowbar if they don't have it
+    -- Give player crowbar weapon if they don't have it equipped (but they have it in inventory)
     if not hasCrowbar then
         GiveWeaponToPed(ped, joaat('WEAPON_CROWBAR'), 1, false, true)
     end
@@ -751,13 +776,22 @@ local function handleSmashAction(heistId, heist, step, stepIndex)
     
     ClearPedTasks(ped)
     
-    -- Restore previous weapon or remove crowbar if player didn't have it
+    -- Restore previous weapon (don't remove crowbar if player has it in inventory)
     if not hasCrowbar then
-        RemoveWeaponFromPed(ped, joaat('WEAPON_CROWBAR'))
-        if currentWeapon ~= 0 then
-            SetCurrentPedWeapon(ped, currentWeapon, true)
+        -- Only remove if it was a temporary weapon (player didn't have it before)
+        -- For store heists, player must have crowbar in inventory, so we keep it equipped
+        if heist.heistType ~= 'store' then
+            RemoveWeaponFromPed(ped, joaat('WEAPON_CROWBAR'))
+            if currentWeapon ~= 0 then
+                SetCurrentPedWeapon(ped, currentWeapon, true)
+            else
+                SetCurrentPedWeapon(ped, joaat('WEAPON_UNARMED'), true)
+            end
         else
-            SetCurrentPedWeapon(ped, joaat('WEAPON_UNARMED'), true)
+            -- For store heists, restore previous weapon but keep crowbar available
+            if currentWeapon ~= 0 then
+                SetCurrentPedWeapon(ped, currentWeapon, true)
+            end
         end
     else
         SetCurrentPedWeapon(ped, currentWeapon, true)
@@ -928,8 +962,23 @@ local function spawnStepObjects(heistId, heist)
                             icon = icon,
                             distance = 2.0,
                             canInteract = function()
-                                return ActiveStep[heistId] == stepIndex and 
-                                       (not alreadyLooted[heistId] or not alreadyLooted[heistId][lootKey])
+                                if ActiveStep[heistId] ~= stepIndex then return false end
+                                if alreadyLooted[heistId] and alreadyLooted[heistId][lootKey] then return false end
+                                
+                                -- For store heists with smash action, require crowbar in inventory
+                                if step.action == 'smash' and heist.heistType == 'store' then
+                                    if exports['ox_inventory'] then
+                                        local searchResult = exports['ox_inventory']:Search('count', 'crowbar')
+                                        if type(searchResult) == 'number' then
+                                            return searchResult > 0
+                                        elseif type(searchResult) == 'table' then
+                                            return searchResult['crowbar'] and searchResult['crowbar'] > 0
+                                        end
+                                    end
+                                    return false
+                                end
+                                
+                                return true
                             end,
                             onSelect = function()
                                 local success = false
