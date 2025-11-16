@@ -6,7 +6,15 @@ local draft = nil
 local previewThread = nil
 
 local function ensurePerms()
-    return lib.callback.await('cs_heistbuilder:server:hasBuilderPerms', false)
+    local state = LocalPlayer.state
+    if state and state.isHeistBuilderAdmin ~= nil then
+        return state.isHeistBuilderAdmin
+    end
+    local hasPerms = lib.callback.await('cs_heistbuilder:server:hasBuilderPerms', false)
+    if state and hasPerms ~= nil then
+        state:set('isHeistBuilderAdmin', hasPerms, true)
+    end
+    return hasPerms
 end
 
 local function startPreview()
