@@ -46,13 +46,6 @@ Config.Heists = {
                 difficulty = { 'easy', 'easy', 'medium' },
                 alert = "silent"        -- maybe they don't get alerted if you're quick
             },
-            {
-                action = "escape",
-                label = "Escape the Area",
-                coords = { x = -46.40, y = -1758.21, z = 29.42 },
-                radius = 80.0,
-                alert = "none"
-            },
         },
 
         rewards = {
@@ -118,13 +111,6 @@ Config.Heists = {
                 radius = 3.0,
                 alert = "silent"
             },
-            {
-                action = "escape",
-                label = "Escape the Area",
-                coords = { x = 148.9, y = -1040.1, z = 29.37 },
-                radius = 120.0,
-                alert = "none"
-            },
         },
 
         rewards = {
@@ -162,12 +148,6 @@ Config.Heists = {
                 label = "Grab the Jewels",
                 coords = { x = -622.55, y = -229.15, z = 38.06 },
                 radius = 5.0,
-            },
-            {
-                action = "escape",
-                label = "Escape with the Jewels",
-                coords = { x = -623.39, y = -230.30, z = 38.06 },
-                radius = 140.0,
             },
         },
 
