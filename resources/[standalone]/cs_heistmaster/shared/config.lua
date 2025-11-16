@@ -12,7 +12,7 @@ Config.Heists = {
     store_247_grove = {
         label = "24/7 Robbery - Grove Street",
 
-        requiredPolice = 2,
+        requiredPolice = 0,
         cooldown = 20 * 60,         -- seconds
         requiredItem = 'weapon_crowbar',  -- nil = no item required
 
