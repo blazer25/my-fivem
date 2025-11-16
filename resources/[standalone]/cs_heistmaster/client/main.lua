@@ -627,14 +627,24 @@ local function handleDrillAction(heistId, heist, step, stepIndex)
     end
     
     if hasKey then
-        -- Skip drill and open instantly with key
+        -- Use unlocking animation with key
+        local unlockDuration = 3500
+        
+        -- Request and play unlocking animation
+        RequestAnimDict('anim@heists@keypad@')
+        while not HasAnimDictLoaded('anim@heists@keypad@') do Wait(0) end
+        
+        TaskPlayAnim(ped, 'anim@heists@keypad@', 'keypad_loop', 8.0, -8.0, unlockDuration, 1, 0.0, false, false, false)
+        
         local progressResult = lib.progressCircle({
-            duration = 3500,
+            duration = unlockDuration,
             label = "Unlocking safe with key...",
             position = 'bottom',
             disable = { move = true, car = true, combat = true },
             canCancel = true
         })
+        
+        ClearPedTasks(ped)
         
         if not progressResult then
             TriggerServerEvent('cs_heistmaster:abortHeist', heistId)
