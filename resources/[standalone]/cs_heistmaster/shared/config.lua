@@ -10,6 +10,7 @@ Config.Heists = {
     -- 24/7 STORE ROBBERY (GROVE STREET)
     ----------------------------------------------------------------
     store_247_grove = {
+        heistType = 'store',  -- NEW
         label = "24/7 Robbery - Grove Street",
 
         requiredPolice = 0,
@@ -57,6 +58,7 @@ Config.Heists = {
     -- FLEECA BANK (LEGION)
     ----------------------------------------------------------------
     fleeca_legion = {
+        heistType = 'fleeca',  -- NEW
         label = "Fleeca Bank - Legion",
 
         requiredPolice = 0,
@@ -129,6 +131,7 @@ Config.Heists = {
     -- JEWELLERY STORE (VANGELICO)
     ----------------------------------------------------------------
     jewellery_vangelico = {
+        heistType = 'jewellery',  -- NEW
         label = "Vangelico Jewellery Store",
 
         requiredPolice = 0,

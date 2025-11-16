@@ -265,91 +265,104 @@ RegisterNetEvent('cs_heistmaster:client:forceStart', function(heistId)
 end)
 
 ------------------------------------------------------
--- Interaction zones (ox_target / qb-target / E prompt)
+-- NATURAL START SYSTEM (NO THIRD-EYE)
 ------------------------------------------------------
 
 CreateThread(function()
     Wait(2000)
 
-    for id, heist in pairs(Heists) do
-        local startPos = vecFromTable(heist.start)
+    while true do
+        local ped = PlayerPedId()
+        local pCoords = GetEntityCoords(ped)
+        local isArmedGun = IsPedArmed(ped, 4)  -- firearms
+        local isArmedMelee = IsPedArmed(ped, 1) -- melee
+        local isAiming = IsPlayerFreeAiming(PlayerId())
 
-        if exports['ox_target'] then
-            exports['ox_target']:addBoxZone({
-                coords = startPos,
-                size = vec3(1.5, 1.5, 1.5),
-                rotation = 0.0,
-                debug = Config.Debug,
-                options = {
-                    {
-                        name = ('cs_heistmaster_%s'):format(id),
-                        icon = 'fa-solid fa-sack-dollar',
-                        label = ('Start %s'):format(heist.label),
-                        onSelect = function()
-                            TriggerServerEvent('cs_heistmaster:requestStart', id)
-                        end,
-                    }
-                }
-            })
+        local anyPrompt = false
 
-        elseif exports['qb-target'] then
-            exports['qb-target']:AddCircleZone(
-                ('cs_heistmaster_%s'):format(id),
-                startPos,
-                1.5,
-                {
-                    name = ('cs_heistmaster_%s'):format(id),
-                    debugPoly = Config.Debug,
-                },
-                {
-                    options = {
-                        {
-                            icon = 'fa-solid fa-sack-dollar',
-                            label = ('Start %s'):format(heist.label),
-                            action = function()
+        -- Don't show start prompts while a heist is already running
+        if not currentHeistId then
+            for id, heist in pairs(Heists) do
+                local steps = heist.steps
+                if steps and steps[1] and steps[1].coords then
+                    local entryPos = vecFromTable(steps[1].coords)
+                    local dist = #(pCoords - entryPos)
+
+                    local hType = heist.heistType or 'generic'
+
+                    -- STORE ROBBERIES
+                    -- Stand near the first step (register area), armed, to start
+                    if hType == 'store' then
+                        if dist < 2.0 and (isArmedGun or isArmedMelee) then
+                            anyPrompt = true
+                            if isAiming and isArmedGun then
+                                -- aiming gun at clerk/register
+                                lib.showTextUI(('[E] Threaten the clerk at %s'):format(heist.label))
+                            else
+                                -- up close with weapon (crowbar/melee)
+                                lib.showTextUI(('[E] Smash the register at %s'):format(heist.label))
+                            end
+
+                            if IsControlJustPressed(0, 38) then -- E
+                                lib.hideTextUI()
                                 TriggerServerEvent('cs_heistmaster:requestStart', id)
-                            end,
-                        }
-                    },
-                    distance = 2.0
-                }
-            )
-
-        else
-            -- fallback: E prompt + marker
-            CreateThread(function()
-                while true do
-                    local ped = PlayerPedId()
-                    local pCoords = GetEntityCoords(ped)
-                    local dist = #(pCoords - startPos)
-
-                    if dist < 20.0 then
-                        DrawMarker(
-                            1,
-                            startPos.x, startPos.y, startPos.z - 1.0,
-                            0.0, 0.0, 0.0,
-                            0.0, 0.0, 0.0,
-                            1.0, 1.0, 1.0,
-                            0, 200, 50, 150,
-                            false, true, 2, false, nil, nil, false
-                        )
-                    end
-
-                    if dist < 2.0 then
-                        lib.showTextUI(('[E] Start %s'):format(heist.label))
-                        if IsControlJustPressed(0, 38) then
-                            lib.hideTextUI()
-                            TriggerServerEvent('cs_heistmaster:requestStart', id)
-                            Wait(1000)
+                                Wait(1200)
+                            end
                         end
-                    else
-                        lib.hideTextUI()
-                    end
 
-                    Wait(0)
+                    -- FLEECA-STYLE BANKS
+                    -- Stand at the panel and "connect laptop"
+                    elseif hType == 'fleeca' then
+                        if dist < 1.5 then
+                            anyPrompt = true
+                            lib.showTextUI(('[E] Connect laptop to security panel (%s)'):format(heist.label))
+
+                            if IsControlJustPressed(0, 38) then
+                                lib.hideTextUI()
+                                -- Server already checks requiredItem (heist_laptop), so just request start.
+                                TriggerServerEvent('cs_heistmaster:requestStart', id)
+                                Wait(1200)
+                            end
+                        end
+
+                    -- JEWELLERY HEIST
+                    -- Stand near first glass case, armed, to "smash glass"
+                    elseif hType == 'jewellery' then
+                        if dist < 2.0 and (isArmedGun or isArmedMelee) then
+                            anyPrompt = true
+                            lib.showTextUI(('[E] Smash the glass and start the heist (%s)'):format(heist.label))
+
+                            if IsControlJustPressed(0, 38) then
+                                lib.hideTextUI()
+                                TriggerServerEvent('cs_heistmaster:requestStart', id)
+                                Wait(1200)
+                            end
+                        end
+
+                    -- fallback generic: E at start position
+                    else
+                        local startPos = heist.start and vecFromTable(heist.start) or entryPos
+                        local distStart = #(pCoords - startPos)
+
+                        if distStart < 2.0 then
+                            anyPrompt = true
+                            lib.showTextUI(('[E] Start %s'):format(heist.label))
+                            if IsControlJustPressed(0, 38) then
+                                lib.hideTextUI()
+                                TriggerServerEvent('cs_heistmaster:requestStart', id)
+                                Wait(1200)
+                            end
+                        end
+                    end
                 end
-            end)
+            end
         end
+
+        if not anyPrompt then
+            lib.hideTextUI()
+        end
+
+        Wait(0)
     end
 end)
 
