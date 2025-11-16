@@ -570,17 +570,15 @@ RegisterNetEvent("cs_heistmaster:client:spawnVaultDoor", function(heistId, coord
     end
     
     -- CRITICAL FIX: Hide/Remove original bank vault door from MLO/interior
-    -- The original door is part of the bank interior and needs to be hidden
+    -- The original door is part of the bank interior and needs to be deleted/hidden
     local originalDoorHash = joaat('v_ilev_gb_vauldr') -- Original Fleeca vault door model
+    local vaultCoords = vecFromTable(coords)
     
-    -- Method 1: Try to find and hide the original door entity
-    CreateThread(function()
-        Wait(500) -- Wait a bit for interior to load
-        local vaultCoords = vecFromTable(coords)
+    -- CRITICAL: Immediate door removal - check right away and repeatedly
+    local function removeOriginalDoor()
         local nearbyObjects = {}
-        
-        -- Find all objects near the vault location
         local objects = GetGamePool('CObject')
+        
         for _, obj in ipairs(objects) do
             if DoesEntityExist(obj) then
                 local objModel = GetEntityModel(obj)
@@ -588,38 +586,130 @@ RegisterNetEvent("cs_heistmaster:client:spawnVaultDoor", function(heistId, coord
                 local dist = #(objCoords - vaultCoords)
                 
                 -- If it's the original vault door model and close to our location
-                if objModel == originalDoorHash and dist < 2.0 then
-                    -- Hide the original door by making it invisible
-                    SetEntityAlpha(obj, 0, false)
-                    SetEntityCollision(obj, false, false)
-                    FreezeEntityPosition(obj, true)
-                    debugPrint(('Original bank vault door hidden at coords: %s'):format(tostring(objCoords)))
+                if objModel == originalDoorHash and dist < 5.0 then -- Increased to 5.0m for better detection
+                    -- CRITICAL: Try to delete first (most aggressive)
+                    SetEntityAsMissionEntity(obj, true, true)
+                    SetEntityCollision(obj, false, false) -- Disable collision first
+                    DeleteEntity(obj)
+                    debugPrint(('Original bank vault door DELETED at coords: %s (distance: %.2f)'):format(tostring(objCoords), dist))
                     table.insert(nearbyObjects, obj)
+                    
+                    -- Also try to move it far away as backup
+                    SetEntityCoords(obj, 0.0, 0.0, -100.0, false, false, false, false)
                 end
             end
         end
         
-        -- Store hidden doors for cleanup
-        if #nearbyObjects > 0 then
-            HeistState[heistId].hiddenDoors = nearbyObjects
+        -- Fallback: Hide any doors we couldn't delete
+        for _, obj in ipairs(objects) do
+            if DoesEntityExist(obj) then
+                local objModel = GetEntityModel(obj)
+                local objCoords = GetEntityCoords(obj)
+                local dist = #(objCoords - vaultCoords)
+                
+                if objModel == originalDoorHash and dist < 5.0 then
+                    -- Hide by making invisible and non-collidable
+                    SetEntityAlpha(obj, 0, false)
+                    SetEntityCollision(obj, false, false)
+                    FreezeEntityPosition(obj, true)
+                    -- Also try moving it away
+                    SetEntityCoords(obj, 0.0, 0.0, -100.0, false, false, false, false)
+                    debugPrint(('Original bank vault door hidden/moved at coords: %s'):format(tostring(objCoords)))
+                    if not nearbyObjects[obj] then
+                        table.insert(nearbyObjects, obj)
+                    end
+                end
+            end
+        end
+        
+        return nearbyObjects
+    end
+    
+    -- Immediate check (no delay)
+    local immediateDoors = removeOriginalDoor()
+    if #immediateDoors > 0 then
+        HeistState[heistId].hiddenDoors = immediateDoors
+        debugPrint(('Immediately processed %d original bank vault door(s) for heist: %s'):format(#immediateDoors, heistId))
+    end
+    
+    -- Aggressive repeated removal - check multiple times
+    CreateThread(function()
+        local attempts = 0
+        local maxAttempts = 15 -- Check for 7.5 seconds (15 attempts * 500ms)
+        
+        while attempts < maxAttempts do
+            Wait(500) -- Check every 500ms
+            
+            local foundDoors = removeOriginalDoor()
+            if #foundDoors > 0 then
+                -- Merge with existing hidden doors
+                if not HeistState[heistId].hiddenDoors then
+                    HeistState[heistId].hiddenDoors = {}
+                end
+                for _, door in ipairs(foundDoors) do
+                    local alreadyTracked = false
+                    for _, existing in ipairs(HeistState[heistId].hiddenDoors) do
+                        if existing == door then
+                            alreadyTracked = true
+                            break
+                        end
+                    end
+                    if not alreadyTracked then
+                        table.insert(HeistState[heistId].hiddenDoors, door)
+                    end
+                end
+                debugPrint(('Found and processed %d additional door(s) on attempt %d'):format(#foundDoors, attempts + 1))
+            end
+            
+            attempts = attempts + 1
+        end
+        
+        if HeistState[heistId].hiddenDoors and #HeistState[heistId].hiddenDoors > 0 then
+            debugPrint(('Total processed %d original bank vault door(s) for heist: %s'):format(#HeistState[heistId].hiddenDoors, heistId))
+        else
+            debugPrint(('WARNING: No original bank vault door found to remove for heist: %s'):format(heistId))
         end
     end)
     
-    -- Method 2: Also try to remove from door system if it exists
-    -- Some banks use the door system, so we'll try to remove it
+    -- Method 3: Remove from door system (runs separately)
     CreateThread(function()
-        Wait(1000) -- Wait for door system to initialize
-        -- Try to remove the door from the door system
-        -- Note: This requires knowing the door hash, which varies by bank
-        -- For Fleeca banks, common door hashes are around the vault area
+        Wait(1500) -- Wait for door system to initialize
+        -- Try multiple door hash variations
         local doorHashes = {
-            originalDoorHash, -- Try the model hash
-            -- Add other potential door hashes if needed
+            originalDoorHash,
+            joaat('v_ilev_gb_vauldr'), -- Explicit hash
+            -- Common Fleeca vault door hashes
+            0x27D1C284, -- Alternative hash for v_ilev_gb_vauldr
         }
         
         for _, doorHash in ipairs(doorHashes) do
             -- Try to remove from door system
             RemoveDoorFromSystem(doorHash)
+            debugPrint(('Attempted to remove door from system: %s'):format(tostring(doorHash)))
+        end
+    end)
+    
+    -- Method 4: Continuous monitoring - keep checking and removing doors
+    CreateThread(function()
+        Wait(2000) -- Initial delay
+        while HeistState[heistId] and HeistState[heistId].vaultObj do
+            Wait(2000) -- Check every 2 seconds
+            
+            local objects = GetGamePool('CObject')
+            for _, obj in ipairs(objects) do
+                if DoesEntityExist(obj) then
+                    local objModel = GetEntityModel(obj)
+                    local objCoords = GetEntityCoords(obj)
+                    local dist = #(objCoords - vaultCoords)
+                    
+                    -- If original door respawns or appears, delete it immediately
+                    if objModel == originalDoorHash and dist < 3.0 then
+                        SetEntityAsMissionEntity(obj, true, true)
+                        DeleteEntity(obj)
+                        debugPrint(('Original bank vault door re-appeared and was deleted: %s'):format(heistId))
+                    end
+                end
+            end
         end
     end)
     
