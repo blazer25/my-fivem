@@ -850,6 +850,16 @@ RegisterNetEvent("cs_heistmaster:server:completeStep", function(heistId, step)
         debugPrint(('Step mismatch: expected %s, got %s for heist %s'):format(GetStep(heistId), step, heistId))
         return 
     end
+    
+    -- Sync loot completion to all crew members
+    local lootKey = ('step_%s_%s'):format(step, heistId)
+    if HeistCrew[heistId] and HeistCrew[heistId].members then
+        for memberSrc in pairs(HeistCrew[heistId].members) do
+            -- Notify all crew members that this step is completed
+            TriggerClientEvent('cs_heistmaster:client:syncLootCompletion', memberSrc, heistId, lootKey)
+        end
+    end
+    
     AdvanceStep(heistId)
 end)
 
@@ -872,6 +882,14 @@ RegisterNetEvent('cs_heistmaster:server:giveLoot', function(heistId, lootKey)
     end
 
     HeistLootServerState[heistId][lootKey] = true
+
+    -- PATCH C: Sync loot completion to all crew members
+    if HeistCrew[heistId] and HeistCrew[heistId].members then
+        for memberSrc in pairs(HeistCrew[heistId].members) do
+            -- Notify all crew members that this loot is completed
+            TriggerClientEvent('cs_heistmaster:client:syncLootCompletion', memberSrc, heistId, lootKey)
+        end
+    end
 
     -- Extract step index from lootKey (format: "step_<index>_<heistId>")
     local stepIndex = tonumber(lootKey:match('step_(%d+)_'))

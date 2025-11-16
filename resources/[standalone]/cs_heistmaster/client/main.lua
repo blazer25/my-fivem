@@ -422,6 +422,15 @@ RegisterNetEvent("cs_heistmaster:client:setStep", function(heistId, step)
     debugPrint(('Step set: %s = %s'):format(heistId, step))
 end)
 
+-- PATCH C: Sync loot completion from server (for co-op)
+RegisterNetEvent('cs_heistmaster:client:syncLootCompletion', function(heistId, lootKey)
+    if not alreadyLooted[heistId] then
+        alreadyLooted[heistId] = {}
+    end
+    alreadyLooted[heistId][lootKey] = true
+    debugPrint(('Loot completion synced: %s - %s'):format(heistId, lootKey))
+end)
+
 RegisterNetEvent('cs_heistmaster:client:forceStart', function(heistId)
     TriggerServerEvent('cs_heistmaster:requestStart', heistId)
 end)
