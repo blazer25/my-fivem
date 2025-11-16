@@ -49,7 +49,7 @@ Config.Heists = {
             {
                 action = "drill",
                 label = "Crack the Safe",
-                coords = { x = -47.24, y = -1759.01, z = 29.42 }, -- behind counter
+                coords = { x = -43.4578, y = -1748.3510, z = 29.4210 }, -- behind counter -43.4578, -1748.3510, 29.4210, 58.7212
                 radius = 1.5,
                 time = 30000, -- Extended to 30 seconds for more realistic timing
                 alert = "loud",
