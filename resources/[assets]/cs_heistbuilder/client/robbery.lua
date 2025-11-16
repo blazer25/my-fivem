@@ -41,6 +41,44 @@ AddEventHandler('entityDamaged', function(victim, damageData)
     end
 end)
 
+-- Configure guard on client side (server can't use ped natives)
+RegisterNetEvent('cs_heistbuilder:client:configureGuard', function(netId, config)
+    CreateThread(function()
+        local ped = NetworkGetEntityFromNetworkId(netId)
+        if not ped or not DoesEntityExist(ped) then return end
+        
+        Wait(100) -- Wait for ped to fully spawn
+        
+        SetEntityAsMissionEntity(ped, true, true)
+        SetPedFleeAttributes(ped, config.fleeAttributes or 0, false)
+        SetPedCombatAttributes(ped, config.combatAttributes or 46, true)
+        SetPedCombatAbility(ped, config.combatAbility or 2)
+        SetPedAccuracy(ped, config.accuracy or 70)
+        SetPedCanSwitchWeapon(ped, true)
+        GiveWeaponToPed(ped, GetHashKey(config.weapon or 'WEAPON_CARBINERIFLE'), 250, false, true)
+        SetPedDropsWeaponsWhenDead(ped, false)
+        SetEntityInvincible(ped, config.invincible == false and false or true)
+        SetBlockingOfNonTemporaryEvents(ped, true)
+        TaskGuardCurrentPosition(ped, 15.0, 15.0, 1)
+    end)
+end)
+
+-- Configure teller on client side
+RegisterNetEvent('cs_heistbuilder:client:configureTeller', function(netId)
+    CreateThread(function()
+        local ped = NetworkGetEntityFromNetworkId(netId)
+        if not ped or not DoesEntityExist(ped) then return end
+        
+        Wait(100) -- Wait for ped to fully spawn
+        
+        SetEntityAsMissionEntity(ped, true, true)
+        SetPedFleeAttributes(ped, 512, true)
+        SetPedCombatAttributes(ped, 0, false)
+        SetBlockingOfNonTemporaryEvents(ped, true)
+        TaskStandStill(ped, -1)
+    end)
+end)
+
 RegisterNetEvent('cs_heistbuilder:client:robberyReady', function(robberyId, heist)
     ActiveRobberies[robberyId] = {
         heist = heist,

@@ -12,17 +12,6 @@ local function spawnGuard(heistId, guardData)
         local ped = CreatePed(4, GetHashKey(model), coords.x, coords.y, coords.z, coords.w or 0.0, true, true)
         if not DoesEntityExist(ped) then return end
         
-        SetPedFleeAttributes(ped, 0, false)
-        SetPedCombatAttributes(ped, 46, true)
-        SetPedCombatAbility(ped, 2)
-        SetPedAccuracy(ped, 60)
-        SetPedCanSwitchWeapon(ped, true)
-        GiveWeaponToPed(ped, GetHashKey(weapon), 250, false, true)
-        SetPedDropsWeaponsWhenDead(ped, false)
-        SetEntityInvincible(ped, false)
-        SetBlockingOfNonTemporaryEvents(ped, true)
-        TaskGuardCurrentPosition(ped, 10.0, 10.0, 1)
-        
         local netId = NetworkGetNetworkIdFromEntity(ped)
         ActiveGuards[netId] = {
             ped = ped,
@@ -30,6 +19,15 @@ local function spawnGuard(heistId, guardData)
             guardData = guardData
         }
         
+        -- Send to client to configure (client-side natives)
+        TriggerClientEvent('cs_heistbuilder:client:configureGuard', -1, netId, {
+            weapon = weapon,
+            fleeAttributes = 0,
+            combatAttributes = 46,
+            combatAbility = 2,
+            accuracy = 60,
+            invincible = false
+        })
         TriggerClientEvent('cs_heistbuilder:client:guardSpawned', -1, netId, heistId, coords)
     end)
 end
@@ -42,10 +40,6 @@ local function spawnTeller(heistId, tellerData)
         local ped = CreatePed(4, GetHashKey(model), coords.x, coords.y, coords.z, coords.w or 0.0, true, true)
         if not DoesEntityExist(ped) then return end
         
-        SetPedFleeAttributes(ped, 512, true)
-        SetBlockingOfNonTemporaryEvents(ped, true)
-        TaskStandStill(ped, -1)
-        
         local netId = NetworkGetNetworkIdFromEntity(ped)
         ActiveGuards[netId] = {
             ped = ped,
@@ -53,6 +47,8 @@ local function spawnTeller(heistId, tellerData)
             isTeller = true
         }
         
+        -- Send to client to configure (client-side natives)
+        TriggerClientEvent('cs_heistbuilder:client:configureTeller', -1, netId)
         TriggerClientEvent('cs_heistbuilder:client:tellerSpawned', -1, netId, heistId, coords)
     end)
 end
