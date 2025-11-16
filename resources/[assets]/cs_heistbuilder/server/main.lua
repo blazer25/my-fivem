@@ -3,7 +3,6 @@ local Storage = CS_HEIST_SERVER and CS_HEIST_SERVER.Storage or {}
 local Reputation = CS_HEIST_REPUTATION or {}
 local Police = CS_HEIST_POLICE or {}
 local StepTypes = CS_HEIST_STEP_TYPES or {}
-local Robbery = CS_HEIST_ROBBERY or {}
 
 local ActiveHeists = {}
 local Cooldowns = {}
@@ -17,11 +16,19 @@ Storage.loadAll()
 -- Spawn robberies on startup - guards spawn permanently
 CreateThread(function()
     Wait(5000)
+    
+    -- Ensure Robbery module is loaded
+    local RobberyModule = CS_HEIST_ROBBERY
+    if not RobberyModule or not RobberyModule.spawnRobbery then
+        print('[cs_heistbuilder] ERROR: Robbery module not loaded!')
+        return
+    end
+    
     local heists = Storage.getHeists()
     for _, heist in pairs(heists) do
         if heist.type and (heist.type == 'bank' or heist.type == 'store') then
             -- Guards and tellers spawn immediately and stay permanently
-            Robbery.spawnRobbery(heist)
+            RobberyModule.spawnRobbery(heist)
         end
     end
 end)
