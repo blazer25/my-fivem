@@ -72,9 +72,16 @@ end
 function sharedUtils.hasBuilderPerms(source)
     if isServer then
         if source == 0 then return true end
-        if exports['qbx_core'] and exports['qbx_core'].HasGroup then
-            if exports['qbx_core']:HasGroup(source, { 'admin', 'god', 'management' }) then
-                return true
+        local coreExports = exports['qbx_core']
+        if coreExports and coreExports.GetPlayer then
+            local player = coreExports:GetPlayer(source)
+            if player and coreExports.HasGroup then
+                local ok, result = pcall(function()
+                    return coreExports:HasGroup(source, { 'admin', 'god', 'management' })
+                end)
+                if ok and result then
+                    return true
+                end
             end
         end
         return IsPlayerAceAllowed(source, 'command.heistbuilder')
