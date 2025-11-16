@@ -712,14 +712,27 @@ local function handleSmashAction(heistId, heist, step, stepIndex)
     -- Trigger alert/alarm
     handleStepAlert(heistId, heist, step)
     
-    RequestAnimDict('melee@unarmed@streamed_core_fps')
-    while not HasAnimDictLoaded('melee@unarmed@streamed_core_fps') do Wait(0) end
+    -- Store current weapon to restore later
+    local currentWeapon = GetSelectedPedWeapon(ped)
+    local hasCrowbar = HasPedGotWeapon(ped, joaat('WEAPON_CROWBAR'), false)
     
-    TaskPlayAnim(ped, 'melee@unarmed@streamed_core_fps', 'ground_attack_0', 8.0, -8.0, step.time or 4000, 0, 0.0, false, false, false)
+    -- Give player crowbar if they don't have it
+    if not hasCrowbar then
+        GiveWeaponToPed(ped, joaat('WEAPON_CROWBAR'), 1, false, true)
+    end
+    
+    -- Equip crowbar
+    SetCurrentPedWeapon(ped, joaat('WEAPON_CROWBAR'), true)
+    
+    -- Use crowbar prying/hammering animation
+    RequestAnimDict('amb@world_human_hammering@male@base')
+    while not HasAnimDictLoaded('amb@world_human_hammering@male@base') do Wait(0) end
+    
+    TaskPlayAnim(ped, 'amb@world_human_hammering@male@base', 'base', 8.0, -8.0, step.time or 4000, 1, 0.0, false, false, false)
     
     local progressResult = lib.progressCircle({
         duration = step.time or 4000,
-        label = step.label or 'Smashing...',
+        label = step.label or 'Prying with crowbar...',
         position = 'bottom',
         useWhileDead = false,
         canCancel = true,
@@ -727,6 +740,18 @@ local function handleSmashAction(heistId, heist, step, stepIndex)
     })
     
     ClearPedTasks(ped)
+    
+    -- Restore previous weapon or remove crowbar if player didn't have it
+    if not hasCrowbar then
+        RemoveWeaponFromPed(ped, joaat('WEAPON_CROWBAR'))
+        if currentWeapon ~= 0 then
+            SetCurrentPedWeapon(ped, currentWeapon, true)
+        else
+            SetCurrentPedWeapon(ped, joaat('WEAPON_UNARMED'), true)
+        end
+    else
+        SetCurrentPedWeapon(ped, currentWeapon, true)
+    end
     
     if not progressResult then
         TriggerServerEvent('cs_heistmaster:abortHeist', heistId)
