@@ -1,6 +1,6 @@
 Config = {}
 
-Config.Debug = false
+Config.Debug = true
 
 Config.PoliceJobs = { 'police', 'sasp', 'bcso' }  -- adjust for your server
 
@@ -25,7 +25,7 @@ Config.Heists = {
             coords = { x = -47.24, y = -1759.01, z = 29.42, heading = 45.0 },
             panicChance = 60,   -- % chance clerk secretly hits silent alarm
             surrenderAnim = true,
-            safeKeyChance = 30  -- optional future update: clerk gives safe key
+            safeKeyChance = 100 -- optional future update: clerk gives safe key
         },
 
         steps = {

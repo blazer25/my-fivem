@@ -646,13 +646,27 @@ local function handleDrillAction(heistId, heist, step, stepIndex)
     local ped = PlayerPedId()
     local lootKey = ('step_%s_%s'):format(stepIndex, heistId)
     
-    -- Check if already completed
+    -- Check if already completed (client-side check)
     if alreadyLooted[heistId] and alreadyLooted[heistId][lootKey] then
         lib.notify({
             description = 'This has already been completed.',
             type = 'error'
         })
         return false
+    end
+    
+    -- For safe drilling, check server-side if safe was already opened
+    -- This prevents multiple players from opening the same safe
+    if heist.heistType == 'store' then
+        -- Check with server if safe is already opened
+        local safeCheck = lib.callback.await('cs_heistmaster:checkSafeOpened', false, heistId)
+        if safeCheck then
+            lib.notify({
+                description = 'This safe has already been opened by another player.',
+                type = 'error'
+            })
+            return false
+        end
     end
     
     -- Trigger alert/alarm (force loud on first step)

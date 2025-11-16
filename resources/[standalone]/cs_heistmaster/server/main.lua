@@ -17,6 +17,9 @@ local HeistLootServerState = {} -- [heistId] = { [lootKey] = true }
 -- PATCH C: Step progression tracking
 local HeistStepState = {} -- [heistId] = currentStep
 
+-- Track which safes have been opened (one-time use per heist)
+local SafeOpened = {} -- [heistId] = true
+
 local function GetStep(heistId)
     return HeistStepState[heistId] or 1
 end
@@ -393,6 +396,7 @@ RegisterNetEvent('cs_heistmaster:finishHeist', function(heistId)
         HeistLootServerState[heistId] = nil
         HeistStepState[heistId] = nil
         HeistActivePlayers[heistId] = nil -- Clear active players tracking
+        SafeOpened[heistId] = nil -- Clear safe opened tracking
         -- Reset to idle after cooldown
         setHeistState(heistId, "idle")
     end)
@@ -435,6 +439,7 @@ RegisterNetEvent('cs_heistmaster:abortHeist', function(heistId)
             HeistLootServerState[heistId] = nil
             HeistStepState[heistId] = nil
             HeistActivePlayers[heistId] = nil
+            SafeOpened[heistId] = nil -- Clear safe opened tracking
             
             debugPrint(('Heist %s aborted by %s (no players left)'):format(heistId, src))
             TriggerClientEvent('cs_heistmaster:client:cleanupHeist', -1, heistId)
@@ -538,6 +543,19 @@ RegisterNetEvent('cs_heistmaster:safeReward', function(heistId)
     local src = source
     local heist = Heists[heistId]
     if not heist then return end
+
+    -- Check if safe has already been opened (one-time use per heist)
+    if SafeOpened[heistId] then
+        debugPrint(('Safe already opened for heist %s by another player'):format(heistId))
+        TriggerClientEvent('ox_lib:notify', src, {
+            description = 'This safe has already been opened.',
+            type = 'error'
+        })
+        return
+    end
+
+    -- Mark safe as opened
+    SafeOpened[heistId] = true
 
     -- Give safe-specific rewards (different from loot rewards)
     -- Use heist-specific safe rewards if configured, otherwise use default
@@ -657,6 +675,11 @@ RegisterNetEvent("cs_heistmaster:server:completeStep", function(heistId, step)
         return 
     end
     AdvanceStep(heistId)
+end)
+
+-- Callback to check if safe is already opened
+lib.callback.register('cs_heistmaster:checkSafeOpened', function(source, heistId)
+    return SafeOpened[heistId] == true
 end)
 
 -- PROMPT C: Server-side loot reward handler
