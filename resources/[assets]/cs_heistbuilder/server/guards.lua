@@ -12,7 +12,6 @@ local function spawnGuard(heistId, guardData)
         local ped = CreatePed(4, GetHashKey(model), coords.x, coords.y, coords.z, coords.w or 0.0, true, true)
         if not DoesEntityExist(ped) then return end
         
-        SetEntityAsMissionEntity(ped, true, true)
         SetPedFleeAttributes(ped, 0, false)
         SetPedCombatAttributes(ped, 46, true)
         SetPedCombatAbility(ped, 2)
@@ -43,7 +42,6 @@ local function spawnTeller(heistId, tellerData)
         local ped = CreatePed(4, GetHashKey(model), coords.x, coords.y, coords.z, coords.w or 0.0, true, true)
         if not DoesEntityExist(ped) then return end
         
-        SetEntityAsMissionEntity(ped, true, true)
         SetPedFleeAttributes(ped, 512, true)
         SetBlockingOfNonTemporaryEvents(ped, true)
         TaskStandStill(ped, -1)

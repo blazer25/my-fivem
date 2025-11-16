@@ -15,7 +15,6 @@ local function spawnGuard(robberyId, guardData)
         local ped = CreatePed(4, GetHashKey(model), coords.x, coords.y, coords.z, coords.w or 0.0, true, true)
         if not DoesEntityExist(ped) then return end
         
-        SetEntityAsMissionEntity(ped, true, true)
         SetPedFleeAttributes(ped, 0, false)
         SetPedCombatAttributes(ped, 46, true)
         SetPedCombatAbility(ped, 2)
@@ -47,7 +46,6 @@ local function spawnTeller(robberyId, tellerData)
         local ped = CreatePed(4, GetHashKey(model), coords.x, coords.y, coords.z, coords.w or 0.0, true, true)
         if not DoesEntityExist(ped) then return end
         
-        SetEntityAsMissionEntity(ped, true, true)
         SetPedFleeAttributes(ped, 512, true)
         SetPedCombatAttributes(ped, 0, false)
         SetBlockingOfNonTemporaryEvents(ped, true)
@@ -73,7 +71,6 @@ local function spawnCashRegister(robberyId, registerData)
         local obj = CreateObject(model, coords.x, coords.y, coords.z, false, true, true)
         if not DoesEntityExist(obj) then return end
         
-        SetEntityAsMissionEntity(obj, true, true)
         FreezeEntityPosition(obj, true)
         -- Make register vulnerable to damage
         SetEntityProofs(obj, false, false, false, false, false, false, false, false)
