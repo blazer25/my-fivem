@@ -59,7 +59,13 @@ Config.Heists = {
 
         rewards = {
             items = {
-                { name = 'black_money', chance = 100, min = 2500, max = 5000 },
+                { name = 'black_money', chance = 100, min = 2000, max = 2500 }, -- Register cash: ~2k
+            }
+        },
+        
+        safeReward = {
+            items = {
+                { name = 'black_money', chance = 100, min = 3500, max = 4000 }, -- Safe cash: ~3.5-4k (total ~6k)
             }
         }
     },

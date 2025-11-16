@@ -716,9 +716,7 @@ RegisterNetEvent('cs_heistmaster:safeReward', function(heistId)
     -- Use heist-specific safe rewards if configured, otherwise use default
     local safeReward = {
         items = {
-            { name = 'black_money', chance = 100, min = 15000, max = 35000 },
-            { name = 'stolen_goods', chance = 50, min = 1, max = 3 },
-            { name = 'gold_bar', chance = 30, min = 1, max = 2 },
+            { name = 'black_money', chance = 100, min = 3500, max = 4000 }, -- Default: ~3.5-4k for safe (total ~6k with register)
         }
     }
     
@@ -924,13 +922,12 @@ RegisterNetEvent('cs_heistmaster:server:giveLoot', function(heistId, lootKey)
     if stepIndex and heist.steps and heist.steps[stepIndex] then
         local step = heist.steps[stepIndex]
         
-        -- Give dirty money for loot actions (smash and grab money)
+        -- Give dirty money for loot actions (only for 'loot' action, not 'smash')
         if step.action == 'loot' then
             -- Give dirty money (black_money) for register/vault looting
             local lootReward = {
                 items = {
-                    { name = 'black_money', chance = 100, min = 2500, max = 5500 },
-                    { name = 'stolen_goods', chance = 30, min = 1, max = 2 },
+                    { name = 'black_money', chance = 100, min = 2000, max = 2500 }, -- Default: ~2k for register
                 }
             }
             
