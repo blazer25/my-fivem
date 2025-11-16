@@ -76,6 +76,8 @@ function SpawnBankGuards(heistId)
         GiveWeaponToPed(ped, joaat(g.weapon or 'weapon_pistol'), 250, false, true)
 
         SetPedRelationshipGroupHash(ped, joaat('BANK_GUARD'))
+        SetRelationshipBetweenGroups(1, joaat('BANK_GUARD'), joaat('PLAYER')) -- Neutral initially
+        SetRelationshipBetweenGroups(1, joaat('PLAYER'), joaat('BANK_GUARD'))
         SetPedCanRagdoll(ped, true)
         SetPedFleeAttributes(ped, 0, false)
         SetPedCombatRange(ped, 0)
@@ -103,13 +105,8 @@ end
 local BankHeistStarted = {} -- [heistId] = true
 local StoreHeistStarted = {} -- [heistId] = true
 
--- Auto-start heist when guards are shot
-AddEventHandler('gameEventTriggered', function(event, args)
-    if event ~= "CEventNetworkEntityDamage" then return end
-
-    local victim = args[1]
-    local attacker = args[2]
-
+-- Improved bank guard damage detection with dual event system
+local function handleGuardDamage(victim, attacker)
     if not DoesEntityExist(victim) or not DoesEntityExist(attacker) then return end
     if attacker ~= PlayerPedId() then return end
 
@@ -125,8 +122,8 @@ AddEventHandler('gameEventTriggered', function(event, args)
     -- Mark as started to prevent duplicate triggers
     BankHeistStarted[heistId] = true
 
-    -- START HEIST
-    debugPrint(('Bank heist auto-started by shooting guard: %s'):format(heistId))
+    -- START HEIST (server will handle anti-spam for multiple players)
+    debugPrint(('Bank heist auto-started by damaging guard: %s'):format(heistId))
     TriggerServerEvent("cs_heistmaster:requestStart", heistId)
 
     -- Make guards aggressive after start (with delay to ensure heist initialized)
@@ -139,11 +136,26 @@ AddEventHandler('gameEventTriggered', function(event, args)
                     SetPedCombatAttributes(ped, 46, true)
                     SetPedCombatRange(ped, 2)
                     SetPedCombatMovement(ped, 2)
+                    SetRelationshipBetweenGroups(5, joaat('BANK_GUARD'), joaat('PLAYER'))
+                    SetRelationshipBetweenGroups(5, joaat('PLAYER'), joaat('BANK_GUARD'))
                     TaskCombatPed(ped, PlayerPedId(), 0, 16)
                 end
             end
         end
     end)
+end
+
+-- Primary: gameEventTriggered
+AddEventHandler('gameEventTriggered', function(event, args)
+    if event ~= "CEventNetworkEntityDamage" then return end
+    local victim = args[1]
+    local attacker = args[2]
+    handleGuardDamage(victim, attacker)
+end)
+
+-- Fallback: EntityDamaged event
+AddEventHandler('entityDamaged', function(victim, attacker, damage)
+    handleGuardDamage(victim, attacker)
 end)
 
 -- ============================================================
@@ -184,7 +196,7 @@ function SpawnClerk(heistId)
     debugPrint(('Store clerk spawned for heist: %s'):format(heistId))
 end
 
--- Detect aiming a gun at clerk
+-- Detect aiming a gun at clerk (improved distance-based detection)
 CreateThread(function()
     while true do
         Wait(150)
@@ -196,57 +208,133 @@ CreateThread(function()
         if not IsPedArmed(player, 4) then goto continue_store_loop end
         if not IsPlayerFreeAiming(PlayerId()) then goto continue_store_loop end
 
-        local aiming, target = GetEntityPlayerIsFreeAimingAt(PlayerId())
+        local playerCoords = GetEntityCoords(player)
 
-        if aiming and IsEntityAPed(target) and DoesEntityExist(target) then
-            for heistId, clerkPed in pairs(StoreClerks) do
-                if not DoesEntityExist(clerkPed) then goto continue_clerk_check end
-                if target ~= clerkPed then goto continue_clerk_check end
+        for heistId, clerkPed in pairs(StoreClerks) do
+            if not DoesEntityExist(clerkPed) then goto continue_clerk_check end
 
-                -- Prevent double-triggering
-                if StoreHeistStarted[heistId] then goto continue_clerk_check end
+            -- Prevent double-triggering
+            if StoreHeistStarted[heistId] then goto continue_clerk_check end
 
-                local state = HeistClientState[heistId] or "idle"
-                if state ~= "idle" then goto continue_clerk_check end -- Already started
+            local state = HeistClientState[heistId] or "idle"
+            if state ~= "idle" then goto continue_clerk_check end -- Already started
 
-                -- Check distance (max 10 meters)
-                local playerCoords = GetEntityCoords(player)
-                local clerkCoords = GetEntityCoords(clerkPed)
-                local dist = #(playerCoords - clerkCoords)
-                if dist > 10.0 then goto continue_clerk_check end
+            -- Check distance (12 meters as specified)
+            local clerkCoords = GetEntityCoords(clerkPed)
+            local dist = #(playerCoords - clerkCoords)
+            if dist > 12.0 then goto continue_clerk_check end
 
-                -- Mark as started to prevent duplicate triggers
-                StoreHeistStarted[heistId] = true
+            -- Check if player is aiming at clerk
+            local aiming, target = GetEntityPlayerIsFreeAimingAt(PlayerId())
+            if not aiming or not IsEntityAPed(target) or target ~= clerkPed then goto continue_clerk_check end
 
-                -- Clerk panics and gives up
-                ClearPedTasksImmediately(clerkPed)
-                TaskHandsUp(clerkPed, 7000, player, -1, true)
+            -- Mark as started to prevent duplicate triggers
+            StoreHeistStarted[heistId] = true
 
-                -- Start heist
-                debugPrint(('Store heist auto-started by aiming at clerk: %s'):format(heistId))
-                TriggerServerEvent("cs_heistmaster:requestStart", heistId)
+            -- Clear tasks BEFORE detection to prevent scenario interruption
+            ClearPedTasksImmediately(clerkPed)
+            Wait(100) -- Small delay for task clearing
 
-                -- Optional: key chance
-                local heist = Config.Heists[heistId]
-                if heist and heist.clerk and (heist.clerk.safeKeyChance or 0) > 0 then
-                    if math.random(1, 100) <= heist.clerk.safeKeyChance then
-                        TriggerServerEvent("cs_heistmaster:giveSafeKey", heistId)
-                        lib.notify({
-                            title = "Clerk",
-                            description = "The clerk gave you a safe key!",
-                            type = "success"
-                        })
-                    end
+            -- Clerk panics and gives up
+            TaskHandsUp(clerkPed, 7000, player, -1, true)
+
+            -- Start heist
+            debugPrint(('Store heist auto-started by aiming at clerk: %s'):format(heistId))
+            TriggerServerEvent("cs_heistmaster:requestStart", heistId)
+
+            -- Optional: key chance
+            local heist = Config.Heists[heistId]
+            if heist and heist.clerk and (heist.clerk.safeKeyChance or 0) > 0 then
+                if math.random(1, 100) <= heist.clerk.safeKeyChance then
+                    TriggerServerEvent("cs_heistmaster:giveSafeKey", heistId)
+                    lib.notify({
+                        title = "Clerk",
+                        description = "The clerk gave you a safe key!",
+                        type = "success"
+                    })
                 end
-
-                -- Alert Police (panic)
-                TriggerServerEvent("cs_heistmaster:clerkPanic", heistId)
-
-                Wait(5000) -- Prevent spam
-                ::continue_clerk_check::
             end
+
+            -- A.1: Alert Police (panic) - respect panicChance and prevent repeat triggering
+            if not ClerkRuntimeState[heistId] then
+                ClerkRuntimeState[heistId] = { panicked = false }
+            end
+            
+            local rt = ClerkRuntimeState[heistId]
+            if not rt.panicked then
+                local panicChance = (heist and heist.clerk and heist.clerk.panicChance) or 50
+                if math.random(1, 100) <= panicChance then
+                    rt.panicked = true
+                    TriggerServerEvent("cs_heistmaster:clerkPanic", heistId)
+                end
+            end
+
+            Wait(5000) -- Prevent spam
+            ::continue_clerk_check::
         end
         ::continue_store_loop::
+    end
+end)
+
+-- A.3: Allow Register Smash Start If Clerk Is Dead
+CreateThread(function()
+    while true do
+        Wait(200)
+
+        local player = PlayerPedId()
+        if not DoesEntityExist(player) then goto continue_smash_loop end
+
+        for heistId, heist in pairs(Heists) do
+            if heist.heistType ~= 'store' then goto continue_smash_heist end
+            if not heist.clerk or not heist.clerk.enabled then goto continue_smash_heist end
+
+            -- Prevent double-triggering
+            if StoreHeistStarted[heistId] then goto continue_smash_heist end
+
+            local state = HeistClientState[heistId] or "idle"
+            if state ~= "idle" then goto continue_smash_heist end -- Already started
+
+            -- Check if clerk is missing or dead
+            local clerkPed = StoreClerks[heistId]
+            if clerkPed and DoesEntityExist(clerkPed) and not IsEntityDead(clerkPed) then
+                goto continue_smash_heist -- Clerk is alive, use normal aiming system
+            end
+
+            -- Clerk is dead/missing - check if player is near register and armed
+            if not IsPedArmed(player, 4) then goto continue_smash_heist end
+
+            -- Find first smash step (register)
+            local registerStep = nil
+            for _, step in ipairs(heist.steps or {}) do
+                if step.action == 'smash' then
+                    registerStep = step
+                    break
+                end
+            end
+
+            if not registerStep then goto continue_smash_heist end
+
+            local playerCoords = GetEntityCoords(player)
+            local registerPos = vecFromTable(registerStep.coords)
+            local dist = #(playerCoords - registerPos)
+
+            if dist < 2.0 then
+                -- Show prompt and allow smash to start
+                if IsControlJustPressed(0, 38) then -- E key
+                    -- Mark as started
+                    StoreHeistStarted[heistId] = true
+
+                    -- Start heist
+                    debugPrint(('Store heist auto-started by smashing register (clerk dead): %s'):format(heistId))
+                    TriggerServerEvent("cs_heistmaster:requestStart", heistId)
+
+                    Wait(2000) -- Prevent spam
+                end
+            end
+
+            ::continue_smash_heist::
+        end
+        ::continue_smash_loop::
     end
 end)
 
@@ -311,14 +399,16 @@ RegisterNetEvent("cs_heistmaster:client:spawnVaultDoor", function(heistId, coord
     RequestModel(hash)
     while not HasModelLoaded(hash) do Wait(10) end
     
-    local obj = CreateObject(hash, coords.x, coords.y, coords.z, false, false, false)
-    SetEntityHeading(obj, heading or 160.0)
+    -- Create as networked entity for proper sync
+    local obj = CreateObjectNoOffset(hash, coords.x, coords.y, coords.z, true, true, false)
+    local startHeading = heading or 160.0
+    SetEntityRotation(obj, 0.0, 0.0, startHeading, 2, true)
     FreezeEntityPosition(obj, true)
     
-    VaultDoors[heistId] = { obj = obj, heading = heading or 160.0, open = open or false }
+    VaultDoors[heistId] = { obj = obj, heading = startHeading, open = open or false }
     
     if open then
-        SetEntityHeading(obj, (heading or 160.0) - 100.0)
+        SetEntityRotation(obj, 0.0, 0.0, startHeading - 100.0, 2, true)
     end
     
     debugPrint(('Vault door spawned: %s (open: %s)'):format(heistId, tostring(open)))
@@ -328,11 +418,13 @@ RegisterNetEvent("cs_heistmaster:client:openVaultDoor", function(heistId)
     local door = VaultDoors[heistId]
     if not door or not DoesEntityExist(door.obj) then return end
     
-    local start = door.heading
+    local startHeading = door.heading
     FreezeEntityPosition(door.obj, false)
     
+    -- Use SetEntityRotation for proper vault door animation
     for i = 1, 100 do
-        SetEntityHeading(door.obj, start - (i * 1.0))
+        local angle = startHeading - (i * 1.0)
+        SetEntityRotation(door.obj, 0.0, 0.0, angle, 2, true)
         Wait(15)
     end
     
@@ -407,62 +499,13 @@ RegisterNetEvent('cs_heistmaster:client:spawnGuards', function(heistId, guardLis
     end
 end)
 
--- ============================================================
--- CLEANUP
--- ============================================================
-
-RegisterNetEvent('cs_heistmaster:client:cleanupHeist', function(heistId)
-    -- Cleanup guards (server-spawned)
-    if guards[heistId] then
-        for _, ped in ipairs(guards[heistId]) do
-            if DoesEntityExist(ped) then DeletePed(ped) end
-        end
-        guards[heistId] = nil
-    end
-    
-    -- DO NOT delete bank guards on cleanup - they should persist
-    -- Bank guards are only deleted when resource stops or heist is reset
-    
-    -- Cleanup clerk
-    if SpawnedClerks[heistId] then
-        local clerkPed = SpawnedClerks[heistId]
-        if DoesEntityExist(clerkPed) then
-            DeletePed(clerkPed)
-        end
-        SpawnedClerks[heistId] = nil
-    end
-    
-    if StoreClerks[heistId] then
-        StoreClerks[heistId] = nil
-    end
-    
-    -- Cleanup vault door
-    if VaultDoors[heistId] then
-        local door = VaultDoors[heistId]
-        if DoesEntityExist(door.obj) then
-            DeleteEntity(door.obj)
-        end
-        VaultDoors[heistId] = nil
-    end
-    
-    -- Reset state
-    ClerkRuntimeState[heistId] = nil
-    alreadyLooted[heistId] = nil
-    BankHeistStarted[heistId] = nil -- Reset start flag for next heist
-    StoreHeistStarted[heistId] = nil -- Reset start flag for next heist
-    
-    if currentHeistId == heistId then
-        currentHeistId = nil
-        currentStepIndex = 0
-        lib.hideTextUI()
-    end
-    
-    debugPrint(('Heist cleaned up: %s'):format(heistId))
-end)
 
 -- ============================================================
 -- ALERT & ALARM HANDLER
 -- ============================================================
+
+-- A.5: Track active alarms to prevent restarting
+local ActiveAlarms = {} -- [heistId] = true
 
 local function handleStepAlert(heistId, heist, step)
     local alertType = step.alert or 'none'
@@ -470,9 +513,12 @@ local function handleStepAlert(heistId, heist, step)
         TriggerServerEvent('cs_heistmaster:alertPolice', heistId, alertType)
     end
     
-    if step.alarmSound then
-        PlaySoundFrontend(-1, 'Bed', 'WastedSounds', true)
-        -- You can add more alarm sounds here
+    -- A.5: Replace alarm sound with proper siren
+    if step.alarmSound and not ActiveAlarms[heistId] then
+        PrepareAlarm("JEWEL_STORE_HEIST_ALARMS")
+        StartAlarm("JEWEL_STORE_HEIST_ALARMS", true)
+        ActiveAlarms[heistId] = true
+        debugPrint(('Alarm started for heist: %s'):format(heistId))
     end
 end
 
@@ -525,56 +571,71 @@ local function runHeistThread(heistId, heist)
             local stepPos = vecFromTable(step.coords)
             local dist = #(pCoords - stepPos)
             
-            -- Draw marker when near
-            if dist < 25.0 then
-                DrawMarker(
-                    1,
-                    stepPos.x, stepPos.y, stepPos.z - 1.0,
-                    0.0, 0.0, 0.0,
-                    0.0, 0.0, 0.0,
-                    1.0, 1.0, 1.0,
-                    255, 165, 0, 150,
-                    false, true, 2, false, nil, nil, false
-                )
-            end
+            -- NO MARKERS - Auto-trigger based on proximity only
             
-            if dist < (step.radius or 1.5) then
+            -- Use tighter radius for auto-trigger (1.2m)
+            local triggerRadius = 1.2
+            if dist < triggerRadius then
                 -- C) Check if this is the active step
                 if ActiveStep[heistId] ~= stepIndex then
-                    lib.hideTextUI()
                     goto continue_step_loop
                 end
                 
-                -- NO UI PROMPTS - Actions trigger automatically when player begins the action
-                -- Detect action initiation based on step type
+                -- NO UI PROMPTS - Actions trigger automatically based on proximity and conditions
                 local actionStarted = false
+                local stepCoords = vecFromTable(step.coords)
                 
-                -- Detect action initiation based on step type
+                -- Detect action initiation based on step type with proximity auto-trigger
                 if step.action == 'hack' then
-                    -- Hack starts when player presses E
-                    if IsControlJustPressed(0, 38) then
+                    -- Hack auto-starts when player is within 1.2m AND pointing at panel
+                    local forwardVector = GetEntityForwardVector(ped)
+                    local toStep = stepCoords - pCoords
+                    local dot = (forwardVector.x * toStep.x + forwardVector.y * toStep.y) / dist
+                    if dot > 0.5 then -- Player facing the panel
                         actionStarted = true
                     end
                 elseif step.action == 'drill' then
-                    -- Drill starts when player presses E
-                    if IsControlJustPressed(0, 38) then
+                    -- Drill auto-starts when within 1.2m AND has drill or safe key
+                    local hasKey = false
+                    local keyName = "safe_key_"..heistId
+                    if exports['ox_inventory'] then
+                        local searchResult = exports['ox_inventory']:Search('count', keyName)
+                        if type(searchResult) == 'number' and searchResult > 0 then
+                            hasKey = true
+                        elseif type(searchResult) == 'table' and searchResult[keyName] and searchResult[keyName] > 0 then
+                            hasKey = true
+                        end
+                    end
+                    -- Check for drill item or key
+                    if hasKey or (heist.requiredItem and exports['ox_inventory']) then
+                        local hasItem = false
+                        if exports['ox_inventory'] then
+                            local itemResult = exports['ox_inventory']:Search('count', heist.requiredItem)
+                            if type(itemResult) == 'number' and itemResult > 0 then
+                                hasItem = true
+                            end
+                        end
+                        if hasKey or hasItem then
+                            actionStarted = true
+                        end
+                    else
+                        -- No key/item required, auto-start
                         actionStarted = true
                     end
                 elseif step.action == 'smash' then
-                    -- Smash starts when player attacks (melee or weapon)
+                    -- Smash auto-starts when player melee-hits the display/register
                     if IsControlJustPressed(0, 24) or (IsPedArmed(ped, 4) and IsControlJustPressed(0, 25)) then
                         actionStarted = true
                     end
                 elseif step.action == 'loot' then
-                    -- Loot starts when player presses E
-                    if IsControlJustPressed(0, 38) then
+                    -- Loot auto-starts when within 1.2m AND register/vault not looted
+                    local lootKey = ('step_%s_%s'):format(stepIndex, heistId) -- Unique per heist
+                    if not alreadyLooted[heistId] or not alreadyLooted[heistId][lootKey] then
                         actionStarted = true
                     end
                 else
-                    -- Custom actions: start on E press
-                    if IsControlJustPressed(0, 38) then
-                        actionStarted = true
-                    end
+                    -- Custom actions: auto-start on proximity
+                    actionStarted = true
                 end
                 
                 if actionStarted then
@@ -582,14 +643,11 @@ local function runHeistThread(heistId, heist)
                     handleStepAlert(heistId, heist, step)
                     
                     local success = false
-                    local lootKey = ('step_%s'):format(stepIndex)
+                    -- Unique loot key per heist and step to prevent conflicts
+                    local lootKey = ('step_%s_%s'):format(stepIndex, heistId)
                     
                     -- E) Check if already looted
                     if alreadyLooted[heistId] and alreadyLooted[heistId][lootKey] then
-                        lib.notify({
-                            description = 'This has already been completed.',
-                            type = 'error'
-                        })
                         goto continue_step_loop
                     end
                     
@@ -634,7 +692,7 @@ local function runHeistThread(heistId, heist)
                         ClearPedTasks(ped)
                         
                     elseif step.action == 'drill' then
-                        -- Check for safe key
+                        -- A.2: Check for safe key (store heists use safe_key_store_heistId format)
                         local keyName = "safe_key_"..heistId
                         local hasKey = false
                         
@@ -650,6 +708,7 @@ local function runHeistThread(heistId, heist)
                         end
                         
                         if hasKey then
+                            -- A.2: Skip drill and open instantly with key
                             local progressResult = lib.progressCircle({
                                 duration = 3500,
                                 label = "Unlocking safe with key...",
@@ -673,6 +732,7 @@ local function runHeistThread(heistId, heist)
                             })
                             success = true
                         else
+                            -- A.2: Run full drill animation for store heists
                             local duration = step.time or 20000
                             RequestAnimDict('anim@heists@fleeca_bank@drilling')
                             while not HasAnimDictLoaded('anim@heists@fleeca_bank@drilling') do Wait(0) end
@@ -694,6 +754,11 @@ local function runHeistThread(heistId, heist)
                                 TriggerServerEvent('cs_heistmaster:abortHeist', heistId)
                                 currentHeistId = nil
                                 break
+                            end
+                            
+                            -- A.2: Give safe reward for store heists
+                            if heist.heistType == 'store' then
+                                TriggerServerEvent('cs_heistmaster:safeReward', heistId)
                             end
                             
                             -- Open vault door for Fleeca
@@ -753,7 +818,7 @@ local function runHeistThread(heistId, heist)
                             break
                         end
                         
-                        -- E) Mark as looted and request reward
+                        -- E) Mark as looted and request reward (using unique key)
                         alreadyLooted[heistId] = alreadyLooted[heistId] or {}
                         alreadyLooted[heistId][lootKey] = true
                         TriggerServerEvent('cs_heistmaster:server:giveLoot', heistId, lootKey)
@@ -784,7 +849,7 @@ local function runHeistThread(heistId, heist)
                         -- E) Mark step as completed (if not already marked for loot)
                         if step.action ~= 'loot' then
                             alreadyLooted[heistId] = alreadyLooted[heistId] or {}
-                            alreadyLooted[heistId][lootKey] = true
+                            alreadyLooted[heistId][lootKey] = true -- Unique key per heist
                         end
                         
                         -- C) Notify server step is complete
@@ -815,8 +880,6 @@ local function runHeistThread(heistId, heist)
                         break
                     end
                 end
-            else
-                lib.hideTextUI()
             end
             
             ::continue_step_loop::
@@ -826,12 +889,10 @@ local function runHeistThread(heistId, heist)
 end
 
 -- ============================================================
--- SPAWN GUARDS AND CLERKS ON RESOURCE START
+-- SPAWN GUARDS AND CLERKS ON RESOURCE START / REJOIN
 -- ============================================================
 
-CreateThread(function()
-    Wait(2000) -- Wait for config to load
-    
+local function SpawnAllHeistElements()
     for heistId, heist in pairs(Heists) do
         -- Spawn bank guards for bank heists (fleeca, etc.)
         if (heist.heistType == 'fleeca' or heist.heistType == 'bank') and heist.guards then
@@ -841,6 +902,136 @@ CreateThread(function()
         -- Spawn clerks for store heists
         if heist.heistType == 'store' and heist.clerk and heist.clerk.enabled then
             SpawnClerk(heistId)
+        end
+        
+        -- Spawn vault doors for fleeca banks
+        if heist.heistType == 'fleeca' and heist.vault and heist.vault.coords then
+            local hash = joaat(heist.vault.doorModel or 'v_ilev_gb_vauldr')
+            RequestModel(hash)
+            while not HasModelLoaded(hash) do Wait(10) end
+            
+            local coords = vecFromTable(heist.vault.coords)
+            local obj = CreateObjectNoOffset(hash, coords.x, coords.y, coords.z, true, true, false)
+            local startHeading = heist.vault.heading or 160.0
+            SetEntityRotation(obj, 0.0, 0.0, startHeading, 2, true)
+            FreezeEntityPosition(obj, true)
+            
+            VaultDoors[heistId] = { obj = obj, heading = startHeading, open = false }
+            debugPrint(('Vault door auto-spawned: %s'):format(heistId))
+        end
+    end
+end
+
+-- Initial spawn
+CreateThread(function()
+    Wait(2000) -- Wait for config to load
+    SpawnAllHeistElements()
+end)
+
+-- Respawn on player loaded / resource restart
+AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
+    Wait(3000) -- Wait for everything to load
+    SpawnAllHeistElements()
+    TriggerServerEvent("cs_heistmaster:server:syncVaultDoors")
+end)
+
+-- Also handle qbx_core if used
+AddEventHandler('qbx_core:client:playerLoaded', function()
+    Wait(3000) -- Wait for everything to load
+    SpawnAllHeistElements()
+    TriggerServerEvent("cs_heistmaster:server:syncVaultDoors")
+end)
+
+-- Respawn after cleanup
+RegisterNetEvent('cs_heistmaster:client:cleanupHeist', function(heistId)
+    -- Cleanup guards (server-spawned)
+    if guards[heistId] then
+        for _, ped in ipairs(guards[heistId]) do
+            if DoesEntityExist(ped) then DeletePed(ped) end
+        end
+        guards[heistId] = nil
+    end
+    
+    -- DO NOT delete bank guards on cleanup - they should persist
+    -- Bank guards are only deleted when resource stops or heist is reset
+    
+    -- Cleanup clerk (will respawn after cooldown)
+    if SpawnedClerks[heistId] then
+        local clerkPed = SpawnedClerks[heistId]
+        if DoesEntityExist(clerkPed) then
+            DeletePed(clerkPed)
+        end
+        SpawnedClerks[heistId] = nil
+    end
+    
+    if StoreClerks[heistId] then
+        StoreClerks[heistId] = nil
+    end
+    
+    -- Cleanup vault door (will respawn automatically)
+    if VaultDoors[heistId] then
+        local door = VaultDoors[heistId]
+        if DoesEntityExist(door.obj) then
+            DeleteEntity(door.obj)
+        end
+        VaultDoors[heistId] = nil
+    end
+    
+    -- Reset state
+    ClerkRuntimeState[heistId] = nil
+    alreadyLooted[heistId] = nil
+    BankHeistStarted[heistId] = nil -- Reset start flag for next heist
+    StoreHeistStarted[heistId] = nil -- Reset start flag for next heist
+    
+    if currentHeistId == heistId then
+        currentHeistId = nil
+        currentStepIndex = 0
+    end
+    
+    debugPrint(('Heist cleaned up: %s'):format(heistId))
+    
+    -- A.5: Stop alarm if active
+    if ActiveAlarms[heistId] then
+        StopAlarm("JEWEL_STORE_HEIST_ALARMS", true)
+        ActiveAlarms[heistId] = nil
+        debugPrint(('Alarm stopped for heist: %s'):format(heistId))
+    end
+    
+    -- A.4: Delay clerk respawn until cooldown ends
+    local heist = Heists[heistId]
+    if heist then
+        -- Respawn bank guards immediately
+        if (heist.heistType == 'fleeca' or heist.heistType == 'bank') and heist.guards then
+            SpawnBankGuards(heistId)
+        end
+        
+        -- A.4: Delay clerk respawn until cooldown ends
+        if heist.heistType == 'store' and heist.clerk and heist.clerk.enabled then
+            local cooldownMs = (heist.cooldown or 0) * 1000
+            CreateThread(function()
+                Wait(cooldownMs)
+                -- Check if heist is still in cooldown before respawning
+                local state = HeistClientState[heistId] or "idle"
+                if state == "cooldown" or state == "idle" then
+                    SpawnClerk(heistId)
+                    debugPrint(('Clerk respawned after cooldown: %s'):format(heistId))
+                end
+            end)
+        end
+        
+        -- Respawn vault doors immediately
+        if heist.heistType == 'fleeca' and heist.vault and heist.vault.coords then
+            local hash = joaat(heist.vault.doorModel or 'v_ilev_gb_vauldr')
+            RequestModel(hash)
+            while not HasModelLoaded(hash) do Wait(10) end
+            
+            local coords = vecFromTable(heist.vault.coords)
+            local obj = CreateObjectNoOffset(hash, coords.x, coords.y, coords.z, true, true, false)
+            local startHeading = heist.vault.heading or 160.0
+            SetEntityRotation(obj, 0.0, 0.0, startHeading, 2, true)
+            FreezeEntityPosition(obj, true)
+            
+            VaultDoors[heistId] = { obj = obj, heading = startHeading, open = false }
         end
     end
 end)

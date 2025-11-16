@@ -46,6 +46,14 @@ Config.Heists = {
                 difficulty = { 'easy', 'easy', 'medium' },
                 alert = "silent"        -- maybe they don't get alerted if you're quick
             },
+            {
+                action = "drill",
+                label = "Crack the Safe",
+                coords = { x = -47.24, y = -1759.01, z = 29.42 }, -- behind counter
+                radius = 1.5,
+                time = 20000,
+                alert = "loud"
+            },
         },
 
         rewards = {

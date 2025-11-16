@@ -103,6 +103,9 @@ end
 -- Handle heist start request
 ----------------------------------------------------------------
 
+-- Anti-spam tracking for heist starts (prevent multiple players starting same heist)
+local HeistStartAttempts = {} -- [heistId] = { time = os.time(), players = {} }
+
 RegisterNetEvent('cs_heistmaster:requestStart', function(heistId)
     local src = source
     local heist = Heists[heistId]
@@ -113,6 +116,30 @@ RegisterNetEvent('cs_heistmaster:requestStart', function(heistId)
 
     local state = getHeistState(heistId)
     local now = os.time()
+    
+    -- Server-side anti-spam: prevent multiple players from starting same heist within 2 seconds
+    if not HeistStartAttempts[heistId] then
+        HeistStartAttempts[heistId] = { time = now, players = {} }
+    end
+    
+    local attempt = HeistStartAttempts[heistId]
+    if state.state == 'in_progress' or (now - attempt.time) < 2 then
+        -- Heist already started or recent attempt
+        if state.state == 'in_progress' then
+            return -- Already active
+        end
+        -- Check if another player already attempted
+        for _, playerId in ipairs(attempt.players) do
+            if playerId ~= src then
+                debugPrint(('Heist %s start blocked - another player already attempting'):format(heistId))
+                return
+            end
+        end
+    end
+    
+    -- Add this player to attempt list
+    table.insert(attempt.players, src)
+    attempt.time = now
 
     -- cooldown check
     if state.lastStart > 0 and (now - state.lastStart) < (heist.cooldown or 0) then
@@ -205,6 +232,9 @@ RegisterNetEvent('cs_heistmaster:requestStart', function(heistId)
         end
     end
 
+    -- Clear attempt tracking
+    HeistStartAttempts[heistId] = nil
+    
     -- set state and broadcast to client
     state.state = 'in_progress'
     state.lastStart = now
