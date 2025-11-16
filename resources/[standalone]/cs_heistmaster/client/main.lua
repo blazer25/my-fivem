@@ -165,22 +165,58 @@ local function runHeistThread(heistId, heist)
                         ClearPedTasks(ped)
 
                     elseif step.action == 'drill' then
-                        local duration = (step.time or 20000)
-                        RequestAnimDict('anim@heists@fleeca_bank@drilling')
-                        while not HasAnimDictLoaded('anim@heists@fleeca_bank@drilling') do Wait(0) end
+                        -- DO THEY HAVE THE KEY?
+                        local keyName = "safe_key_"..heistId
+                        local hasKey = false
+                        if exports['ox_inventory'] then
+                            local keyCount = exports['ox_inventory']:Search('count', keyName)
+                            hasKey = (type(keyCount) == 'number' and keyCount > 0)
+                        end
 
-                        TaskPlayAnim(ped, 'anim@heists@fleeca_bank@drilling', 'drill_straight_idle', 8.0, -8.0, duration, 1, 0.0, false, false, false)
+                        if hasKey then
+                            -- USE KEY INSTEAD OF DRILL/LOCKPICK/THERMITE
+                            lib.progressCircle({
+                                duration = 3500,
+                                label = "Unlocking safe with key...",
+                                position = 'bottom',
+                                disable = { move = true, car = true, combat = true },
+                                canCancel = false
+                            })
 
-                        lib.progressCircle({
-                            duration = duration,
-                            label = step.label or 'Drilling...',
-                            position = 'bottom',
-                            useWhileDead = false,
-                            canCancel = false,
-                            disable = { move = true, car = true, combat = true },
-                        })
+                            -- silent open (no cop alert)
+                            TriggerServerEvent('cs_heistmaster:safeReward', heistId)
+                            lib.notify({ 
+                                title = 'Safe', 
+                                description = 'You unlocked the safe silently!', 
+                                type = 'success' 
+                            })
 
-                        ClearPedTasks(ped)
+                            -- remove key
+                            if exports['ox_inventory'] then
+                                exports['ox_inventory']:RemoveItem(keyName, 1)
+                            end
+
+                            success = true
+                        else
+                            -- Normal drilling (loud)
+                            local duration = (step.time or 20000)
+                            RequestAnimDict('anim@heists@fleeca_bank@drilling')
+                            while not HasAnimDictLoaded('anim@heists@fleeca_bank@drilling') do Wait(0) end
+
+                            TaskPlayAnim(ped, 'anim@heists@fleeca_bank@drilling', 'drill_straight_idle', 8.0, -8.0, duration, 1, 0.0, false, false, false)
+
+                            lib.progressCircle({
+                                duration = duration,
+                                label = step.label or 'Drilling...',
+                                position = 'bottom',
+                                useWhileDead = false,
+                                canCancel = false,
+                                disable = { move = true, car = true, combat = true },
+                            })
+
+                            ClearPedTasks(ped)
+                            success = true
+                        end
 
                     elseif step.action == 'smash' then
                         RequestAnimDict('melee@unarmed@streamed_core_fps')
@@ -452,6 +488,27 @@ CreateThread(function()
                         RequestAnimDict('missfbi5ig_22')
                         while not HasAnimDictLoaded('missfbi5ig_22') do Wait(0) end
                         TaskPlayAnim(clerkPed, 'missfbi5ig_22', 'hands_up_anxious_scared', 8.0, -8.0, -1, 1, 0, false, false, false)
+                    end
+
+                    -- SAFE KEY CHANCE
+                    if not heist.clerk.keyGiven then
+                        if math.random(1, 100) <= (heist.clerk.safeKeyChance or 0) then
+                            heist.clerk.keyGiven = true
+
+                            -- animation
+                            RequestAnimDict("mp_common")
+                            while not HasAnimDictLoaded("mp_common") do Wait(0) end
+                            TaskPlayAnim(clerkPed, "mp_common", "givetake1_a", 8.0, -8.0, 2000, 1, 0, false, false, false)
+
+                            -- give key to player
+                            TriggerServerEvent("cs_heistmaster:giveSafeKey", id)
+
+                            lib.notify({
+                                title = "Clerk",
+                                description = "The clerk gave you a safe key!",
+                                type = "success"
+                            })
+                        end
                     end
 
                     -- PANIC CHANCE (silent alarm)

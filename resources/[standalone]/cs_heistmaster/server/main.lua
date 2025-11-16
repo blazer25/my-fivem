@@ -295,6 +295,63 @@ RegisterNetEvent('cs_heistmaster:alertPolice', function(heistId, alertType)
 end)
 
 ----------------------------------------------------------------
+-- Give safe key to player
+----------------------------------------------------------------
+
+RegisterNetEvent('cs_heistmaster:giveSafeKey', function(heistId)
+    local src = source
+    local heist = Heists[heistId]
+    if not heist or not heist.clerk then return end
+
+    local keyName = "safe_key_"..heistId
+
+    if exports['ox_inventory'] then
+        exports['ox_inventory']:AddItem(src, keyName, 1)
+        debugPrint('Clerk gave safe key for heist: '..heistId)
+    else
+        debugPrint('Cannot give safe key - ox_inventory not available')
+    end
+end)
+
+----------------------------------------------------------------
+-- Safe reward handler (for key-based silent opening)
+----------------------------------------------------------------
+
+RegisterNetEvent('cs_heistmaster:safeReward', function(heistId)
+    local src = source
+    local heist = Heists[heistId]
+    if not heist then return end
+
+    -- Give safe-specific rewards (you can customize this)
+    -- For now, just give extra cash/items
+    local safeReward = {
+        cash = { min = 1000, max = 3000 },
+        items = {
+            { name = 'stolen_goods', chance = 50, min = 1, max = 3 },
+        }
+    }
+
+    -- Cash rewards
+    if safeReward.cash then
+        local amount = math.random(safeReward.cash.min or 0, safeReward.cash.max or 0)
+        if amount > 0 then
+            giveMoney(src, amount)
+        end
+    end
+
+    -- Item rewards
+    if safeReward.items then
+        for _, item in ipairs(safeReward.items) do
+            local chance = item.chance or 100
+            if math.random(0, 100) <= chance then
+                local qty = math.random(item.min or 1, item.max or 1)
+                giveItem(src, item.name, qty)
+            end
+        end
+    end
+end)
+
+----------------------------------------------------------------
 -- Clerk panic / alarm handler
 ----------------------------------------------------------------
 
