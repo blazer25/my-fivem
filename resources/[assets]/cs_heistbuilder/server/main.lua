@@ -14,12 +14,13 @@ end
 
 Storage.loadAll()
 
--- Spawn robberies on startup
+-- Spawn robberies on startup - guards spawn permanently
 CreateThread(function()
     Wait(5000)
     local heists = Storage.getHeists()
     for _, heist in pairs(heists) do
         if heist.type and (heist.type == 'bank' or heist.type == 'store') then
+            -- Guards and tellers spawn immediately and stay permanently
             Robbery.spawnRobbery(heist)
         end
     end

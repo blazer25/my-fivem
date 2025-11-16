@@ -93,7 +93,11 @@ local function spawnCashRegister(robberyId, registerData)
     end)
 end
 
+local RobberyCooldowns = {}
+
 function Robbery.spawnRobbery(heist)
+    -- Guards and tellers spawn permanently on server start
+    -- This just initializes the robbery state
     if ActiveRobberies[heist.id] then return end
     
     local robberyType = heist.type or 'bank'
@@ -105,7 +109,9 @@ function Robbery.spawnRobbery(heist)
         requiredGuards = 0,
         requiredTellers = 0,
         activated = false,
-        registers = {}
+        registers = {},
+        guards = {},
+        tellers = {}
     }
     
     local state = ActiveRobberies[heist.id]
@@ -113,20 +119,18 @@ function Robbery.spawnRobbery(heist)
     -- Count required guards/tellers
     if heist.guards then
         state.requiredGuards = #heist.guards
-        for _, guard in ipairs(heist.guards) do
-            spawnGuard(heist.id, guard)
-        end
     end
     
-    -- For stores: spawn tellers and cash registers
+    if robberyType == 'store' and heist.tellers then
+        state.requiredTellers = #heist.tellers
+    end
+    
+    -- Spawn guards permanently (they respawn after cooldown)
+    Robbery.spawnGuards(heist)
+    
+    -- For stores: spawn tellers and cash registers permanently
     if robberyType == 'store' then
-        if heist.tellers then
-            state.requiredTellers = #heist.tellers
-            for _, teller in ipairs(heist.tellers) do
-                spawnTeller(heist.id, teller)
-            end
-        end
-        
+        Robbery.spawnTellers(heist)
         if heist.cashRegisters then
             for _, register in ipairs(heist.cashRegisters) do
                 spawnCashRegister(heist.id, register)
@@ -137,25 +141,77 @@ function Robbery.spawnRobbery(heist)
     TriggerClientEvent('cs_heistbuilder:client:robberyReady', -1, heist.id, heist)
 end
 
+function Robbery.spawnGuards(heist)
+    if not heist.guards then return end
+    
+    local state = ActiveRobberies[heist.id]
+    if not state then return end
+    
+    -- Clear existing guards for this heist
+    for netId, guardData in pairs(ActiveGuards) do
+        if guardData.robberyId == heist.id then
+            local ped = NetworkGetEntityFromNetworkId(netId)
+            if DoesEntityExist(ped) then
+                DeleteEntity(ped)
+            end
+            ActiveGuards[netId] = nil
+        end
+    end
+    
+    -- Spawn all guards
+    for _, guard in ipairs(heist.guards) do
+        spawnGuard(heist.id, guard)
+    end
+end
+
+function Robbery.spawnTellers(heist)
+    if not heist.tellers then return end
+    
+    local state = ActiveRobberies[heist.id]
+    if not state then return end
+    
+    -- Clear existing tellers for this heist
+    for netId, tellerData in pairs(ActiveTellers) do
+        if tellerData.robberyId == heist.id then
+            local ped = NetworkGetEntityFromNetworkId(netId)
+            if DoesEntityExist(ped) then
+                DeleteEntity(ped)
+            end
+            ActiveTellers[netId] = nil
+        end
+    end
+    
+    -- Spawn all tellers
+    for _, teller in ipairs(heist.tellers) do
+        spawnTeller(heist.id, teller)
+    end
+end
+
 function Robbery.checkGuardKill(netId, attacker)
     local guardData = ActiveGuards[netId]
     if not guardData then return end
     
     local robberyId = guardData.robberyId
     local state = ActiveRobberies[robberyId]
-    if not state or state.activated then return end
+    if not state then return end
     
     local ped = NetworkGetEntityFromNetworkId(netId)
     if not DoesEntityExist(ped) or not IsEntityDead(ped) then return end
     
-    state.guardsKilled = state.guardsKilled + 1
+    -- Track this guard as killed for this robbery session
+    if not state.guards[netId] then
+        state.guards[netId] = true
+        state.guardsKilled = state.guardsKilled + 1
+    end
+    
+    -- Remove from active guards (but don't delete yet - will respawn after cooldown)
     ActiveGuards[netId] = nil
     
     local msg = ('Guard eliminated (%d/%d)'):format(state.guardsKilled, state.requiredGuards)
     TriggerClientEvent('cs_heistbuilder:client:robberyUpdate', -1, robberyId, msg)
     
-    -- Check if all guards are dead
-    if state.guardsKilled >= state.requiredGuards then
+    -- Check if all guards are dead (but only activate if not already activated)
+    if not state.activated and state.guardsKilled >= state.requiredGuards then
         if state.type == 'store' then
             -- For stores, wait for tellers too
             if state.tellersKilled >= state.requiredTellers then
@@ -166,6 +222,9 @@ function Robbery.checkGuardKill(netId, attacker)
             Robbery.activateRobbery(robberyId, attacker)
         end
     end
+    
+    -- Schedule guard respawn after cooldown
+    Robbery.scheduleGuardRespawn(robberyId, guardData.guardData)
 end
 
 function Robbery.checkTellerKill(netId, attacker)
@@ -174,21 +233,74 @@ function Robbery.checkTellerKill(netId, attacker)
     
     local robberyId = tellerData.robberyId
     local state = ActiveRobberies[robberyId]
-    if not state or state.activated then return end
+    if not state then return end
     
     local ped = NetworkGetEntityFromNetworkId(netId)
     if not DoesEntityExist(ped) or not IsEntityDead(ped) then return end
     
-    state.tellersKilled = state.tellersKilled + 1
+    -- Track this teller as killed for this robbery session
+    if not state.tellers[netId] then
+        state.tellers[netId] = true
+        state.tellersKilled = state.tellersKilled + 1
+    end
+    
+    -- Remove from active tellers (but don't delete yet - will respawn after cooldown)
     ActiveTellers[netId] = nil
     
     local msg = ('Teller eliminated (%d/%d)'):format(state.tellersKilled, state.requiredTellers)
     TriggerClientEvent('cs_heistbuilder:client:robberyUpdate', -1, robberyId, msg)
     
-    -- For stores, check if all guards and tellers are dead
-    if state.type == 'store' and state.guardsKilled >= state.requiredGuards and state.tellersKilled >= state.requiredTellers then
+    -- For stores, check if all guards and tellers are dead (but only activate if not already activated)
+    if not state.activated and state.type == 'store' and state.guardsKilled >= state.requiredGuards and state.tellersKilled >= state.requiredTellers then
         Robbery.activateRobbery(robberyId, attacker)
     end
+    
+    -- Schedule teller respawn after cooldown
+    Robbery.scheduleTellerRespawn(robberyId, tellerData.tellerData)
+end
+
+function Robbery.scheduleGuardRespawn(robberyId, guardData)
+    if not guardData then return end
+    
+    local state = ActiveRobberies[robberyId]
+    if not state then return end
+    
+    local cooldownMinutes = (state.heist and state.heist.cooldownMinutes) or 15
+    
+    CreateThread(function()
+        Wait(cooldownMinutes * 60 * 1000)
+        
+        -- Reset robbery state for respawn
+        local currentState = ActiveRobberies[robberyId]
+        if currentState then
+            currentState.guardsKilled = 0
+            currentState.tellersKilled = 0
+            currentState.activated = false
+            currentState.guards = {}
+            currentState.tellers = {}
+        end
+        
+        -- Respawn guard
+        spawnGuard(robberyId, guardData)
+        
+        TriggerClientEvent('cs_heistbuilder:client:robberyUpdate', -1, robberyId, 'Guards have respawned')
+    end)
+end
+
+function Robbery.scheduleTellerRespawn(robberyId, tellerData)
+    if not tellerData then return end
+    
+    local state = ActiveRobberies[robberyId]
+    if not state then return end
+    
+    local cooldownMinutes = (state.heist and state.heist.cooldownMinutes) or 15
+    
+    CreateThread(function()
+        Wait(cooldownMinutes * 60 * 1000)
+        
+        -- Respawn teller
+        spawnTeller(robberyId, tellerData)
+    end)
 end
 
 function Robbery.activateRobbery(robberyId, activator)
@@ -255,31 +367,13 @@ function Robbery.checkRegisterHit(netId, attacker)
 end
 
 function Robbery.cleanupRobbery(robberyId)
-    if not ActiveRobberies[robberyId] then return end
+    -- Don't delete guards/tellers permanently - they respawn after cooldown
+    -- Only clean up if heist is being removed from config
     
-    -- Clean up guards
-    for netId, guardData in pairs(ActiveGuards) do
-        if guardData.robberyId == robberyId then
-            local ped = NetworkGetEntityFromNetworkId(netId)
-            if DoesEntityExist(ped) then
-                DeleteEntity(ped)
-            end
-            ActiveGuards[netId] = nil
-        end
-    end
+    local state = ActiveRobberies[robberyId]
+    if not state then return end
     
-    -- Clean up tellers
-    for netId, tellerData in pairs(ActiveTellers) do
-        if tellerData.robberyId == robberyId then
-            local ped = NetworkGetEntityFromNetworkId(netId)
-            if DoesEntityExist(ped) then
-                DeleteEntity(ped)
-            end
-            ActiveTellers[netId] = nil
-        end
-    end
-    
-    -- Clean up registers
+    -- Only clean up registers and reset state
     for netId, registerData in pairs(CashRegisters) do
         if registerData.robberyId == robberyId then
             local obj = NetworkGetEntityFromNetworkId(netId)
@@ -290,8 +384,43 @@ function Robbery.cleanupRobbery(robberyId)
         end
     end
     
-    ActiveRobberies[robberyId] = nil
+    -- Reset state but keep robbery active for respawn
+    state.guardsKilled = 0
+    state.tellersKilled = 0
+    state.activated = false
+    state.guards = {}
+    state.tellers = {}
+    
     TriggerClientEvent('cs_heistbuilder:client:robberyCleaned', -1, robberyId)
+end
+
+function Robbery.removeRobbery(robberyId)
+    -- Permanently remove robbery and all NPCs (for config changes)
+    Robbery.cleanupRobbery(robberyId)
+    
+    -- Delete guards
+    for netId, guardData in pairs(ActiveGuards) do
+        if guardData.robberyId == robberyId then
+            local ped = NetworkGetEntityFromNetworkId(netId)
+            if DoesEntityExist(ped) then
+                DeleteEntity(ped)
+            end
+            ActiveGuards[netId] = nil
+        end
+    end
+    
+    -- Delete tellers
+    for netId, tellerData in pairs(ActiveTellers) do
+        if tellerData.robberyId == robberyId then
+            local ped = NetworkGetEntityFromNetworkId(netId)
+            if DoesEntityExist(ped) then
+                DeleteEntity(ped)
+            end
+            ActiveTellers[netId] = nil
+        end
+    end
+    
+    ActiveRobberies[robberyId] = nil
 end
 
 function Robbery.getRobberyState(robberyId)
