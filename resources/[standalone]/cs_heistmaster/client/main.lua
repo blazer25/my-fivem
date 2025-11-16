@@ -16,6 +16,7 @@ local ClerkRuntimeState = {} -- [heistId] = { panicked = false, gaveKey = false,
 local guards = {} -- [heistId] = { ped1, ped2, ... }
 local SpawnedClerks = {} -- [heistId] = ped
 local VaultDoors = {} -- [heistId] = { obj = entity, heading = number, open = boolean }
+local StepObjects = {} -- [heistId] = { [stepIndex] = object }
 
 -- ============================================================
 -- HELPERS
@@ -41,6 +42,38 @@ local function loadModel(model)
     RequestModel(hash)
     while not HasModelLoaded(hash) do Wait(0) end
     return hash
+end
+
+-- ============================================================
+-- TARGETING SYSTEM DETECTION & HELPERS
+-- ============================================================
+
+local useOxTarget = false
+local useQbTarget = false
+
+-- Detect which targeting system is available
+CreateThread(function()
+    Wait(1000) -- Wait for resources to load
+    if GetResourceState('ox_target') == 'started' then
+        useOxTarget = true
+        debugPrint('Using ox_target for heist interactions')
+    elseif GetResourceState('qb-target') == 'started' then
+        useQbTarget = true
+        debugPrint('Using qb-target for heist interactions')
+    else
+        debugPrint('WARNING: No targeting system found! Heist steps will not be interactable.')
+    end
+end)
+
+-- Helper to remove target from object
+local function removeTargetFromObject(object)
+    if not DoesEntityExist(object) then return end
+    
+    if useOxTarget then
+        exports.ox_target:removeLocalEntity(object)
+    elseif useQbTarget then
+        exports['qb-target']:RemoveTargetEntity(object)
+    end
 end
 
 -- ============================================================
@@ -358,8 +391,9 @@ RegisterNetEvent("cs_heistmaster:client:setStep", function(heistId, step)
     debugPrint(('Step set: %s = %s'):format(heistId, step))
 end)
 
--- Forward declaration - will be defined later
+-- Forward declarations - will be defined later
 local runHeistThread
+local spawnStepObjects
 
 RegisterNetEvent('cs_heistmaster:client:startHeist', function(heistId, heistData)
     currentHeistId = heistId
@@ -376,6 +410,12 @@ RegisterNetEvent('cs_heistmaster:client:startHeist', function(heistId, heistData
         description = 'Heist started. Follow the objectives.',
         type = 'success'
     })
+    
+    -- Spawn step objects with target options
+    CreateThread(function()
+        Wait(500) -- Small delay to ensure targeting system is ready
+        spawnStepObjects(heistId, heistData)
+    end)
     
     -- Start the heist thread
     runHeistThread(heistId, heistData)
@@ -523,6 +563,480 @@ local function handleStepAlert(heistId, heist, step)
 end
 
 -- ============================================================
+-- ACTION HANDLER FUNCTIONS (Called from target options)
+-- ============================================================
+
+local function handleHackAction(heistId, heist, step, stepIndex)
+    local ped = PlayerPedId()
+    local lootKey = ('step_%s_%s'):format(stepIndex, heistId)
+    
+    -- Check if already completed
+    if alreadyLooted[heistId] and alreadyLooted[heistId][lootKey] then
+        lib.notify({
+            description = 'This has already been completed.',
+            type = 'error'
+        })
+        return false
+    end
+    
+    -- Trigger alert/alarm
+    handleStepAlert(heistId, heist, step)
+    
+    RequestAnimDict('anim@heists@prison_heiststation@cop_reactions')
+    while not HasAnimDictLoaded('anim@heists@prison_heiststation@cop_reactions') do Wait(0) end
+    
+    TaskPlayAnim(ped, 'anim@heists@prison_heiststation@cop_reactions', 'console_peek_a', 8.0, -8.0, -1, 1, 0.0, false, false, false)
+    
+    -- Skill check
+    local difficulty = step.difficulty or { 'easy', 'medium', 'hard' }
+    local inputs = step.inputs or nil
+    local result = lib.skillCheck(difficulty, inputs)
+    
+    if result then
+        local hackDuration = step.time or 5000
+        local progressResult = lib.progressCircle({
+            duration = hackDuration,
+            label = step.label or 'Hacking...',
+            position = 'bottom',
+            useWhileDead = false,
+            canCancel = true,
+            disable = { move = true, car = true, combat = true },
+        })
+        
+        ClearPedTasks(ped)
+        
+        if not progressResult then
+            TriggerServerEvent('cs_heistmaster:abortHeist', heistId)
+            return false
+        end
+        
+        -- Mark as completed
+        alreadyLooted[heistId] = alreadyLooted[heistId] or {}
+        alreadyLooted[heistId][lootKey] = true
+        TriggerServerEvent("cs_heistmaster:server:completeStep", heistId, stepIndex)
+        return true
+    else
+        ClearPedTasks(ped)
+        lib.notify({
+            description = 'Hack failed!',
+            type = 'error'
+        })
+        return false
+    end
+end
+
+local function handleDrillAction(heistId, heist, step, stepIndex)
+    local ped = PlayerPedId()
+    local lootKey = ('step_%s_%s'):format(stepIndex, heistId)
+    
+    -- Check if already completed
+    if alreadyLooted[heistId] and alreadyLooted[heistId][lootKey] then
+        lib.notify({
+            description = 'This has already been completed.',
+            type = 'error'
+        })
+        return false
+    end
+    
+    -- Trigger alert/alarm
+    handleStepAlert(heistId, heist, step)
+    
+    -- Check for safe key
+    local keyName = "safe_key_"..heistId
+    local hasKey = false
+    
+    if exports['ox_inventory'] then
+        local searchResult = exports['ox_inventory']:Search('count', keyName)
+        if type(searchResult) == 'number' then
+            hasKey = searchResult > 0
+        elseif type(searchResult) == 'table' then
+            if searchResult[keyName] then
+                hasKey = searchResult[keyName] > 0
+            end
+        end
+    end
+    
+    if hasKey then
+        -- Skip drill and open instantly with key
+        local progressResult = lib.progressCircle({
+            duration = 3500,
+            label = "Unlocking safe with key...",
+            position = 'bottom',
+            disable = { move = true, car = true, combat = true },
+            canCancel = true
+        })
+        
+        if not progressResult then
+            TriggerServerEvent('cs_heistmaster:abortHeist', heistId)
+            return false
+        end
+        
+        TriggerServerEvent('cs_heistmaster:safeReward', heistId)
+        TriggerServerEvent('cs_heistmaster:removeSafeKey', heistId)
+        lib.notify({
+            title = 'Safe',
+            description = 'You unlocked the safe silently!',
+            type = 'success'
+        })
+        
+        -- Mark as completed
+        alreadyLooted[heistId] = alreadyLooted[heistId] or {}
+        alreadyLooted[heistId][lootKey] = true
+        TriggerServerEvent("cs_heistmaster:server:completeStep", heistId, stepIndex)
+        return true
+    else
+        -- Run full drill animation
+        local duration = step.time or 20000
+        RequestAnimDict('anim@heists@fleeca_bank@drilling')
+        while not HasAnimDictLoaded('anim@heists@fleeca_bank@drilling') do Wait(0) end
+        
+        TaskPlayAnim(ped, 'anim@heists@fleeca_bank@drilling', 'drill_straight_idle', 8.0, -8.0, duration, 1, 0.0, false, false, false)
+        
+        local progressResult = lib.progressCircle({
+            duration = duration,
+            label = step.label or 'Drilling...',
+            position = 'bottom',
+            useWhileDead = false,
+            canCancel = true,
+            disable = { move = true, car = true, combat = true },
+        })
+        
+        ClearPedTasks(ped)
+        
+        if not progressResult then
+            TriggerServerEvent('cs_heistmaster:abortHeist', heistId)
+            return false
+        end
+        
+        -- Give safe reward for store heists
+        if heist.heistType == 'store' then
+            TriggerServerEvent('cs_heistmaster:safeReward', heistId)
+        end
+        
+        -- Open vault door for Fleeca
+        if heist.heistType == 'fleeca' and heist.vault then
+            TriggerServerEvent('cs_heistmaster:server:setVaultOpen', heistId)
+        end
+        
+        -- Mark as completed
+        alreadyLooted[heistId] = alreadyLooted[heistId] or {}
+        alreadyLooted[heistId][lootKey] = true
+        TriggerServerEvent("cs_heistmaster:server:completeStep", heistId, stepIndex)
+        return true
+    end
+end
+
+local function handleSmashAction(heistId, heist, step, stepIndex)
+    local ped = PlayerPedId()
+    local lootKey = ('step_%s_%s'):format(stepIndex, heistId)
+    
+    -- Check if already completed
+    if alreadyLooted[heistId] and alreadyLooted[heistId][lootKey] then
+        lib.notify({
+            description = 'This has already been completed.',
+            type = 'error'
+        })
+        return false
+    end
+    
+    -- Trigger alert/alarm
+    handleStepAlert(heistId, heist, step)
+    
+    RequestAnimDict('melee@unarmed@streamed_core_fps')
+    while not HasAnimDictLoaded('melee@unarmed@streamed_core_fps') do Wait(0) end
+    
+    TaskPlayAnim(ped, 'melee@unarmed@streamed_core_fps', 'ground_attack_0', 8.0, -8.0, step.time or 4000, 0, 0.0, false, false, false)
+    
+    local progressResult = lib.progressCircle({
+        duration = step.time or 4000,
+        label = step.label or 'Smashing...',
+        position = 'bottom',
+        useWhileDead = false,
+        canCancel = true,
+        disable = { move = true, car = true, combat = true },
+    })
+    
+    ClearPedTasks(ped)
+    
+    if not progressResult then
+        TriggerServerEvent('cs_heistmaster:abortHeist', heistId)
+        return false
+    end
+    
+    -- Mark as completed
+    alreadyLooted[heistId] = alreadyLooted[heistId] or {}
+    alreadyLooted[heistId][lootKey] = true
+    TriggerServerEvent("cs_heistmaster:server:completeStep", heistId, stepIndex)
+    return true
+end
+
+local function handleLootAction(heistId, heist, step, stepIndex)
+    local ped = PlayerPedId()
+    local lootKey = ('step_%s_%s'):format(stepIndex, heistId)
+    
+    -- Check if already looted
+    if alreadyLooted[heistId] and alreadyLooted[heistId][lootKey] then
+        lib.notify({
+            description = 'This has already been looted.',
+            type = 'error'
+        })
+        return false
+    end
+    
+    RequestAnimDict('anim@heists@ornate_bank@grab_cash')
+    while not HasAnimDictLoaded('anim@heists@ornate_bank@grab_cash') do Wait(0) end
+    
+    TaskPlayAnim(ped, 'anim@heists@ornate_bank@grab_cash', 'grab', 8.0, -8.0, -1, 1, 0.0, false, false, false)
+    
+    local lootDuration = step.time or 3000
+    local progressResult = lib.progressCircle({
+        duration = lootDuration,
+        label = step.label or 'Looting...',
+        position = 'bottom',
+        useWhileDead = false,
+        canCancel = true,
+        disable = { move = true, car = true, combat = true },
+    })
+    
+    ClearPedTasks(ped)
+    
+    if not progressResult then
+        TriggerServerEvent('cs_heistmaster:abortHeist', heistId)
+        return false
+    end
+    
+    -- Mark as looted and request reward
+    alreadyLooted[heistId] = alreadyLooted[heistId] or {}
+    alreadyLooted[heistId][lootKey] = true
+    TriggerServerEvent('cs_heistmaster:server:giveLoot', heistId, lootKey)
+    TriggerServerEvent("cs_heistmaster:server:completeStep", heistId, stepIndex)
+    return true
+end
+
+-- Client event handler for step actions (for qb-target)
+RegisterNetEvent('cs_heistmaster:client:doStepAction', function(data)
+    local heistId = data.heistId
+    local stepIndex = data.stepIndex
+    local heist = Heists[heistId]
+    if not heist or not heist.steps[stepIndex] then return end
+    
+    -- Check if this is the active step (qb-target doesn't support canInteract)
+    if ActiveStep[heistId] ~= stepIndex then
+        lib.notify({
+            description = 'This step is not active yet.',
+            type = 'error'
+        })
+        return
+    end
+    
+    local step = heist.steps[stepIndex]
+    local lootKey = ('step_%s_%s'):format(stepIndex, heistId)
+    
+    -- Check if already completed
+    if alreadyLooted[heistId] and alreadyLooted[heistId][lootKey] then
+        lib.notify({
+            description = 'This has already been completed.',
+            type = 'error'
+        })
+        return
+    end
+    
+    local success = false
+    
+    if step.action == 'hack' then
+        success = handleHackAction(heistId, heist, step, stepIndex)
+    elseif step.action == 'drill' then
+        success = handleDrillAction(heistId, heist, step, stepIndex)
+    elseif step.action == 'smash' then
+        success = handleSmashAction(heistId, heist, step, stepIndex)
+    elseif step.action == 'loot' then
+        success = handleLootAction(heistId, heist, step, stepIndex)
+    end
+    
+    if success then
+        local nextStepIndex = stepIndex + 1
+        local nextStep = heist.steps[nextStepIndex]
+        
+        if not nextStep then
+            -- Finished all steps
+            TriggerServerEvent('cs_heistmaster:finishHeist', heistId)
+        else
+            lib.notify({
+                description = 'Objective complete. Move to the next location.',
+                type = 'success'
+            })
+        end
+    end
+end)
+
+-- ============================================================
+-- STEP OBJECT SPAWNING & TARGET SETUP
+-- ============================================================
+
+local function spawnStepObjects(heistId, heist)
+    if not StepObjects[heistId] then
+        StepObjects[heistId] = {}
+    end
+    
+    -- Cleanup existing objects first
+    for stepIndex, obj in pairs(StepObjects[heistId]) do
+        if DoesEntityExist(obj) then
+            removeTargetFromObject(obj)
+            DeleteEntity(obj)
+        end
+    end
+    StepObjects[heistId] = {}
+    
+    -- Spawn invisible object for each step
+    for stepIndex, step in ipairs(heist.steps or {}) do
+        if step.action ~= 'escape' then -- Escape steps don't need objects
+            local stepCoords = vecFromTable(step.coords)
+            
+            -- Use zone-based approach for ox_target, object-based for qb-target
+            if useOxTarget then
+                -- ox_target supports sphere zones which are better than invisible objects
+                local lootKey = ('step_%s_%s'):format(stepIndex, heistId)
+                local icon = 'fas fa-hand'
+                local label = step.label or 'Interact'
+                
+                if step.action == 'hack' then
+                    icon = 'fas fa-keyboard'
+                    label = step.label or 'Hack Security Panel'
+                elseif step.action == 'drill' then
+                    icon = 'fas fa-screwdriver'
+                    label = step.label or 'Drill Safe/Vault'
+                elseif step.action == 'loot' then
+                    icon = 'fas fa-hand-holding'
+                    label = step.label or 'Loot Register/Vault'
+                elseif step.action == 'smash' then
+                    icon = 'fas fa-hammer'
+                    label = step.label or 'Smash Register/Display'
+                end
+                
+                local zoneId = exports.ox_target:addSphereZone({
+                    coords = stepCoords,
+                    radius = 1.5,
+                    debug = Config.Debug,
+                    options = {
+                        {
+                            label = label,
+                            icon = icon,
+                            distance = 2.0,
+                            canInteract = function()
+                                return ActiveStep[heistId] == stepIndex and 
+                                       (not alreadyLooted[heistId] or not alreadyLooted[heistId][lootKey])
+                            end,
+                            onSelect = function()
+                                local success = false
+                                if step.action == 'hack' then
+                                    success = handleHackAction(heistId, heist, step, stepIndex)
+                                elseif step.action == 'drill' then
+                                    success = handleDrillAction(heistId, heist, step, stepIndex)
+                                elseif step.action == 'smash' then
+                                    success = handleSmashAction(heistId, heist, step, stepIndex)
+                                elseif step.action == 'loot' then
+                                    success = handleLootAction(heistId, heist, step, stepIndex)
+                                end
+                                
+                                if success then
+                                    local nextStepIndex = stepIndex + 1
+                                    local nextStep = heist.steps[nextStepIndex]
+                                    
+                                    if not nextStep then
+                                        TriggerServerEvent('cs_heistmaster:finishHeist', heistId)
+                                    else
+                                        lib.notify({
+                                            description = 'Objective complete. Move to the next location.',
+                                            type = 'success'
+                                        })
+                                    end
+                                end
+                            end
+                        }
+                    }
+                })
+                
+                -- Store zone ID for cleanup (ox_target returns zone ID)
+                StepObjects[heistId][stepIndex] = zoneId
+            else
+                -- qb-target requires an entity, so create invisible object
+                local modelHash = joaat('prop_mp_placement') -- Small invisible prop
+                if not IsModelInCdimage(modelHash) then
+                    modelHash = joaat('prop_atm_01') -- Fallback to ATM model
+                end
+                
+                RequestModel(modelHash)
+                while not HasModelLoaded(modelHash) do Wait(10) end
+                
+                local obj = CreateObjectNoOffset(modelHash, stepCoords.x, stepCoords.y, stepCoords.z, false, false, false)
+                SetEntityAlpha(obj, 0, false) -- Make invisible
+                FreezeEntityPosition(obj, true)
+                SetEntityCollision(obj, false, false)
+                
+                StepObjects[heistId][stepIndex] = obj
+                
+                -- Add target option for qb-target
+                local lootKey = ('step_%s_%s'):format(stepIndex, heistId)
+                local icon = 'fas fa-hand'
+                local label = step.label or 'Interact'
+                
+                if step.action == 'hack' then
+                    icon = 'fas fa-keyboard'
+                    label = step.label or 'Hack Security Panel'
+                elseif step.action == 'drill' then
+                    icon = 'fas fa-screwdriver'
+                    label = step.label or 'Drill Safe/Vault'
+                elseif step.action == 'loot' then
+                    icon = 'fas fa-hand-holding'
+                    label = step.label or 'Loot Register/Vault'
+                elseif step.action == 'smash' then
+                    icon = 'fas fa-hammer'
+                    label = step.label or 'Smash Register/Display'
+                end
+                
+                exports['qb-target']:AddTargetEntity(obj, {
+                    options = {
+                        {
+                            type = "client",
+                            event = "cs_heistmaster:client:doStepAction",
+                            label = label,
+                            icon = icon,
+                            action = step.action,
+                            heistId = heistId,
+                            stepIndex = stepIndex
+                        }
+                    },
+                    distance = 2.0
+                })
+            end
+            
+            debugPrint(('Step target spawned for heist %s, step %s'):format(heistId, stepIndex))
+        end
+    end
+end
+
+local function cleanupStepObjects(heistId)
+    if StepObjects[heistId] then
+        for stepIndex, objOrZoneId in pairs(StepObjects[heistId]) do
+            if useOxTarget then
+                -- ox_target zones are removed by ID
+                local zoneId = objOrZoneId
+                if type(zoneId) == 'string' then
+                    exports.ox_target:removeZone(zoneId)
+                end
+            elseif useQbTarget then
+                -- qb-target uses entities
+                if DoesEntityExist(objOrZoneId) then
+                    removeTargetFromObject(objOrZoneId)
+                    DeleteEntity(objOrZoneId)
+                end
+            end
+        end
+        StepObjects[heistId] = nil
+    end
+end
+
+-- ============================================================
 -- C) STEP PROGRESSION & ACTIONS
 -- ============================================================
 
@@ -530,7 +1044,6 @@ local function runHeistThread(heistId, heist)
     CreateThread(function()
         local heistStartPos = vecFromTable(heist.start)
         local maxDistance = 80.0 -- Abort if player goes too far
-        local heistRadius = 50.0 -- Abort if player leaves heist radius
         
         while currentHeistId == heistId do
             local ped = PlayerPedId()
@@ -558,332 +1071,25 @@ local function runHeistThread(heistId, heist)
                 break
             end
             
-            -- Get current step
+            -- Check for escape step (escape steps don't use target objects)
             local stepIndex = ActiveStep[heistId] or 1
             local step = heist.steps[stepIndex]
             
-            if not step then
-                -- No more steps, check for escape
-                break
-            end
-            
-            currentStepIndex = stepIndex
-            local stepPos = vecFromTable(step.coords)
-            local dist = #(pCoords - stepPos)
-            
-            -- NO MARKERS - Auto-trigger based on proximity only
-            
-            -- Use tighter radius for auto-trigger (1.2m)
-            local triggerRadius = 1.2
-            if dist < triggerRadius then
-                -- C) Check if this is the active step
-                if ActiveStep[heistId] ~= stepIndex then
-                    goto continue_step_loop
-                end
+            if step and step.action == 'escape' then
+                local escapePos = vecFromTable(step.coords)
+                local distFromEscape = #(pCoords - escapePos)
+                local escapeRadius = step.radius or 5.0
                 
-                -- NO UI PROMPTS - Actions trigger automatically based on proximity and conditions
-                local actionStarted = false
-                local stepCoords = vecFromTable(step.coords)
-                
-                -- Detect action initiation based on step type with proximity auto-trigger
-                if step.action == 'hack' then
-                    -- Hack auto-starts when player is within 1.2m AND pointing at panel
-                    local forwardVector = GetEntityForwardVector(ped)
-                    local toStep = stepCoords - pCoords
-                    local dot = (forwardVector.x * toStep.x + forwardVector.y * toStep.y) / dist
-                    if dot > 0.5 then -- Player facing the panel
-                        actionStarted = true
-                    end
-                elseif step.action == 'drill' then
-                    -- Drill auto-starts when within 1.2m AND has drill or safe key
-                    local hasKey = false
-                    local keyName = "safe_key_"..heistId
-                    if exports['ox_inventory'] then
-                        local searchResult = exports['ox_inventory']:Search('count', keyName)
-                        if type(searchResult) == 'number' and searchResult > 0 then
-                            hasKey = true
-                        elseif type(searchResult) == 'table' and searchResult[keyName] and searchResult[keyName] > 0 then
-                            hasKey = true
-                        end
-                    end
-                    -- Check for drill item or key
-                    if hasKey or (heist.requiredItem and exports['ox_inventory']) then
-                        local hasItem = false
-                        if exports['ox_inventory'] then
-                            local itemResult = exports['ox_inventory']:Search('count', heist.requiredItem)
-                            if type(itemResult) == 'number' and itemResult > 0 then
-                                hasItem = true
-                            end
-                        end
-                        if hasKey or hasItem then
-                            actionStarted = true
-                        end
-                    else
-                        -- No key/item required, auto-start
-                        actionStarted = true
-                    end
-                elseif step.action == 'smash' then
-                    -- Smash auto-starts when player melee-hits the display/register
-                    if IsControlJustPressed(0, 24) or (IsPedArmed(ped, 4) and IsControlJustPressed(0, 25)) then
-                        actionStarted = true
-                    end
-                elseif step.action == 'loot' then
-                    -- Loot auto-starts when within 1.2m AND register/vault not looted
-                    local lootKey = ('step_%s_%s'):format(stepIndex, heistId) -- Unique per heist
-                    if not alreadyLooted[heistId] or not alreadyLooted[heistId][lootKey] then
-                        actionStarted = true
-                    end
-                else
-                    -- Custom actions: auto-start on proximity
-                    actionStarted = true
-                end
-                
-                if actionStarted then
-                    -- Trigger alert/alarm
-                    handleStepAlert(heistId, heist, step)
-                    
-                    local success = false
-                    -- Unique loot key per heist and step to prevent conflicts
-                    local lootKey = ('step_%s_%s'):format(stepIndex, heistId)
-                    
-                    -- E) Check if already looted
-                    if alreadyLooted[heistId] and alreadyLooted[heistId][lootKey] then
-                        goto continue_step_loop
-                    end
-                    
-                    -- Handle different action types
-                    if step.action == 'hack' then
-                        RequestAnimDict('anim@heists@prison_heiststation@cop_reactions')
-                        while not HasAnimDictLoaded('anim@heists@prison_heiststation@cop_reactions') do Wait(0) end
-                        
-                        TaskPlayAnim(ped, 'anim@heists@prison_heiststation@cop_reactions', 'console_peek_a', 8.0, -8.0, -1, 1, 0.0, false, false, false)
-                        
-                        -- Skill check
-                        local difficulty = step.difficulty or { 'easy', 'medium', 'hard' }
-                        local inputs = step.inputs or nil
-                        local result = lib.skillCheck(difficulty, inputs)
-                        
-                        if result then
-                            local hackDuration = step.time or 5000
-                            local progressResult = lib.progressCircle({
-                                duration = hackDuration,
-                                label = step.label or 'Hacking...',
-                                position = 'bottom',
-                                useWhileDead = false,
-                                canCancel = true,
-                                disable = { move = true, car = true, combat = true },
-                            })
-                            
-                            if not progressResult then
-                                -- F) Player cancelled
-                                TriggerServerEvent('cs_heistmaster:abortHeist', heistId)
-                                currentHeistId = nil
-                                break
-                            end
-                            
-                            success = true
-                        else
-                            lib.notify({
-                                description = 'Hack failed!',
-                                type = 'error'
-                            })
-                            success = false
-                        end
-                        ClearPedTasks(ped)
-                        
-                    elseif step.action == 'drill' then
-                        -- A.2: Check for safe key (store heists use safe_key_store_heistId format)
-                        local keyName = "safe_key_"..heistId
-                        local hasKey = false
-                        
-                        if exports['ox_inventory'] then
-                            local searchResult = exports['ox_inventory']:Search('count', keyName)
-                            if type(searchResult) == 'number' then
-                                hasKey = searchResult > 0
-                            elseif type(searchResult) == 'table' then
-                                if searchResult[keyName] then
-                                    hasKey = searchResult[keyName] > 0
-                                end
-                            end
-                        end
-                        
-                        if hasKey then
-                            -- A.2: Skip drill and open instantly with key
-                            local progressResult = lib.progressCircle({
-                                duration = 3500,
-                                label = "Unlocking safe with key...",
-                                position = 'bottom',
-                                disable = { move = true, car = true, combat = true },
-                                canCancel = true
-                            })
-                            
-                            if not progressResult then
-                                TriggerServerEvent('cs_heistmaster:abortHeist', heistId)
-                                currentHeistId = nil
-                                break
-                            end
-                            
-                            TriggerServerEvent('cs_heistmaster:safeReward', heistId)
-                            TriggerServerEvent('cs_heistmaster:removeSafeKey', heistId)
-                            lib.notify({
-                                title = 'Safe',
-                                description = 'You unlocked the safe silently!',
-                                type = 'success'
-                            })
-                            success = true
-                        else
-                            -- A.2: Run full drill animation for store heists
-                            local duration = step.time or 20000
-                            RequestAnimDict('anim@heists@fleeca_bank@drilling')
-                            while not HasAnimDictLoaded('anim@heists@fleeca_bank@drilling') do Wait(0) end
-                            
-                            TaskPlayAnim(ped, 'anim@heists@fleeca_bank@drilling', 'drill_straight_idle', 8.0, -8.0, duration, 1, 0.0, false, false, false)
-                            
-                            local progressResult = lib.progressCircle({
-                                duration = duration,
-                                label = step.label or 'Drilling...',
-                                position = 'bottom',
-                                useWhileDead = false,
-                                canCancel = true,
-                                disable = { move = true, car = true, combat = true },
-                            })
-                            
-                            ClearPedTasks(ped)
-                            
-                            if not progressResult then
-                                TriggerServerEvent('cs_heistmaster:abortHeist', heistId)
-                                currentHeistId = nil
-                                break
-                            end
-                            
-                            -- A.2: Give safe reward for store heists
-                            if heist.heistType == 'store' then
-                                TriggerServerEvent('cs_heistmaster:safeReward', heistId)
-                            end
-                            
-                            -- Open vault door for Fleeca
-                            if heist.heistType == 'fleeca' and heist.vault then
-                                TriggerServerEvent('cs_heistmaster:server:setVaultOpen', heistId)
-                            end
-                            
-                            success = true
-                        end
-                        
-                    elseif step.action == 'smash' then
-                        RequestAnimDict('melee@unarmed@streamed_core_fps')
-                        while not HasAnimDictLoaded('melee@unarmed@streamed_core_fps') do Wait(0) end
-                        
-                        TaskPlayAnim(ped, 'melee@unarmed@streamed_core_fps', 'ground_attack_0', 8.0, -8.0, step.time or 4000, 0, 0.0, false, false, false)
-                        
-                        local progressResult = lib.progressCircle({
-                            duration = step.time or 4000,
-                            label = step.label or 'Smashing...',
-                            position = 'bottom',
-                            useWhileDead = false,
-                            canCancel = true,
-                            disable = { move = true, car = true, combat = true },
-                        })
-                        
-                        ClearPedTasks(ped)
-                        
-                        if not progressResult then
-                            TriggerServerEvent('cs_heistmaster:abortHeist', heistId)
-                            currentHeistId = nil
-                            break
-                        end
-                        
-                        success = true
-                        
-                    elseif step.action == 'loot' then
-                        RequestAnimDict('anim@heists@ornate_bank@grab_cash')
-                        while not HasAnimDictLoaded('anim@heists@ornate_bank@grab_cash') do Wait(0) end
-                        
-                        TaskPlayAnim(ped, 'anim@heists@ornate_bank@grab_cash', 'grab', 8.0, -8.0, -1, 1, 0.0, false, false, false)
-                        
-                        local lootDuration = step.time or 3000
-                        local progressResult = lib.progressCircle({
-                            duration = lootDuration,
-                            label = step.label or 'Looting...',
-                            position = 'bottom',
-                            useWhileDead = false,
-                            canCancel = true,
-                            disable = { move = true, car = true, combat = true },
-                        })
-                        
-                        ClearPedTasks(ped)
-                        
-                        if not progressResult then
-                            TriggerServerEvent('cs_heistmaster:abortHeist', heistId)
-                            currentHeistId = nil
-                            break
-                        end
-                        
-                        -- E) Mark as looted and request reward (using unique key)
-                        alreadyLooted[heistId] = alreadyLooted[heistId] or {}
-                        alreadyLooted[heistId][lootKey] = true
-                        TriggerServerEvent('cs_heistmaster:server:giveLoot', heistId, lootKey)
-                        
-                        success = true
-                        
-                    elseif step.action == 'escape' then
-                        -- G) ESCAPE STEP
-                        local escapePos = vecFromTable(step.coords)
-                        local distFromEscape = #(pCoords - escapePos)
-                        local escapeRadius = step.radius or 5.0
-                        
-                        -- Check if player is within escape radius
-                        if distFromEscape <= escapeRadius then
-                            -- Player is at escape point, finish heist
-                            success = true
-                        else
-                            lib.notify({
-                                description = 'You need to reach the escape point!',
-                                type = 'error'
-                            })
-                            success = false
-                        end
-                    end
-                    
-                    -- Handle step completion
-                    if success then
-                        -- E) Mark step as completed (if not already marked for loot)
-                        if step.action ~= 'loot' then
-                            alreadyLooted[heistId] = alreadyLooted[heistId] or {}
-                            alreadyLooted[heistId][lootKey] = true -- Unique key per heist
-                        end
-                        
-                        -- C) Notify server step is complete
-                        TriggerServerEvent("cs_heistmaster:server:completeStep", heistId, stepIndex)
-                        
-                        local nextStepIndex = stepIndex + 1
-                        local nextStep = heist.steps[nextStepIndex]
-                        
-                        if not nextStep then
-                            -- Finished all steps
-                            TriggerServerEvent('cs_heistmaster:finishHeist', heistId)
-                            currentHeistId = nil
-                            break
-                        else
-                            lib.notify({
-                                description = 'Objective complete. Move to the next location.',
-                                type = 'success'
-                            })
-                        end
-                    else
-                        lib.notify({
-                            description = 'You failed the objective!',
-                            type = 'error'
-                        })
-                        -- F) Abort on failure
-                        TriggerServerEvent('cs_heistmaster:abortHeist', heistId)
-                        currentHeistId = nil
-                        break
-                    end
+                if distFromEscape <= escapeRadius then
+                    -- Player is at escape point, finish heist
+                    TriggerServerEvent("cs_heistmaster:server:completeStep", heistId, stepIndex)
+                    TriggerServerEvent('cs_heistmaster:finishHeist', heistId)
+                    currentHeistId = nil
+                    break
                 end
             end
             
-            ::continue_step_loop::
-            Wait(0)
+            Wait(1000) -- Check escape step every second
         end
     end)
 end
@@ -989,6 +1195,9 @@ RegisterNetEvent('cs_heistmaster:client:cleanupHeist', function(heistId)
     end
     
     debugPrint(('Heist cleaned up: %s'):format(heistId))
+    
+    -- Cleanup step objects
+    cleanupStepObjects(heistId)
     
     -- A.5: Stop alarm if active
     if ActiveAlarms[heistId] then
