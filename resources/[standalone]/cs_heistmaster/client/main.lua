@@ -1670,6 +1670,45 @@ RegisterNetEvent('cs_heistmaster:client:startHeist', function(heistId, heistData
         type = 'success'
     })
     
+    -- CRITICAL FIX: Spawn vault door immediately when heist starts (for Fleeca banks)
+    if heistData.heistType == 'fleeca' and heistData.vault and heistData.vault.coords then
+        -- Spawn door immediately (no delay) - it should be visible from the start
+        local doorModel = heistData.vault.doorModel or 'v_ilev_gb_vauldr'
+        local vaultCoords = vecFromTable(heistData.vault.coords)
+        local vaultHeading = heistData.vault.heading or 160.0
+        
+        CreateThread(function()
+            -- Wait a tiny bit for original door removal to start, then spawn our door
+            Wait(300)
+            
+            -- Ensure HeistState is initialized
+            if not HeistState[heistId] then HeistState[heistId] = {} end
+            
+            -- Check if door already exists
+            if HeistState[heistId].vaultObj and DoesEntityExist(HeistState[heistId].vaultObj) then
+                debugPrint(('Vault door already exists for heist: %s'):format(heistId))
+                return
+            end
+            
+            -- Load and spawn the door
+            local hash = joaat(doorModel)
+            RequestModel(hash)
+            while not HasModelLoaded(hash) do Wait(10) end
+            
+            -- Spawn door
+            local obj = CreateObject(hash, vaultCoords.x, vaultCoords.y, vaultCoords.z, true, false, false)
+            SetEntityHeading(obj, vaultHeading)
+            FreezeEntityPosition(obj, true)
+            SetEntityCollision(obj, true, true) -- Closed door blocks passage
+            
+            -- Store reference
+            HeistState[heistId].vaultObj = obj
+            VaultDoors[heistId] = { obj = obj, heading = vaultHeading, open = false }
+            
+            debugPrint(('Vault door spawned immediately on heist start: %s at coords: %s'):format(heistId, tostring(vaultCoords)))
+        end)
+    end
+    
     -- Spawn step objects with target options
     CreateThread(function()
         -- Wait for targeting system to be detected
