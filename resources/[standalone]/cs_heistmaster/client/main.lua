@@ -168,9 +168,32 @@ local function runHeistThread(heistId, heist)
                         -- DO THEY HAVE THE KEY?
                         local keyName = "safe_key_"..heistId
                         local hasKey = false
+                        
                         if exports['ox_inventory'] then
-                            local keyCount = exports['ox_inventory']:Search('count', keyName)
-                            hasKey = (type(keyCount) == 'number' and keyCount > 0)
+                            -- Client-side Search: Search(search, item) - no source needed
+                            local searchResult = exports['ox_inventory']:Search('count', keyName)
+                            
+                            if Config.Debug then
+                                debugPrint(('Key search result type: %s, value: %s'):format(
+                                    type(searchResult), tostring(searchResult)
+                                ))
+                            end
+                            
+                            -- Search can return number or table, handle both
+                            if type(searchResult) == 'number' then
+                                hasKey = searchResult > 0
+                            elseif type(searchResult) == 'table' then
+                                -- Could be { [itemName] = count } or just the count directly
+                                if searchResult[keyName] then
+                                    hasKey = searchResult[keyName] > 0
+                                elseif searchResult[1] then
+                                    hasKey = searchResult[1] > 0
+                                end
+                            end
+                        end
+
+                        if Config.Debug then
+                            debugPrint(('Drill step: checking for key %s, hasKey=%s'):format(keyName, tostring(hasKey)))
                         end
 
                         if hasKey then
@@ -191,10 +214,8 @@ local function runHeistThread(heistId, heist)
                                 type = 'success' 
                             })
 
-                            -- remove key
-                            if exports['ox_inventory'] then
-                                exports['ox_inventory']:RemoveItem(keyName, 1)
-                            end
+                            -- remove key (server will handle removal)
+                            TriggerServerEvent('cs_heistmaster:removeSafeKey', heistId)
 
                             success = true
                         else

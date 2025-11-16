@@ -314,6 +314,20 @@ RegisterNetEvent('cs_heistmaster:giveSafeKey', function(heistId)
 end)
 
 ----------------------------------------------------------------
+-- Remove safe key after use
+----------------------------------------------------------------
+
+RegisterNetEvent('cs_heistmaster:removeSafeKey', function(heistId)
+    local src = source
+    local keyName = "safe_key_"..heistId
+    
+    if exports['ox_inventory'] then
+        exports['ox_inventory']:RemoveItem(src, keyName, 1)
+        debugPrint('Removed safe key from player: ' .. src)
+    end
+end)
+
+----------------------------------------------------------------
 -- Safe reward handler (for key-based silent opening)
 ----------------------------------------------------------------
 
