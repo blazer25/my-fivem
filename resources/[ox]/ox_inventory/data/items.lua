@@ -1243,5 +1243,18 @@ return {
     ['skin_deer_good'] = { label = 'Prime Deer Pelt', weight = 200, client = { image = 'skin_deer_good.png' } },
     ['skin_deer_perfect'] = { label = 'Flawless Deer Pelt', weight = 200, client = { image = 'skin_deer_perfect.png' } },
     ['deer_horn'] = { label = 'Deer Horn', weight = 1000, client = { image = 'deer_horn.png' } },
+
+    -- cs_heistmaster safe keys
+    ['safe_key_store_247_grove'] = {
+        label = 'Store Safe Key',
+        weight = 0,
+        stack = false,
+        close = true,
+        description = 'A small key that unlocks the backroom safe.',
+        consume = 0,
+        client = {
+            image = 'key.png'
+        }
+    },
 }
 
