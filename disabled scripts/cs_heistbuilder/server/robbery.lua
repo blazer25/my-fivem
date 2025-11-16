@@ -6,25 +6,25 @@ local ActiveGuards = {}
 local ActiveTellers = {}
 local CashRegisters = {}
 
+-- Server creates networked entities, clients configure them
 local function spawnGuard(robberyId, guardData)
     local coords = guardData.coords or {}
     local model = guardData.model or 's_m_m_security_01'
     local weapon = guardData.weapon or 'WEAPON_CARBINERIFLE'
     
     CreateThread(function()
-        local ped = CreatePed(4, GetHashKey(model), coords.x, coords.y, coords.z, coords.w or 0.0, true, true)
-        if not DoesEntityExist(ped) then return end
+        -- Validate coordinates
+        if not coords.x or not coords.y or not coords.z then
+            print(('[cs_heistbuilder] ERROR: Invalid guard coordinates for robbery %s'):format(robberyId))
+            return
+        end
         
-        SetPedFleeAttributes(ped, 0, false)
-        SetPedCombatAttributes(ped, 46, true)
-        SetPedCombatAbility(ped, 2)
-        SetPedAccuracy(ped, 70)
-        SetPedCanSwitchWeapon(ped, true)
-        GiveWeaponToPed(ped, GetHashKey(weapon), 250, false, true)
-        SetPedDropsWeaponsWhenDead(ped, false)
-        SetEntityInvincible(ped, false)
-        SetBlockingOfNonTemporaryEvents(ped, true)
-        TaskGuardCurrentPosition(ped, 15.0, 15.0, 1)
+        -- Server can create networked peds
+        local ped = CreatePed(4, GetHashKey(model), coords.x, coords.y, coords.z, coords.w or 0.0, true, true)
+        if not DoesEntityExist(ped) then 
+            print(('[cs_heistbuilder] ERROR: Failed to create guard at %s, %s, %s'):format(coords.x, coords.y, coords.z))
+            return 
+        end
         
         local netId = NetworkGetNetworkIdFromEntity(ped)
         ActiveGuards[netId] = {
@@ -33,8 +33,16 @@ local function spawnGuard(robberyId, guardData)
             guardData = guardData
         }
         
-        SetNetworkIdCanMigrate(netId, false)
-        TriggerClientEvent('cs_heistbuilder:client:guardSpawned', -1, netId, robberyId, coords)
+        -- Send to clients to configure (clients handle SetNetworkIdCanMigrate)
+        TriggerClientEvent('cs_heistbuilder:client:configureGuard', -1, netId, robberyId, {
+            weapon = weapon,
+            fleeAttributes = 0,
+            combatAttributes = 46,
+            combatAbility = 2,
+            accuracy = 70,
+            invincible = false,
+            coords = coords  -- Pass coords for positioning
+        })
     end)
 end
 
@@ -43,13 +51,18 @@ local function spawnTeller(robberyId, tellerData)
     local model = tellerData.model or 's_f_y_shop_low'
     
     CreateThread(function()
-        local ped = CreatePed(4, GetHashKey(model), coords.x, coords.y, coords.z, coords.w or 0.0, true, true)
-        if not DoesEntityExist(ped) then return end
+        -- Validate coordinates
+        if not coords.x or not coords.y or not coords.z then
+            print(('[cs_heistbuilder] ERROR: Invalid teller coordinates for robbery %s'):format(robberyId))
+            return
+        end
         
-        SetPedFleeAttributes(ped, 512, true)
-        SetPedCombatAttributes(ped, 0, false)
-        SetBlockingOfNonTemporaryEvents(ped, true)
-        TaskStandStill(ped, -1)
+        -- Server can create networked peds
+        local ped = CreatePed(4, GetHashKey(model), coords.x, coords.y, coords.z, coords.w or 0.0, true, true)
+        if not DoesEntityExist(ped) then 
+            print(('[cs_heistbuilder] ERROR: Failed to create teller at %s, %s, %s'):format(coords.x, coords.y, coords.z))
+            return 
+        end
         
         local netId = NetworkGetNetworkIdFromEntity(ped)
         ActiveTellers[netId] = {
@@ -58,37 +71,13 @@ local function spawnTeller(robberyId, tellerData)
             tellerData = tellerData
         }
         
-        SetNetworkIdCanMigrate(netId, false)
-        TriggerClientEvent('cs_heistbuilder:client:tellerSpawned', -1, netId, robberyId, coords)
+        -- Send to clients to configure (clients handle SetNetworkIdCanMigrate)
+        TriggerClientEvent('cs_heistbuilder:client:configureTeller', -1, netId, robberyId)
     end)
 end
 
-local function spawnCashRegister(robberyId, registerData)
-    local coords = registerData.coords or {}
-    local model = registerData.model or `prop_till_01`
-    
-    CreateThread(function()
-        local obj = CreateObject(model, coords.x, coords.y, coords.z, false, true, true)
-        if not DoesEntityExist(obj) then return end
-        
-        FreezeEntityPosition(obj, true)
-        -- Make register vulnerable to damage
-        SetEntityProofs(obj, false, false, false, false, false, false, false, false)
-        SetEntityHealth(obj, 100)
-        SetEntityMaxHealth(obj, 100)
-        
-        local netId = NetworkGetNetworkIdFromEntity(obj)
-        CashRegisters[netId] = {
-            obj = obj,
-            robberyId = robberyId,
-            registerData = registerData,
-            opened = false
-        }
-        
-        SetNetworkIdCanMigrate(netId, false)
-        TriggerClientEvent('cs_heistbuilder:client:registerSpawned', -1, netId, robberyId, coords)
-    end)
-end
+-- Cash registers are found on client side from existing world objects
+-- No need to spawn them - they already exist in the city
 
 local RobberyCooldowns = {}
 
@@ -125,13 +114,14 @@ function Robbery.spawnRobbery(heist)
     -- Spawn guards permanently (they respawn after cooldown)
     Robbery.spawnGuards(heist)
     
-    -- For stores: spawn tellers and cash registers permanently
+    -- For stores: spawn tellers (registers already exist in the city)
     if robberyType == 'store' then
         Robbery.spawnTellers(heist)
+        -- Don't spawn cash registers - use existing ones in the city
+        -- Client will find and track existing registers at the coordinates
         if heist.cashRegisters then
-            for _, register in ipairs(heist.cashRegisters) do
-                spawnCashRegister(heist.id, register)
-            end
+            -- Send register coordinates to clients to find existing registers
+            TriggerClientEvent('cs_heistbuilder:client:findRegisters', -1, heist.id, heist.cashRegisters)
         end
     end
     
@@ -332,36 +322,49 @@ function Robbery.checkRegisterHit(netId, attacker)
         return
     end
     
-    local obj = NetworkGetEntityFromNetworkId(netId)
-    if not DoesEntityExist(obj) then return end
+    -- Mark register as opened (don't give money yet - wait for loot interaction)
+    registerData.opened = true
     
-    -- Check if register was shot - health below 100 means it's been damaged
-    local health = GetEntityHealth(obj)
-    if health < 100 then
-        registerData.opened = true
-        
-        -- Prevent further damage
-        SetEntityHealth(obj, 100)
-        FreezeEntityPosition(obj, true)
-        
-        -- Spawn money
-        local coords = registerData.registerData.coords or {}
-        local amount = math.random(registerData.registerData.minCash or 500, registerData.registerData.maxCash or 1500)
-        
-        TriggerClientEvent('cs_heistbuilder:client:registerOpened', -1, netId, coords, amount)
-        
-        -- Give money to attacker
-        if attacker then
-            if exports['qbx_core'] and exports['qbx_core'].Functions and exports['qbx_core'].Functions.AddMoney then
-                exports['qbx_core'].Functions.AddMoney(attacker, 'cash', amount, 'store_robbery')
-            else
-                exports['ox_inventory']:AddItem(attacker, 'cash', amount)
-            end
-            
-            TriggerClientEvent('cs_heistbuilder:client:lootCollected', attacker, amount)
-        end
-    end
+    local coords = registerData.registerData.coords or {}
+    local amount = math.random(registerData.registerData.minCash or 500, registerData.registerData.maxCash or 1500)
+    
+    -- Store amount for when player loots it
+    registerData.cashAmount = amount
+    
+    TriggerClientEvent('cs_heistbuilder:client:registerOpened', -1, netId, coords, amount)
+    print(('[cs_heistbuilder] Register %s opened by player %s, amount: $%s'):format(netId, attacker or 'unknown', amount))
 end
+
+-- Handle loot interaction
+RegisterNetEvent('cs_heistbuilder:server:lootRegister', function(netId)
+    local src = source
+    local registerData = CashRegisters[netId]
+    if not registerData or not registerData.opened or registerData.looted then
+        TriggerClientEvent('cs_heistbuilder:client:robberyUpdate', src, registerData and registerData.robberyId or '', 'Register already looted!')
+        return
+    end
+    
+    local robberyId = registerData.robberyId
+    local state = ActiveRobberies[robberyId]
+    if not state or not state.activated then
+        TriggerClientEvent('cs_heistbuilder:client:robberyUpdate', src, robberyId, 'Robbery not activated yet!')
+        return
+    end
+    
+    -- Mark as looted
+    registerData.looted = true
+    local amount = registerData.cashAmount or math.random(registerData.registerData.minCash or 500, registerData.registerData.maxCash or 1500)
+    
+    -- Give money to player
+    if exports['qbx_core'] and exports['qbx_core'].Functions and exports['qbx_core'].Functions.AddMoney then
+        exports['qbx_core'].Functions.AddMoney(src, 'cash', amount, 'store_robbery')
+    elseif exports['ox_inventory'] and exports['ox_inventory'].AddItem then
+        exports['ox_inventory']:AddItem(src, 'money', amount)
+    end
+    
+    TriggerClientEvent('cs_heistbuilder:client:lootCollected', src, amount)
+    print(('[cs_heistbuilder] Player %s looted register %s: $%s'):format(src, netId, amount))
+end)
 
 function Robbery.cleanupRobbery(robberyId)
     -- Don't delete guards/tellers permanently - they respawn after cooldown

@@ -25,12 +25,29 @@ CreateThread(function()
     end
     
     local heists = Storage.getHeists()
+    local spawnedCount = 0
+    local skippedCount = 0
+    
     for _, heist in pairs(heists) do
         if heist.type and (heist.type == 'bank' or heist.type == 'store') then
-            -- Guards and tellers spawn immediately and stay permanently
-            RobberyModule.spawnRobbery(heist)
+            -- Check if heist has guards or tellers configured
+            if heist.guards and #heist.guards > 0 then
+                -- Guards and tellers spawn immediately and stay permanently
+                RobberyModule.spawnRobbery(heist)
+                spawnedCount = spawnedCount + 1
+                print(('[cs_heistbuilder] Spawned robbery: %s (%s guards, %s tellers)'):format(
+                    heist.id or 'unknown',
+                    heist.guards and #heist.guards or 0,
+                    heist.tellers and #heist.tellers or 0
+                ))
+            else
+                skippedCount = skippedCount + 1
+                print(('[cs_heistbuilder] Skipped heist %s: No guards configured'):format(heist.id or 'unknown'))
+            end
         end
     end
+    
+    print(('[cs_heistbuilder] Robbery spawn complete: %d spawned, %d skipped'):format(spawnedCount, skippedCount))
 end)
 
 local function setCooldown(heist)
