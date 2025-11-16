@@ -53,15 +53,23 @@ local useQbTarget = false
 
 -- Detect which targeting system is available
 CreateThread(function()
-    Wait(1000) -- Wait for resources to load
-    if GetResourceState('ox_target') == 'started' then
-        useOxTarget = true
-        debugPrint('Using ox_target for heist interactions')
-    elseif GetResourceState('qb-target') == 'started' then
-        useQbTarget = true
-        debugPrint('Using qb-target for heist interactions')
-    else
+    -- Wait for resources to load and retry detection
+    for i = 1, 10 do
+        Wait(500)
+        if GetResourceState('ox_target') == 'started' then
+            useOxTarget = true
+            debugPrint('Using ox_target for heist interactions')
+            break
+        elseif GetResourceState('qb-target') == 'started' then
+            useQbTarget = true
+            debugPrint('Using qb-target for heist interactions')
+            break
+        end
+    end
+    
+    if not useOxTarget and not useQbTarget then
         debugPrint('WARNING: No targeting system found! Heist steps will not be interactable.')
+        print('^1[cs_heistmaster] ERROR: No targeting system (ox_target or qb-target) found!^7')
     end
 end)
 
@@ -962,23 +970,10 @@ local function spawnStepObjects(heistId, heist)
                             icon = icon,
                             distance = 2.0,
                             canInteract = function()
-                                if ActiveStep[heistId] ~= stepIndex then return false end
-                                if alreadyLooted[heistId] and alreadyLooted[heistId][lootKey] then return false end
-                                
-                                -- For store heists with smash action, require crowbar in inventory
-                                if step.action == 'smash' and heist.heistType == 'store' then
-                                    if exports['ox_inventory'] then
-                                        local searchResult = exports['ox_inventory']:Search('count', 'crowbar')
-                                        if type(searchResult) == 'number' then
-                                            return searchResult > 0
-                                        elseif type(searchResult) == 'table' then
-                                            return searchResult['crowbar'] and searchResult['crowbar'] > 0
-                                        end
-                                    end
-                                    return false
-                                end
-                                
-                                return true
+                                -- Always show target option if step is active and not completed
+                                -- Item checks happen in the action handler, not here
+                                return ActiveStep[heistId] == stepIndex and 
+                                       (not alreadyLooted[heistId] or not alreadyLooted[heistId][lootKey])
                             end,
                             onSelect = function()
                                 local success = false
@@ -1170,8 +1165,24 @@ RegisterNetEvent('cs_heistmaster:client:startHeist', function(heistId, heistData
     
     -- Spawn step objects with target options
     CreateThread(function()
-        Wait(500) -- Small delay to ensure targeting system is ready
-        spawnStepObjects(heistId, heistData)
+        -- Wait for targeting system to be detected
+        local attempts = 0
+        while not useOxTarget and not useQbTarget and attempts < 20 do
+            Wait(100)
+            attempts = attempts + 1
+        end
+        
+        if useOxTarget or useQbTarget then
+            Wait(200) -- Small delay to ensure targeting system is ready
+            spawnStepObjects(heistId, heistData)
+        else
+            debugPrint('ERROR: Cannot spawn step objects - targeting system not available')
+            lib.notify({
+                title = 'Error',
+                description = 'Targeting system not available. Heist steps may not work.',
+                type = 'error'
+            })
+        end
     end)
     
     -- Start the heist thread
