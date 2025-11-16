@@ -51,8 +51,9 @@ Config.Heists = {
                 label = "Crack the Safe",
                 coords = { x = -47.24, y = -1759.01, z = 29.42 }, -- behind counter
                 radius = 1.5,
-                time = 20000,
-                alert = "loud"
+                time = 30000, -- Extended to 30 seconds for more realistic timing
+                alert = "loud",
+                alarmSound = true
             },
         },
 

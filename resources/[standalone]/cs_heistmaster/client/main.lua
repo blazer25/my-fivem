@@ -525,18 +525,30 @@ end)
 -- A.5: Track active alarms to prevent restarting
 local ActiveAlarms = {} -- [heistId] = true
 
-local function handleStepAlert(heistId, heist, step)
+local function handleStepAlert(heistId, heist, step, stepIndex)
     local alertType = step.alert or 'none'
-    if alertType ~= 'none' then
-        TriggerServerEvent('cs_heistmaster:alertPolice', heistId, alertType)
+    
+    -- Force loud alert on first step (stepIndex == 1)
+    if stepIndex == 1 then
+        alertType = "loud"
+        -- Force alarm sound on first step
+        if step.alarmSound == nil then
+            step.alarmSound = true
+        end
+        debugPrint(('Forcing loud alert on first step for heist: %s'):format(heistId))
     end
     
-    -- A.5: Replace alarm sound with proper siren
+    -- Trigger alarm sound if configured
     if step.alarmSound and not ActiveAlarms[heistId] then
         PrepareAlarm("JEWEL_STORE_HEIST_ALARMS")
         StartAlarm("JEWEL_STORE_HEIST_ALARMS", true)
         ActiveAlarms[heistId] = true
         debugPrint(('Alarm started for heist: %s'):format(heistId))
+    end
+    
+    -- Always trigger police alert if not silent/none
+    if alertType ~= 'none' and alertType ~= 'silent' then
+        TriggerServerEvent('cs_heistmaster:alertPolice', heistId, alertType)
     end
 end
 
@@ -557,8 +569,8 @@ local function handleHackAction(heistId, heist, step, stepIndex)
         return false
     end
     
-    -- Trigger alert/alarm
-    handleStepAlert(heistId, heist, step)
+    -- Trigger alert/alarm (force loud on first step)
+    handleStepAlert(heistId, heist, step, stepIndex)
     
     RequestAnimDict('anim@heists@prison_heiststation@cop_reactions')
     while not HasAnimDictLoaded('anim@heists@prison_heiststation@cop_reactions') do Wait(0) end
@@ -591,6 +603,10 @@ local function handleHackAction(heistId, heist, step, stepIndex)
         -- Mark as completed
         alreadyLooted[heistId] = alreadyLooted[heistId] or {}
         alreadyLooted[heistId][lootKey] = true
+        
+        -- Step delay: Wait 2 seconds before allowing next step
+        Wait(2000)
+        
         TriggerServerEvent("cs_heistmaster:server:completeStep", heistId, stepIndex)
         return true
     else
@@ -616,8 +632,8 @@ local function handleDrillAction(heistId, heist, step, stepIndex)
         return false
     end
     
-    -- Trigger alert/alarm
-    handleStepAlert(heistId, heist, step)
+    -- Trigger alert/alarm (force loud on first step)
+    handleStepAlert(heistId, heist, step, stepIndex)
     
     -- Check for safe key
     local keyName = "safe_key_"..heistId
@@ -670,6 +686,10 @@ local function handleDrillAction(heistId, heist, step, stepIndex)
         -- Mark as completed
         alreadyLooted[heistId] = alreadyLooted[heistId] or {}
         alreadyLooted[heistId][lootKey] = true
+        
+        -- Step delay: Wait 2 seconds before allowing next step
+        Wait(2000)
+        
         TriggerServerEvent("cs_heistmaster:server:completeStep", heistId, stepIndex)
         return true
     else
@@ -709,6 +729,10 @@ local function handleDrillAction(heistId, heist, step, stepIndex)
         -- Mark as completed
         alreadyLooted[heistId] = alreadyLooted[heistId] or {}
         alreadyLooted[heistId][lootKey] = true
+        
+        -- Step delay: Wait 2 seconds before allowing next step
+        Wait(2000)
+        
         TriggerServerEvent("cs_heistmaster:server:completeStep", heistId, stepIndex)
         return true
     end
@@ -808,8 +832,8 @@ local function handleSmashAction(heistId, heist, step, stepIndex)
         end
     end
     
-    -- Trigger alert/alarm
-    handleStepAlert(heistId, heist, step)
+    -- Trigger alert/alarm (force loud on first step)
+    handleStepAlert(heistId, heist, step, stepIndex)
     
     -- Store current weapon to restore later
     local currentWeapon = GetSelectedPedWeapon(ped)
@@ -928,6 +952,10 @@ local function handleLootAction(heistId, heist, step, stepIndex)
     alreadyLooted[heistId] = alreadyLooted[heistId] or {}
     alreadyLooted[heistId][lootKey] = true
     TriggerServerEvent('cs_heistmaster:server:giveLoot', heistId, lootKey)
+    
+    -- Step delay: Wait 2 seconds before allowing next step
+    Wait(2000)
+    
     TriggerServerEvent("cs_heistmaster:server:completeStep", heistId, stepIndex)
     return true
 end
@@ -1220,14 +1248,31 @@ end
 -- ============================================================
 
 RegisterNetEvent('cs_heistmaster:client:startHeist', function(heistId, heistData)
-    currentHeistId = heistId
-    currentStepIndex = 1
-    Heists[heistId] = heistData
-    HeistClientState[heistId] = "active"
-    ActiveStep[heistId] = 1
-    alreadyLooted[heistId] = {}
+    -- Allow multiple players to have the same heist active (co-op support)
+    -- Don't overwrite if already active, just ensure state is set
+    if not Heists[heistId] then
+        Heists[heistId] = heistData
+    end
     
-    debugPrint('Heist started:', heistId)
+    -- Only set currentHeistId if this player doesn't have another heist active
+    if not currentHeistId then
+        currentHeistId = heistId
+        currentStepIndex = 1
+    end
+    
+    HeistClientState[heistId] = "active"
+    
+    -- Initialize step tracking if not already set
+    if not ActiveStep[heistId] then
+        ActiveStep[heistId] = 1
+    end
+    
+    -- Initialize loot tracking if not already set
+    if not alreadyLooted[heistId] then
+        alreadyLooted[heistId] = {}
+    end
+    
+    debugPrint('Heist started/joined:', heistId)
     
     lib.notify({
         title = heistData.label,
@@ -1257,8 +1302,10 @@ RegisterNetEvent('cs_heistmaster:client:startHeist', function(heistId, heistData
         end
     end)
     
-    -- Start the heist thread
-    runHeistThread(heistId, heistData)
+    -- Start the heist thread (only if not already running)
+    if currentHeistId == heistId then
+        runHeistThread(heistId, heistData)
+    end
 end)
 
 -- ============================================================

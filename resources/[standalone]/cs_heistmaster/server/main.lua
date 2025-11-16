@@ -103,8 +103,33 @@ end
 -- Handle heist start request
 ----------------------------------------------------------------
 
--- Anti-spam tracking for heist starts (prevent multiple players starting same heist)
+-- Track active players per heist (for co-op support)
+local HeistActivePlayers = {} -- [heistId] = { [playerId] = true }
 local HeistStartAttempts = {} -- [heistId] = { time = os.time(), players = {} }
+
+-- Helper to get player coords from server
+local function getPlayerCoords(src)
+    local ped = GetPlayerPed(src)
+    if ped and ped ~= 0 then
+        return GetEntityCoords(ped)
+    end
+    return nil
+end
+
+-- Helper to check if player is near heist location
+local function isPlayerNearHeist(src, heist, maxDistance)
+    maxDistance = maxDistance or 50.0
+    local playerCoords = getPlayerCoords(src)
+    if not playerCoords then return false end
+    
+    local heistStart = heist.start
+    if not heistStart then return false end
+    
+    local heistCoords = vec3(heistStart.x, heistStart.y, heistStart.z)
+    local distance = #(playerCoords - heistCoords)
+    
+    return distance <= maxDistance
+end
 
 RegisterNetEvent('cs_heistmaster:requestStart', function(heistId)
     local src = source
@@ -117,17 +142,58 @@ RegisterNetEvent('cs_heistmaster:requestStart', function(heistId)
     local state = getHeistState(heistId)
     local now = os.time()
     
+    -- Initialize active players tracking
+    if not HeistActivePlayers[heistId] then
+        HeistActivePlayers[heistId] = {}
+    end
+    
+    -- If heist is already active, allow player to join if they're near the location
+    if state.state == 'in_progress' then
+        -- Check if player is already participating
+        if HeistActivePlayers[heistId] and HeistActivePlayers[heistId][src] then
+            debugPrint(('Player %s already participating in heist %s'):format(src, heistId))
+            return
+        end
+        
+        -- Allow joining if player is near heist location (co-op support)
+        if isPlayerNearHeist(src, heist, 50.0) then
+            -- Player can join the active heist
+            if not HeistActivePlayers[heistId] then
+                HeistActivePlayers[heistId] = {}
+            end
+            HeistActivePlayers[heistId][src] = true
+            debugPrint(('Player %s joined active heist %s'):format(src, heistId))
+            
+            -- Send heist data to joining player
+            TriggerClientEvent('cs_heistmaster:client:startHeist', src, heistId, heist)
+            
+            -- Sync current step
+            local currentStep = HeistStepState[heistId] or 1
+            TriggerClientEvent("cs_heistmaster:client:setStep", src, heistId, currentStep)
+            
+            TriggerClientEvent('ox_lib:notify', src, {
+                title = heist.label,
+                description = 'You joined an active heist!',
+                type = 'info'
+            })
+            return
+        else
+            -- Player too far away, can't join
+            TriggerClientEvent('ox_lib:notify', src, {
+                description = 'This heist is already active. Get closer to join.',
+                type = 'error'
+            })
+            return
+        end
+    end
+    
     -- Server-side anti-spam: prevent multiple players from starting same heist within 2 seconds
     if not HeistStartAttempts[heistId] then
         HeistStartAttempts[heistId] = { time = now, players = {} }
     end
     
     local attempt = HeistStartAttempts[heistId]
-    if state.state == 'in_progress' or (now - attempt.time) < 2 then
-        -- Heist already started or recent attempt
-        if state.state == 'in_progress' then
-            return -- Already active
-        end
+    if (now - attempt.time) < 2 then
         -- Check if another player already attempted
         for _, playerId in ipairs(attempt.players) do
             if playerId ~= src then
@@ -235,6 +301,12 @@ RegisterNetEvent('cs_heistmaster:requestStart', function(heistId)
     -- Clear attempt tracking
     HeistStartAttempts[heistId] = nil
     
+    -- Add starter to active players
+    if not HeistActivePlayers[heistId] then
+        HeistActivePlayers[heistId] = {}
+    end
+    HeistActivePlayers[heistId][src] = true
+    
     -- set state and broadcast to client
     state.state = 'in_progress'
     state.lastStart = now
@@ -242,12 +314,16 @@ RegisterNetEvent('cs_heistmaster:requestStart', function(heistId)
     -- Use centralized state management
     setHeistState(heistId, "active")
 
-    -- PROMPT C: Initialize loot tracking
-    HeistLootServerState[heistId] = {}
+    -- PROMPT C: Initialize loot tracking (only if not already initialized)
+    if not HeistLootServerState[heistId] then
+        HeistLootServerState[heistId] = {}
+    end
     
-    -- PATCH C: Initialize step state
-    HeistStepState[heistId] = 1
-    TriggerClientEvent("cs_heistmaster:client:setStep", -1, heistId, 1)
+    -- PATCH C: Initialize step state (only if not already initialized)
+    if not HeistStepState[heistId] then
+        HeistStepState[heistId] = 1
+        TriggerClientEvent("cs_heistmaster:client:setStep", -1, heistId, 1)
+    end
 
     debugPrint(('Heist %s started by %s'):format(heistId, src))
 
@@ -277,6 +353,12 @@ RegisterNetEvent('cs_heistmaster:finishHeist', function(heistId)
     local state = getHeistState(heistId)
     if state.state ~= 'in_progress' then return end
 
+    -- Check if this player is actually participating
+    if not HeistActivePlayers[heistId] or not HeistActivePlayers[heistId][src] then
+        debugPrint(('Player %s tried to finish heist %s but is not participating'):format(src, heistId))
+        return
+    end
+
     state.state = 'cooldown'
     HeistAlerts[heistId] = nil -- reset alert state
 
@@ -301,10 +383,16 @@ RegisterNetEvent('cs_heistmaster:finishHeist', function(heistId)
         type = 'success'
     })
 
+    -- Remove player from active players
+    if HeistActivePlayers[heistId] then
+        HeistActivePlayers[heistId][src] = nil
+    end
+
     -- PROMPT C: Clear loot tracking after cooldown
     SetTimeout((heist.cooldown or 0) * 1000, function()
         HeistLootServerState[heistId] = nil
         HeistStepState[heistId] = nil
+        HeistActivePlayers[heistId] = nil -- Clear active players tracking
         -- Reset to idle after cooldown
         setHeistState(heistId, "idle")
     end)
@@ -324,18 +412,47 @@ RegisterNetEvent('cs_heistmaster:abortHeist', function(heistId)
     local state = getHeistState(heistId)
     if state.state ~= 'in_progress' then return end
 
-    state.state = 'idle'
-    HeistAlerts[heistId] = nil -- reset alert state
-    
-    -- Use centralized state management
-    setHeistState(heistId, "cooldown")
-    
-    -- PROMPT C: Clear loot tracking
-    HeistLootServerState[heistId] = nil
-    HeistStepState[heistId] = nil
-    
-    debugPrint(('Heist %s aborted by %s'):format(heistId, src))
-    TriggerClientEvent('cs_heistmaster:client:cleanupHeist', -1, heistId)
+    -- Remove this player from active players (but don't abort for everyone if others are participating)
+    if HeistActivePlayers[heistId] then
+        HeistActivePlayers[heistId][src] = nil
+        
+        -- Check if any players are still participating
+        local hasActivePlayers = false
+        for _ in pairs(HeistActivePlayers[heistId]) do
+            hasActivePlayers = true
+            break
+        end
+        
+        -- Only abort for everyone if no players are left participating
+        if not hasActivePlayers then
+            state.state = 'idle'
+            HeistAlerts[heistId] = nil -- reset alert state
+            
+            -- Use centralized state management
+            setHeistState(heistId, "cooldown")
+            
+            -- PROMPT C: Clear loot tracking
+            HeistLootServerState[heistId] = nil
+            HeistStepState[heistId] = nil
+            HeistActivePlayers[heistId] = nil
+            
+            debugPrint(('Heist %s aborted by %s (no players left)'):format(heistId, src))
+            TriggerClientEvent('cs_heistmaster:client:cleanupHeist', -1, heistId)
+        else
+            -- Other players still participating, only cleanup for this player
+            debugPrint(('Player %s left heist %s (others still participating)'):format(src, heistId))
+            TriggerClientEvent('cs_heistmaster:client:cleanupHeist', src, heistId)
+        end
+    else
+        -- Fallback: full abort if tracking is missing
+        state.state = 'idle'
+        HeistAlerts[heistId] = nil
+        setHeistState(heistId, "cooldown")
+        HeistLootServerState[heistId] = nil
+        HeistStepState[heistId] = nil
+        debugPrint(('Heist %s aborted by %s'):format(heistId, src))
+        TriggerClientEvent('cs_heistmaster:client:cleanupHeist', -1, heistId)
+    end
 end)
 
 ----------------------------------------------------------------
