@@ -99,15 +99,15 @@ const LoadingScreenConfig = {
         volume: 0.1, // 0.0 to 1.0
         tracks: [
             {
-                title: "Pink Pony Club ",
-                artist: "Chappell Roan",
-                url: "ytmp3free.cc_chappell-roan-pink-pony-club-official-music-video-youtubemp3free.org"
+                title: "Janji - Heroes Tonight",
+                artist: "Johnning",
+                url: "assetmp3s/music/music1."
             },
 
             { 
                 title: "Janji - Heroes Tonight", 
                 artist: "Johnning", 
-                url: "assets/music/music2.mp3" 
+                url: "assetmp3s/music/music2." 
             },
         ]
     },
