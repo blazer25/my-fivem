@@ -19,18 +19,46 @@ CreateThread(function()
     SetRelationshipBetweenGroups(5, GetHashKey('PLAYER'), GetHashKey('GUARD'))
 end)
 
--- Track guard kills on client
+-- Track guard/teller deaths using game event
+AddEventHandler('gameEventTriggered', function(name, args)
+    if name == 'CEventNetworkEntityDamage' then
+        local victim = args[1]
+        if not victim or not DoesEntityExist(victim) then return end
+        if IsPedAPlayer(victim) then return end
+        
+        -- Check if it's a guard or teller
+        local netId = NetworkGetNetworkIdFromEntity(victim)
+        if GuardPeds[netId] or TellerPeds[netId] then
+            -- Check if they're dead
+            Wait(100)  -- Wait a moment for death to register
+            if IsEntityDead(victim) or GetEntityHealth(victim) <= 0 then
+                if GuardPeds[netId] then
+                    TriggerServerEvent('cs_heistbuilder:server:guardKilled', netId)
+                    GuardPeds[netId] = nil  -- Remove from tracking
+                elseif TellerPeds[netId] then
+                    TriggerServerEvent('cs_heistbuilder:server:tellerKilled', netId)
+                    TellerPeds[netId] = nil  -- Remove from tracking
+                end
+            end
+        end
+    end
+end)
+
+-- Also track using entity damaged as backup
 AddEventHandler('entityDamaged', function(victim, damageData)
     if not victim or not DoesEntityExist(victim) then return end
     if IsPedAPlayer(victim) then return end
     
     local netId = NetworkGetNetworkIdFromEntity(victim)
     if GuardPeds[netId] or TellerPeds[netId] then
-        if IsEntityDead(victim) then
+        Wait(100)
+        if IsEntityDead(victim) or GetEntityHealth(victim) <= 0 then
             if GuardPeds[netId] then
                 TriggerServerEvent('cs_heistbuilder:server:guardKilled', netId)
+                GuardPeds[netId] = nil
             elseif TellerPeds[netId] then
                 TriggerServerEvent('cs_heistbuilder:server:tellerKilled', netId)
+                TellerPeds[netId] = nil
             end
         end
     end
@@ -102,14 +130,15 @@ RegisterNetEvent('cs_heistbuilder:client:configureGuard', function(netId, robber
         SetRelationshipBetweenGroups(5, GetHashKey('GUARD'), GetHashKey('PLAYER'))  -- 5 = hate
         
         -- PREVENT FLEEING: Disable panic/flee behavior
-        SetPedConfigFlag(ped, 287, true)  -- PED_FLAG_NO_FLEE
-        SetPedConfigFlag(ped, 281, true)  -- PED_FLAG_CAN_ATTACK_FRIENDLY
+        SetPedConfigFlag(ped, 287, true)  -- PED_FLAG_NO_FLEE (don't flee)
         
         -- HEALTH: Make guards killable (set max health to 200 like players)
         SetEntityMaxHealth(ped, 200)
         SetEntityHealth(ped, 200)
-        SetPedDiesWhenInjured(ped, true)  -- Allow them to die
+        SetPedDiesWhenInjured(ped, true)  -- Allow them to die when injured
         SetEntityInvincible(ped, false)  -- Make them killable!
+        SetPedCanRagdoll(ped, true)  -- Allow ragdoll on death
+        SetPedConfigFlag(ped, 118, false)  -- PED_FLAG_DISABLE_RAGDOLL = false (allow ragdoll)
         
         SetBlockingOfNonTemporaryEvents(ped, true)
         
@@ -223,35 +252,50 @@ RegisterNetEvent('cs_heistbuilder:client:configureTeller', function(netId, robbe
     end)
 end)
 
--- Configure cash register (server creates, client configures network settings)
-RegisterNetEvent('cs_heistbuilder:client:configureRegister', function(netId, robberyId, coords)
+-- Find existing cash registers in the city (don't spawn new ones)
+RegisterNetEvent('cs_heistbuilder:client:findRegisters', function(robberyId, registerConfigs)
     CreateThread(function()
-        local obj = NetworkGetEntityFromNetworkId(netId)
-        if not obj or not DoesEntityExist(obj) then 
-            -- Wait a bit for entity to sync
-            Wait(500)
-            obj = NetworkGetEntityFromNetworkId(netId)
-            if not obj or not DoesEntityExist(obj) then return end
+        for _, registerConfig in ipairs(registerConfigs) do
+            local coords = registerConfig.coords or {}
+            if coords.x and coords.y and coords.z then
+                -- Wait a bit for world to load
+                Wait(2000)
+                
+                -- Find existing cash register object near coordinates
+                local model = registerConfig.model or `prop_till_01`
+                local obj = GetClosestObjectOfType(coords.x, coords.y, coords.z, 2.0, model, false, false, false)
+                
+                if obj and DoesEntityExist(obj) then
+                    local netId = NetworkGetNetworkIdFromEntity(obj)
+                    
+                    -- Make register vulnerable to damage
+                    SetEntityProofs(obj, false, false, false, false, false, false, false, false)
+                    SetEntityHealth(obj, 100)
+                    SetEntityMaxHealth(obj, 100)
+                    
+                    -- Remove any target interactions (prevent third eye/pick lock)
+                    if exports.ox_target and exports.ox_target.removeLocalEntity then
+                        exports.ox_target:removeLocalEntity(obj)
+                    end
+                    if exports['qb-target'] and exports['qb-target'].RemoveTargetEntity then
+                        exports['qb-target']:RemoveTargetEntity(obj)
+                    end
+                    
+                    -- Track on client
+                    CashRegisters[netId] = {
+                        robberyId = robberyId,
+                        coords = coords,
+                        obj = obj,
+                        opened = false,
+                        registerData = registerConfig
+                    }
+                    
+                    print(('[cs_heistbuilder] Found existing register at %s, %s, %s'):format(coords.x, coords.y, coords.z))
+                else
+                    print(('[cs_heistbuilder] WARNING: Could not find existing register at %s, %s, %s'):format(coords.x, coords.y, coords.z))
+                end
+            end
         end
-        
-        -- Network/migration settings (client-side only)
-        SetNetworkIdCanMigrate(netId, false)
-        
-        -- Remove any target interactions (prevent third eye/pick lock)
-        if exports.ox_target and exports.ox_target.removeLocalEntity then
-            exports.ox_target:removeLocalEntity(obj)
-        end
-        if exports['qb-target'] and exports['qb-target'].RemoveTargetEntity then
-            exports['qb-target']:RemoveTargetEntity(obj)
-        end
-        
-        -- Track on client
-        CashRegisters[netId] = {
-            robberyId = robberyId,
-            coords = coords,
-            obj = obj,
-            opened = false
-        }
     end)
 end)
 

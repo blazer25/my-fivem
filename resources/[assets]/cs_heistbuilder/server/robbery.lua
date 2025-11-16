@@ -76,33 +76,8 @@ local function spawnTeller(robberyId, tellerData)
     end)
 end
 
-local function spawnCashRegister(robberyId, registerData)
-    local coords = registerData.coords or {}
-    local model = registerData.model or `prop_till_01`
-    
-    CreateThread(function()
-        -- Server can create networked objects
-        local obj = CreateObject(model, coords.x, coords.y, coords.z, false, true, true)
-        if not DoesEntityExist(obj) then return end
-        
-        -- Server can do basic object setup
-        FreezeEntityPosition(obj, true)
-        SetEntityProofs(obj, false, false, false, false, false, false, false, false)
-        SetEntityHealth(obj, 100)
-        SetEntityMaxHealth(obj, 100)
-        
-        local netId = NetworkGetNetworkIdFromEntity(obj)
-        CashRegisters[netId] = {
-            obj = obj,
-            robberyId = robberyId,
-            registerData = registerData,
-            opened = false
-        }
-        
-        -- Send to clients to configure network settings
-        TriggerClientEvent('cs_heistbuilder:client:configureRegister', -1, netId, robberyId, coords)
-    end)
-end
+-- Cash registers are found on client side from existing world objects
+-- No need to spawn them - they already exist in the city
 
 local RobberyCooldowns = {}
 
@@ -139,13 +114,14 @@ function Robbery.spawnRobbery(heist)
     -- Spawn guards permanently (they respawn after cooldown)
     Robbery.spawnGuards(heist)
     
-    -- For stores: spawn tellers and cash registers permanently
+    -- For stores: spawn tellers (registers already exist in the city)
     if robberyType == 'store' then
         Robbery.spawnTellers(heist)
+        -- Don't spawn cash registers - use existing ones in the city
+        -- Client will find and track existing registers at the coordinates
         if heist.cashRegisters then
-            for _, register in ipairs(heist.cashRegisters) do
-                spawnCashRegister(heist.id, register)
-            end
+            -- Send register coordinates to clients to find existing registers
+            TriggerClientEvent('cs_heistbuilder:client:findRegisters', -1, heist.id, heist.cashRegisters)
         end
     end
     
