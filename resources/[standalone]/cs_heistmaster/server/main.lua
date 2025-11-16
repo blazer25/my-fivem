@@ -20,6 +20,9 @@ local HeistStepState = {} -- [heistId] = currentStep
 -- Track which safes have been opened (one-time use per heist)
 local SafeOpened = {} -- [heistId] = true
 
+-- PATCH C: Heist crew tracking (leader + members) - declared early for use in functions
+local HeistCrew = {} -- [heistId] = { leader = src, members = { [src] = true } }
+
 local function GetStep(heistId)
     return HeistStepState[heistId] or 1
 end
@@ -137,9 +140,6 @@ end
 -- Track active players per heist (for co-op support)
 local HeistActivePlayers = {} -- [heistId] = { [playerId] = true }
 local HeistStartAttempts = {} -- [heistId] = { time = os.time(), players = {} }
-
--- PATCH C: Heist crew tracking (leader + members)
-local HeistCrew = {} -- [heistId] = { leader = src, members = { [src] = true } }
 
 -- Helper to get player coords from server
 local function getPlayerCoords(src)
