@@ -422,14 +422,20 @@ RegisterNetEvent('cs_heistmaster:safeReward', function(heistId)
     local heist = Heists[heistId]
     if not heist then return end
 
-    -- Give safe-specific rewards (you can customize this)
-    -- All rewards are items now (black_money instead of cash)
+    -- Give safe-specific rewards (different from loot rewards)
+    -- Use heist-specific safe rewards if configured, otherwise use default
     local safeReward = {
         items = {
-            { name = 'black_money', chance = 100, min = 1000, max = 3000 },
+            { name = 'black_money', chance = 100, min = 15000, max = 35000 },
             { name = 'stolen_goods', chance = 50, min = 1, max = 3 },
+            { name = 'gold_bar', chance = 30, min = 1, max = 2 },
         }
     }
+    
+    -- Check if heist has specific safe rewards configured
+    if heist.safeReward and heist.safeReward.items then
+        safeReward.items = heist.safeReward.items
+    end
 
     -- Item rewards
     if safeReward.items then
@@ -438,6 +444,7 @@ RegisterNetEvent('cs_heistmaster:safeReward', function(heistId)
             if math.random(0, 100) <= chance then
                 local qty = math.random(item.min or 1, item.max or 1)
                 giveItem(src, item.name, qty)
+                debugPrint(('Gave safe reward: %sx %s to player %s'):format(qty, item.name, src))
             end
         end
     end
@@ -550,13 +557,43 @@ RegisterNetEvent('cs_heistmaster:server:giveLoot', function(heistId, lootKey)
 
     HeistLootServerState[heistId][lootKey] = true
 
-    -- Give register/safe/jewellery rewards based on step
-    -- For now, we'll use a simple reward system - you can customize this
-    local stepIndex = tonumber(lootKey:match('step_(%d+)'))
+    -- Extract step index from lootKey (format: "step_<index>_<heistId>")
+    local stepIndex = tonumber(lootKey:match('step_(%d+)_'))
+    if not stepIndex then
+        -- Fallback for old format: "step_<index>"
+        stepIndex = tonumber(lootKey:match('step_(%d+)'))
+    end
+    
     if stepIndex and heist.steps and heist.steps[stepIndex] then
         local step = heist.steps[stepIndex]
-        -- You can add step-specific rewards here if needed
-        -- For now, rewards are handled at heist completion
+        
+        -- Give dirty money for loot actions (smash and grab money)
+        if step.action == 'loot' then
+            -- Give dirty money (black_money) for register/vault looting
+            local lootReward = {
+                items = {
+                    { name = 'black_money', chance = 100, min = 2500, max = 5500 },
+                    { name = 'stolen_goods', chance = 30, min = 1, max = 2 },
+                }
+            }
+            
+            -- Use heist-specific rewards if configured
+            if heist.rewards and heist.rewards.items then
+                lootReward.items = heist.rewards.items
+            end
+            
+            -- Give item rewards
+            if lootReward.items then
+                for _, item in ipairs(lootReward.items) do
+                    local chance = item.chance or 100
+                    if math.random(0, 100) <= chance then
+                        local qty = math.random(item.min or 1, item.max or 1)
+                        giveItem(src, item.name, qty)
+                        debugPrint(('Gave loot reward: %sx %s to player %s'):format(qty, item.name, src))
+                    end
+                end
+            end
+        end
     end
 
     debugPrint(('Loot given for heist %s, key: %s'):format(heistId, lootKey))

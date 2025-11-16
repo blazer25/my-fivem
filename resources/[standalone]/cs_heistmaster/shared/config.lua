@@ -1,6 +1,6 @@
 Config = {}
 
-Config.Debug = true
+Config.Debug = false
 
 Config.PoliceJobs = { 'police', 'sasp', 'bcso' }  -- adjust for your server
 
