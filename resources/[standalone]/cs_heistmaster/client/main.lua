@@ -15,8 +15,11 @@ local ClerkRuntimeState = {} -- [heistId] = { panicked = false, gaveKey = false,
 -- Entity tracking
 local guards = {} -- [heistId] = { ped1, ped2, ... }
 local SpawnedClerks = {} -- [heistId] = ped
-local VaultDoors = {} -- [heistId] = { obj = entity, heading = number, open = boolean }
+local VaultDoors = {} -- [heistId] = { obj = entity, heading = number, open = boolean } (legacy, kept for compatibility)
 local StepObjects = {} -- [heistId] = { [stepIndex] = object }
+
+-- PATCH: Vault Door Entity Management
+HeistState = HeistState or {} -- [heistId] = { vaultObj = entity }
 
 -- ============================================================
 -- HELPERS
@@ -504,25 +507,36 @@ end)
 -- ============================================================
 
 RegisterNetEvent("cs_heistmaster:client:spawnVaultDoor", function(heistId, coords, heading, model, open)
-    -- Delete existing door if present
-    if VaultDoors[heistId] and DoesEntityExist(VaultDoors[heistId].obj) then
-        DeleteEntity(VaultDoors[heistId].obj)
+    -- PATCH: Vault Door Entity Management
+    if not HeistState[heistId] then HeistState[heistId] = {} end
+    
+    -- Delete existing door if somehow already exists
+    if HeistState[heistId].vaultObj and DoesEntityExist(HeistState[heistId].vaultObj) then
+        DeleteEntity(HeistState[heistId].vaultObj)
     end
     
-    local hash = joaat(model or 'v_ilev_gb_vauldr')
-    RequestModel(hash)
-    while not HasModelLoaded(hash) do Wait(10) end
+    -- Load model
+    local vaultCoords = vecFromTable(coords)
+    local vaultHeading = heading or 160.0
+    local doorModel = model or 'v_ilev_gb_vauldr'
+    local hash = joaat(doorModel)
     
-    -- Create as networked entity for proper sync
-    local obj = CreateObjectNoOffset(hash, coords.x, coords.y, coords.z, true, true, false)
-    local startHeading = heading or 160.0
-    SetEntityRotation(obj, 0.0, 0.0, startHeading, 2, true)
+    RequestModel(hash)
+    while not HasModelLoaded(hash) do Wait(0) end
+    
+    -- Spawn door
+    local obj = CreateObject(hash, vaultCoords.x, vaultCoords.y, vaultCoords.z, true, false, false)
+    SetEntityHeading(obj, vaultHeading)
     FreezeEntityPosition(obj, true)
     
-    VaultDoors[heistId] = { obj = obj, heading = startHeading, open = open or false }
+    -- Store reference
+    HeistState[heistId].vaultObj = obj
+    
+    -- Keep legacy VaultDoors for compatibility with openVaultDoor function
+    VaultDoors[heistId] = { obj = obj, heading = vaultHeading, open = open or false }
     
     if open then
-        SetEntityRotation(obj, 0.0, 0.0, startHeading - 100.0, 2, true)
+        SetEntityRotation(obj, 0.0, 0.0, vaultHeading - 100.0, 2, true)
     end
     
     debugPrint(('Vault door spawned: %s (open: %s)'):format(heistId, tostring(open)))
@@ -1471,18 +1485,35 @@ local function SpawnAllHeistElements()
         
         -- Spawn vault doors for fleeca banks - only if they don't exist
         if heist.heistType == 'fleeca' and heist.vault and heist.vault.coords then
-            if not VaultDoors[heistId] or not DoesEntityExist(VaultDoors[heistId].obj) then
-                local hash = joaat(heist.vault.doorModel or 'v_ilev_gb_vauldr')
-                RequestModel(hash)
-                while not HasModelLoaded(hash) do Wait(10) end
+            -- PATCH: Vault Door Entity Management
+            if not HeistState[heistId] then HeistState[heistId] = {} end
+            
+            if not HeistState[heistId].vaultObj or not DoesEntityExist(HeistState[heistId].vaultObj) then
+                -- Delete existing door if somehow already exists
+                if HeistState[heistId].vaultObj and DoesEntityExist(HeistState[heistId].vaultObj) then
+                    DeleteEntity(HeistState[heistId].vaultObj)
+                end
                 
-                local coords = vecFromTable(heist.vault.coords)
-                local obj = CreateObjectNoOffset(hash, coords.x, coords.y, coords.z, true, true, false)
-                local startHeading = heist.vault.heading or 160.0
-                SetEntityRotation(obj, 0.0, 0.0, startHeading, 2, true)
+                -- Load model
+                local vaultCoords = vecFromTable(heist.vault.coords)
+                local vaultHeading = heist.vault.heading or 160.0
+                local model = heist.vault.doorModel or 'v_ilev_gb_vauldr'
+                local hash = joaat(model)
+                
+                RequestModel(hash)
+                while not HasModelLoaded(hash) do Wait(0) end
+                
+                -- Spawn door
+                local obj = CreateObject(hash, vaultCoords.x, vaultCoords.y, vaultCoords.z, true, false, false)
+                SetEntityHeading(obj, vaultHeading)
                 FreezeEntityPosition(obj, true)
                 
-                VaultDoors[heistId] = { obj = obj, heading = startHeading, open = false }
+                -- Store reference
+                HeistState[heistId].vaultObj = obj
+                
+                -- Keep legacy VaultDoors for compatibility
+                VaultDoors[heistId] = { obj = obj, heading = vaultHeading, open = false }
+                
                 debugPrint(('Vault door auto-spawned: %s'):format(heistId))
             end
         end
@@ -1542,12 +1573,16 @@ RegisterNetEvent('cs_heistmaster:client:cleanupHeist', function(heistId)
     SpawnedClerks[heistId] = nil
     ClerkSpawning[heistId] = nil -- Clear spawn lock
     
-    -- Cleanup vault door (will respawn automatically)
-    if VaultDoors[heistId] then
-        local door = VaultDoors[heistId]
-        if DoesEntityExist(door.obj) then
-            DeleteEntity(door.obj)
+    -- PATCH: Cleanup vault door (will respawn automatically)
+    if HeistState[heistId] and HeistState[heistId].vaultObj then
+        if DoesEntityExist(HeistState[heistId].vaultObj) then
+            DeleteEntity(HeistState[heistId].vaultObj)
         end
+        HeistState[heistId].vaultObj = nil
+    end
+    
+    -- Also cleanup legacy VaultDoors reference
+    if VaultDoors[heistId] then
         VaultDoors[heistId] = nil
     end
     
