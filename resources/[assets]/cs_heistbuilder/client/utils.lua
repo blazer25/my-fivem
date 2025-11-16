@@ -81,9 +81,10 @@ function ClientUtils.ensureWeapon(weapon)
     GiveWeaponToPed(cache.ped, weapon, 30, false, true)
 end
 
-ClientUtils.runtimeWrapper = function(heistId, stepIndex)
+ClientUtils.runtimeWrapper = function(heistId, stepIndex, onComplete)
     local self = { heistId = heistId, stepIndex = stepIndex }
     function self:complete(success, payload)
+        if onComplete then onComplete() end
         TriggerServerEvent('cs_heistbuilder:server:stepResult', self.heistId, self.stepIndex, success ~= false, payload or {})
     end
     return self
