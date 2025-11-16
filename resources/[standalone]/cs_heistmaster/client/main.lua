@@ -578,20 +578,26 @@ RegisterNetEvent("cs_heistmaster:client:spawnVaultDoor", function(heistId, coord
     RequestModel(hash)
     while not HasModelLoaded(hash) do Wait(0) end
     
-    -- Spawn door
-    local obj = CreateObject(hash, vaultCoords.x, vaultCoords.y, vaultCoords.z, true, false, false)
-    SetEntityHeading(obj, vaultHeading)
-    FreezeEntityPosition(obj, true)
-    
-    -- Store reference
-    HeistState[heistId].vaultObj = obj
-    
-    -- Keep legacy VaultDoors for compatibility with openVaultDoor function
-    VaultDoors[heistId] = { obj = obj, heading = vaultHeading, open = open or false }
-    
-    if open then
-        SetEntityRotation(obj, 0.0, 0.0, vaultHeading - 100.0, 2, true)
-    end
+                -- Spawn door
+                local obj = CreateObject(hash, vaultCoords.x, vaultCoords.y, vaultCoords.z, true, false, false)
+                SetEntityHeading(obj, vaultHeading)
+                FreezeEntityPosition(obj, true)
+                
+                -- CRITICAL: Enable collision when door is closed (will be disabled when opened)
+                SetEntityCollision(obj, true, true)
+                
+                -- Store reference
+                HeistState[heistId].vaultObj = obj
+                
+                -- Keep legacy VaultDoors for compatibility with openVaultDoor function
+                VaultDoors[heistId] = { obj = obj, heading = vaultHeading, open = open or false }
+                
+                if open then
+                    -- If door should be open on spawn, disable collision and rotate
+                    SetEntityRotation(obj, 0.0, 0.0, vaultHeading - 100.0, 2, true)
+                    SetEntityCollision(obj, false, false)
+                    FreezeEntityPosition(obj, false)
+                end
     
     debugPrint(('Vault door spawned: %s (open: %s)'):format(heistId, tostring(open)))
 end)
@@ -629,10 +635,14 @@ RegisterNetEvent("cs_heistmaster:client:openVaultDoor", function(heistId)
     
     debugPrint(('Opening vault door: startHeading=%s, currentHeading=%s'):format(startHeading, GetEntityHeading(vaultObj)))
     
+    -- CRITICAL FIX: Disable collision BEFORE opening to allow passage
+    SetEntityCollision(vaultObj, false, false)
+    
     -- FIX: Unfreeze door for animation
     FreezeEntityPosition(vaultObj, false)
     
     -- FIX: Use SetEntityHeading with smooth rotation for visible door opening
+    -- Rotate door 90-100 degrees to create opening (vault doors typically swing open)
     local targetHeading = startHeading - 100.0 -- Rotate 100 degrees to open
     local currentHeading = GetEntityHeading(vaultObj)
     local rotationSteps = 50
@@ -650,7 +660,10 @@ RegisterNetEvent("cs_heistmaster:client:openVaultDoor", function(heistId)
         -- Ensure final heading is set correctly
         if DoesEntityExist(vaultObj) then
             SetEntityHeading(vaultObj, targetHeading)
-            FreezeEntityPosition(vaultObj, true)
+            -- CRITICAL: Keep collision disabled so players can walk through
+            SetEntityCollision(vaultObj, false, false)
+            -- Keep door unfrozen so it doesn't interfere
+            FreezeEntityPosition(vaultObj, false)
         end
         
         -- Update door state
@@ -665,7 +678,7 @@ RegisterNetEvent("cs_heistmaster:client:openVaultDoor", function(heistId)
         PlaySoundFromCoord(-1, "VAULT_DOOR_OPEN", coords.x, coords.y, coords.z, "dlc_heist_fleeca_bank_door_sounds", false, 1.0, false)
         ShakeGameplayCam("SMALL_EXPLOSION_SHAKE", 0.5)
         
-        debugPrint(('Vault door opened successfully: %s'):format(heistId))
+        debugPrint(('Vault door opened successfully (collision disabled): %s'):format(heistId))
     end)
 end)
 
@@ -1618,6 +1631,9 @@ local function SpawnAllHeistElements()
                 local obj = CreateObject(hash, vaultCoords.x, vaultCoords.y, vaultCoords.z, true, false, false)
                 SetEntityHeading(obj, vaultHeading)
                 FreezeEntityPosition(obj, true)
+                
+                -- CRITICAL: Enable collision when door is closed (will be disabled when opened)
+                SetEntityCollision(obj, true, true)
                 
                 -- Store reference
                 HeistState[heistId].vaultObj = obj
