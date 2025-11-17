@@ -5,7 +5,7 @@ Config.WaterMark = true -- Set to false to disable watermark
 
 -- Item names for hacking and drilling
 Config.HackingItem = 'door_override_chip' -- Item name required for hacking
-Config.DrillItem = 'drill'  -- Item name required for drilling
+Config.DrillItem = 'miningdrill' -- Item name required for drilling
 Config.RopeItem = 'rope'  -- Item name required for rope robbery
 
 -- Enable or disable ATM robbery actions (hacking and drilling)
