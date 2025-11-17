@@ -691,7 +691,7 @@ RegisterNetEvent('cs_heistmaster:client:spawnVaultDoor', function(heistId, coord
     debugPrint(('Vault door spawned for heist %s at %s (heading: %.2f, open: %s)'):format(heistId, tostring(coords), heading or 160.0, tostring(isOpen)))
     
     if isOpen then
-        local openHeading = (heading or 160.0) - 110.0
+        local openHeading = (heading or 160.0) + 110.0
         SetEntityHeading(door, openHeading)
         SetEntityCollision(door, false, false)
     end
@@ -702,7 +702,8 @@ local function animateVaultDoorOpen(heistId)
     if not door or not DoesEntityExist(door) then return end
     
     local startHeading = GetEntityHeading(door)
-    local endHeading = startHeading - 110.0
+    -- Rotate door open in positive direction (clockwise) - adjust if needed
+    local endHeading = startHeading + 110.0
     
     FreezeEntityPosition(door, false)
     SetEntityCollision(door, false, false)
