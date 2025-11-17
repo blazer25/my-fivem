@@ -31,13 +31,13 @@ Config.useLasers = true
 --- FRAMEWORK SETTINGS
 -------------------------------------------------
 Config.esxSettings = {
-    enabled = true,
+    enabled = false
     -- Whether or not to use the new ESX export method
-    useNewESXExport = true,
+    useNewESXExport = false
 }
 
 Config.qbSettings = {
-    enabled = false,
+    enabled = true
 }
 
 Config.textScale = 1.0
