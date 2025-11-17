@@ -1,6 +1,18 @@
 Config = {} --Ignore.
-ps = exports.ps_lib:init()  --Ignore.
-ps.loadLangs("en") -- set your language
+
+-- Check if ps_lib is available
+if GetResourceState('ps_lib') == 'started' then
+    ps = exports.ps_lib:init()  --Ignore.
+    if ps then
+        ps.loadLangs("en") -- set your language
+    else
+        print("^1[md-drugs] ERROR: ps_lib:init() returned nil. Make sure ps_lib is properly installed.^0")
+    end
+else
+    print("^1[md-drugs] ERROR: ps_lib resource is not started. Please ensure ps_lib is installed and started in server.cfg^0")
+    print("^1[md-drugs] Download ps_lib from: https://github.com/Project-Sloth/ps_lib^0")
+    ps = nil
+end
 
 Config.Fuel = "LegacyFuel" -- type the name of script you use i.e. ps-fuel, cdn-fuel, LegacyFuel, ox_fuel
 Config.TierSystem = true -- allows for three tiers of certain drugs ( coke, heroin, crack, lsd)
