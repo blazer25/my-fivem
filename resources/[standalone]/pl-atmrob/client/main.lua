@@ -1,7 +1,15 @@
--- Try QBox first (qbx_core), then fallback to qb-core
-if GetResourceState('qbx_core') == 'started' then
-    QBCore = exports['qbx_core']:GetCoreObject()
-elseif GetResourceState('qb-core') == 'started' then
+-- Framework detection and initialization
+local isQBox = GetResourceState('qbx_core') == 'started'
+local isQBCore = GetResourceState('qb-core') == 'started'
+
+if isQBox then
+    -- QBox doesn't use GetCoreObject, we'll use exports directly when needed
+    QBCore = {
+        Functions = {
+            -- QBox client functions are accessed via exports when needed
+        }
+    }
+elseif isQBCore then
     QBCore = exports['qb-core']:GetCoreObject()
 end
 

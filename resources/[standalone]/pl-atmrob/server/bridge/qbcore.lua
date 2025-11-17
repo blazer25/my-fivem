@@ -1,10 +1,30 @@
 local QBCore = nil
+local isQBox = false
 
 -- Try QBox first (qbx_core), then fallback to qb-core
 if GetResourceState('qbx_core') == 'started' then
-    QBCore = exports['qbx_core']:GetCoreObject()
+    local qbx = exports.qbx_core
+    isQBox = true
+    
+    -- Create a QBCore-compatible wrapper for QBox
+    QBCore = {
+        Functions = {
+            GetPlayer = function(source)
+                return qbx:GetPlayer(source)
+            end,
+            GetPlayers = function()
+                return qbx:GetPlayers()
+            end,
+        },
+        Shared = {
+            Items = {} -- Will be populated if needed
+        }
+    }
+    
+    print('^2[pl-atmrob]^7 Using QBox framework (qbx_core)')
 elseif GetResourceState('qb-core'):find('start') then
     QBCore = exports['qb-core']:GetCoreObject()
+    print('^2[pl-atmrob]^7 Using QBCore framework')
 end
 
 if not QBCore then 
@@ -13,53 +33,92 @@ if not QBCore then
 end
 
 function getPlayer(target)
-    local xPlayer = QBCore.Functions.GetPlayer(target)
-    return xPlayer
-end
-
-function getPlayers()
-    return QBCore.Functions.GetPlayers()
-end
-
-function getPlayerName(target)
-    local xPlayer = QBCore.Functions.GetPlayer(target)
-
-    return xPlayer.PlayerData.charinfo.firstname .. " " .. xPlayer.PlayerData.charinfo.lastname
-end
-
-function getPlayerIdentifier(target)
-    local xPlayer = QBCore.Functions.GetPlayer(target)
-
-    return xPlayer.PlayerData.citizenid
-end
-
-function GetJob(target)
-    local xPlayer = QBCore.Functions.GetPlayer(target)
-    if xPlayer then
-        return xPlayer.PlayerData.job.name
+    if isQBox then
+        return exports.qbx_core:GetPlayer(target)
     else
-        return nil
+        return QBCore.Functions.GetPlayer(target)
     end
 end
 
+function getPlayers()
+    if isQBox then
+        return exports.qbx_core:GetPlayers()
+    else
+        return QBCore.Functions.GetPlayers()
+    end
+end
 
-function AddPlayerMoney(Player,account,TotalBill)
+function getPlayerName(target)
+    local xPlayer = getPlayer(target)
+    if not xPlayer then return "Unknown" end
+
+    if xPlayer.PlayerData and xPlayer.PlayerData.charinfo then
+        return xPlayer.PlayerData.charinfo.firstname .. " " .. xPlayer.PlayerData.charinfo.lastname
+    elseif xPlayer.PlayerData and xPlayer.PlayerData.name then
+        return xPlayer.PlayerData.name
+    end
+    
+    return "Unknown"
+end
+
+function getPlayerIdentifier(target)
+    local xPlayer = getPlayer(target)
+    if not xPlayer then return nil end
+
+    if xPlayer.PlayerData then
+        return xPlayer.PlayerData.citizenid or xPlayer.PlayerData.license
+    end
+    
+    return nil
+end
+
+function GetJob(target)
+    local xPlayer = getPlayer(target)
+    if not xPlayer then return nil end
+    
+    if xPlayer.PlayerData and xPlayer.PlayerData.job then
+        return xPlayer.PlayerData.job.name
+    end
+    
+    return nil
+end
+
+function AddPlayerMoney(Player, account, TotalBill)
+    if not Player or not Player.PlayerData then return end
+    
     local source = Player.PlayerData.source
+    
     if account == 'bank' then
-        Player.Functions.AddMoney('bank', TotalBill)
+        if isQBox then
+            exports.qbx_core:AddMoney(source, 'bank', TotalBill)
+        else
+            Player.Functions.AddMoney('bank', TotalBill)
+        end
     elseif account == 'cash' then
-        Player.Functions.AddMoney('cash', TotalBill)
+        if isQBox then
+            exports.qbx_core:AddMoney(source, 'cash', TotalBill)
+        else
+            Player.Functions.AddMoney('cash', TotalBill)
+        end
     elseif account == 'dirty' then
         if GetResourceState("ox_inventory") == "started" then
-            exports.ox_inventory:AddItem(source, Config.Reward.account, TotalBill, false)
+            exports.ox_inventory:AddItem(source, 'markedbills', 1, {worth = TotalBill})
         elseif lib.checkDependency('qb-inventory', '2.0.0') then
             local info = {worth = TotalBill}
             exports['qb-inventory']:AddItem(source, 'markedbills', 1, false, info)
-            TriggerClientEvent('qb-inventory:client:ItemBox', source, QBCore.Shared.Items['markedbills'], "add", info)
+            if QBCore.Shared and QBCore.Shared.Items and QBCore.Shared.Items['markedbills'] then
+                TriggerClientEvent('qb-inventory:client:ItemBox', source, QBCore.Shared.Items['markedbills'], "add", info)
+            end
         else
-            local info = {worth = TotalBill}
-            Player.Functions.AddItem('markedbills', 1, false, info)
-            TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items['markedbills'], "add", info)
+            if isQBox then
+                exports.qbx_core:AddItem(source, 'markedbills', 1, {worth = TotalBill})
+            else
+                local info = {worth = TotalBill}
+                Player.Functions.AddItem('markedbills', 1, false, info)
+                if QBCore.Shared and QBCore.Shared.Items and QBCore.Shared.Items['markedbills'] then
+                    TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items['markedbills'], "add", info)
+                end
+            end
         end
     end
 end
