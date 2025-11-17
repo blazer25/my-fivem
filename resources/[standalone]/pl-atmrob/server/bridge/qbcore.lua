@@ -12,9 +12,6 @@ if GetResourceState('qbx_core') == 'started' then
             GetPlayer = function(source)
                 return qbx:GetPlayer(source)
             end,
-            GetPlayers = function()
-                return qbx:GetPlayers()
-            end,
         },
         Shared = {
             Items = {} -- Will be populated if needed
@@ -42,7 +39,12 @@ end
 
 function getPlayers()
     if isQBox then
-        return exports.qbx_core:GetPlayers()
+        -- QBox: Use native GetPlayers() which returns player IDs as strings, convert to numbers
+        local players = {}
+        for _, playerId in ipairs(GetPlayers()) do
+            table.insert(players, tonumber(playerId))
+        end
+        return players
     else
         return QBCore.Functions.GetPlayers()
     end
