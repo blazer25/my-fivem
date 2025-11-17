@@ -814,7 +814,46 @@ end
 function OpenVaultDoor(heistId)
     local doorId = getDoorId(heistId)
     
-    debugPrint(('Attempting to open vault door for heist: %s (doorId: %d)'):format(heistId, doorId))
+    debugPrint(('=== OPENING VAULT DOOR ==='))
+    debugPrint(('Heist ID: %s, Door ID: %d'):format(heistId, doorId))
+    
+    -- First, try to find the actual door entity
+    local heist = Config.Heists[heistId]
+    if not heist or not heist.vault or not heist.vault.coords then
+        debugPrint(('ERROR: Heist config not found for: %s'):format(heistId))
+        return
+    end
+    
+    local vaultCoords = vecFromTable(heist.vault.coords)
+    
+    -- Find the door entity
+    local doorEntity, doorCoords = FindDefaultVaultDoor(vaultCoords, heistId)
+    
+    if doorEntity and DoesEntityExist(doorEntity) then
+        debugPrint(('Found door entity: %d at %s'):format(doorEntity, tostring(doorCoords)))
+        
+        -- Register the door using its actual coordinates
+        RemoveDoorFromSystem(doorId)
+        RemoveDoorFromSystem(fleecaDoorHash)
+        Wait(100)
+        
+        if doorCoords then
+            AddDoorToSystem(
+                doorId,
+                fleecaDoorHash,
+                doorCoords.x,
+                doorCoords.y,
+                doorCoords.z,
+                false, false, false
+            )
+        end
+        Wait(300)
+    else
+        debugPrint(('WARNING: Door entity not found, using config coordinates'))
+        -- Re-register with config coords
+        RegisterFleecaDoor(heistId, vaultCoords)
+        Wait(500)
+    end
     
     -- Check if door is registered in DoorSystem
     local doorState = DoorSystemGetDoorState(doorId)
@@ -822,36 +861,54 @@ function OpenVaultDoor(heistId)
     
     debugPrint(('Door state before opening: %d, ratio: %.2f'):format(doorState, openRatio))
     
-    -- If door state is 0 (invalid/not registered), try to register it first
-    if doorState == 0 and openRatio == 0.0 then
-        debugPrint(('Door may not be registered. Attempting to register...'))
-        local heist = Config.Heists[heistId]
-        if heist and heist.vault and heist.vault.coords then
-            local vaultCoords = vecFromTable(heist.vault.coords)
-            RegisterFleecaDoor(heistId, vaultCoords)
-            Wait(500)
+    -- If door state is still invalid, try using the model hash directly
+    if doorState == 0 then
+        debugPrint(('Door not registered with custom ID, trying model hash directly...'))
+        -- Try using the model hash as the door ID
+        local modelHashId = fleecaDoorHash
+        AddDoorToSystem(
+            modelHashId,
+            fleecaDoorHash,
+            vaultCoords.x,
+            vaultCoords.y,
+            vaultCoords.z,
+            false, false, false
+        )
+        Wait(300)
+        
+        -- Try opening with model hash
+        DoorSystemSetDoorState(modelHashId, 0, false, false)
+        Wait(100)
+        
+        for i = 0.0, 1.0, 0.01 do
+            DoorSystemSetOpenRatio(modelHashId, i, false, false)
+            Wait(10)
         end
+        
+        DoorSystemSetDoorState(modelHashId, 6, false, false)
+        debugPrint(('Attempted to open door using model hash: %d'):format(modelHashId))
+    else
+        -- Unlock door
+        DoorSystemSetDoorState(doorId, 0, false, false)
+        Wait(100)
+        
+        -- Animate open
+        debugPrint(('Animating door open with doorId: %d...'):format(doorId))
+        for i = 0.0, 1.0, 0.01 do
+            DoorSystemSetOpenRatio(doorId, i, false, false)
+            Wait(10)
+        end
+        
+        -- Final state: fully open
+        DoorSystemSetDoorState(doorId, 6, false, false)
     end
-    
-    -- Unlock door
-    DoorSystemSetDoorState(doorId, 0, false, false)
-    Wait(100)
-    
-    -- Animate open
-    debugPrint(('Animating door open...'))
-    for i = 0.0, 1.0, 0.01 do
-        DoorSystemSetOpenRatio(doorId, i, false, false)
-        Wait(10)
-    end
-    
-    -- Final state: fully open
-    DoorSystemSetDoorState(doorId, 6, false, false)
     
     -- Verify final state
     local finalState = DoorSystemGetDoorState(doorId)
     local finalRatio = DoorSystemGetOpenRatio(doorId)
     
     debugPrint(('Vault door opened for heist: %s (final state: %d, ratio: %.2f)'):format(heistId, finalState, finalRatio))
+    debugPrint(('=== END OPENING VAULT DOOR ==='))
 end
 
 -- Close the vault door
