@@ -658,20 +658,22 @@ local function RemovePropVaultDoors(coords)
     return removedCount
 end
 
--- Find the existing default vault door entity
+-- Find the existing default vault door entity (searches more thoroughly)
 local function FindDefaultVaultDoor(coords, heistId)
     local objects = GetGamePool('CObject')
     local foundDoor = nil
     local foundCoords = nil
+    local closestDist = 999.0
     
+    -- Search for the door - check within 10m radius and allow different Z levels
     for _, obj in ipairs(objects) do
         if DoesEntityExist(obj) then
             local objModel = GetEntityModel(obj)
             local objCoords = GetEntityCoords(obj)
             local dist = #(vector2(objCoords.x, objCoords.y) - vector2(coords.x, coords.y))
             
-            -- Check if it's a vault door model near our coordinates (allow different Z levels)
-            if (objModel == fleecaDoorHash or objModel == joaat('v_ilev_gb_vauldr')) and dist < 3.0 then
+            -- Check if it's a vault door model near our coordinates (allow different Z levels, wider search)
+            if (objModel == fleecaDoorHash or objModel == joaat('v_ilev_gb_vauldr')) and dist < 10.0 then
                 -- Check if it's NOT one of our spawned doors
                 local isOurDoor = false
                 for hid, doorData in pairs(VaultDoors) do
@@ -688,11 +690,11 @@ local function FindDefaultVaultDoor(coords, heistId)
                     end
                 end
                 
-                if not isOurDoor then
+                if not isOurDoor and dist < closestDist then
                     foundDoor = obj
                     foundCoords = objCoords
-                    debugPrint(('Found default vault door at %s (model: %d)'):format(tostring(objCoords), objModel))
-                    break
+                    closestDist = dist
+                    debugPrint(('Found default vault door at %s (model: %d, dist: %.2f)'):format(tostring(objCoords), objModel, dist))
                 end
             end
         end
@@ -709,11 +711,34 @@ local function RegisterFleecaDoor(heistId, coords)
     RemovePropVaultDoors(coords)
     Wait(100)
     
-    -- Find the existing default vault door
-    local defaultDoor, defaultCoords = FindDefaultVaultDoor(coords, heistId)
+    -- Try multiple times to find the door (it might load later with the interior)
+    local defaultDoor, defaultCoords = nil, nil
+    for attempt = 1, 5 do
+        defaultDoor, defaultCoords = FindDefaultVaultDoor(coords, heistId)
+        if defaultDoor and defaultCoords then
+            break
+        end
+        Wait(500) -- Wait for interior/doors to load
+    end
     
     -- Use the actual door coordinates if found, otherwise use config coordinates
     local doorCoords = defaultCoords or coords
+    
+    -- If we found the door, use its exact coordinates; otherwise try multiple Z levels
+    if not defaultCoords then
+        -- Try common Z offsets for Fleeca doors
+        local zOffsets = {0.0, 1.0, 1.16, -1.0}
+        for _, zOffset in ipairs(zOffsets) do
+            local testCoords = vector3(coords.x, coords.y, coords.z + zOffset)
+            local testDoor, testCoords = FindDefaultVaultDoor(testCoords, heistId)
+            if testDoor and testCoords then
+                defaultCoords = testCoords
+                doorCoords = testCoords
+                debugPrint(('Found door with Z offset %.2f: %s'):format(zOffset, tostring(testCoords)))
+                break
+            end
+        end
+    end
     
     -- Remove from DoorSystem first
     RemoveDoorFromSystem(doorId)
@@ -730,7 +755,7 @@ local function RegisterFleecaDoor(heistId, coords)
         false, false, false
     )
     
-    Wait(200) -- Give DoorSystem time to register
+    Wait(300) -- Give DoorSystem more time to register
     
     -- Set door to opening state first (required by DoorSystem)
     DoorSystemSetDoorState(doorId, 4, false, false)
@@ -745,9 +770,10 @@ local function RegisterFleecaDoor(heistId, coords)
     local openRatio = DoorSystemGetOpenRatio(doorId)
     
     if defaultDoor then
-        debugPrint(('Fleeca vault door registered (DEFAULT door) for heist: %s at %s (state: %d, ratio: %.2f)'):format(heistId, tostring(doorCoords), doorState, openRatio))
+        debugPrint(('Fleeca vault door registered (DEFAULT door found) for heist: %s at %s (state: %d, ratio: %.2f)'):format(heistId, tostring(doorCoords), doorState, openRatio))
     else
-        debugPrint(('Fleeca vault door registered (config coords) for heist: %s at %s (state: %d, ratio: %.2f)'):format(heistId, tostring(doorCoords), doorState, openRatio))
+        debugPrint(('Fleeca vault door registered (using config coords - door not found) for heist: %s at %s (state: %d, ratio: %.2f)'):format(heistId, tostring(doorCoords), doorState, openRatio))
+        debugPrint(('WARNING: Could not find existing vault door entity. Door may not appear. Check coordinates.'))
     end
 end
 
@@ -1879,29 +1905,25 @@ end
 
 -- 4️⃣ REGISTER DOORS IMMEDIATELY ON RESOURCE START (BEFORE GAME LOADS DOORS)
 CreateThread(function()
-    -- Wait a bit for game to load
-    Wait(1000)
-    
-    -- Register doors immediately
-    for heistId, hData in pairs(Config.Heists) do
-        if hData.heistType == "fleeca" and hData.vault and hData.vault.coords then
-            local vaultCoords = vecFromTable(hData.vault.coords)
-            RegisterFleecaDoor(heistId, vaultCoords)
-        end
-    end
-    
-    -- Also register again after a longer delay (in case config loads later or doors respawn)
+    -- Wait for game and interiors to load
     Wait(3000)
-    for heistId, hData in pairs(Config.Heists) do
-        if hData.heistType == "fleeca" and hData.vault and hData.vault.coords then
-            local vaultCoords = vecFromTable(hData.vault.coords)
-            RegisterFleecaDoor(heistId, vaultCoords)
+    
+    -- Register doors - try multiple times as interiors may load later
+    for attempt = 1, 3 do
+        for heistId, hData in pairs(Config.Heists) do
+            if hData.heistType == "fleeca" and hData.vault and hData.vault.coords then
+                local vaultCoords = vecFromTable(hData.vault.coords)
+                RegisterFleecaDoor(heistId, vaultCoords)
+            end
+        end
+        if attempt < 3 then
+            Wait(2000) -- Wait between attempts
         end
     end
     
     -- Continuous check to ensure doors stay registered and remove any respawned doors
     while true do
-        Wait(3000) -- Check every 3 seconds
+        Wait(5000) -- Check every 5 seconds (less frequent to avoid spam)
         
         local playerCoords = GetEntityCoords(PlayerPedId())
         
@@ -1915,13 +1937,67 @@ CreateThread(function()
                 if dist < 50.0 then
                     -- Remove any prop doors we may have spawned
                     RemovePropVaultDoors(vaultCoords)
-                    -- Re-register DEFAULT door to ensure it's controlled
+                    -- Re-register DEFAULT door to ensure it's controlled (only once per proximity check)
                     RegisterFleecaDoor(heistId, vaultCoords)
                 end
             end
         end
     end
 end)
+
+-- DEBUG: Command to manually find and register vault door
+RegisterCommand('findvaultdoor', function(source, args)
+    local heistId = args[1] or 'fleeca_legion'
+    local heist = Config.Heists[heistId]
+    
+    if not heist then
+        print('^1[DEBUG] Heist not found: ' .. heistId .. '^7')
+        return
+    end
+    
+    if not heist.vault or not heist.vault.coords then
+        print('^1[DEBUG] Heist has no vault config: ' .. heistId .. '^7')
+        return
+    end
+    
+    print('^2[DEBUG] Searching for vault door for: ' .. heistId .. '^7')
+    
+    local vaultCoords = vecFromTable(heist.vault.coords)
+    local playerCoords = GetEntityCoords(PlayerPedId())
+    
+    print(string.format('^3[DEBUG] Config coords: %s^7', tostring(vaultCoords)))
+    print(string.format('^3[DEBUG] Player coords: %s^7', tostring(playerCoords)))
+    print(string.format('^3[DEBUG] Distance: %.2f^7', #(playerCoords - vaultCoords)))
+    
+    -- Search for door
+    local objects = GetGamePool('CObject')
+    local foundDoors = {}
+    
+    for _, obj in ipairs(objects) do
+        if DoesEntityExist(obj) then
+            local objModel = GetEntityModel(obj)
+            local objCoords = GetEntityCoords(obj)
+            local dist = #(objCoords - vaultCoords)
+            
+            if (objModel == fleecaDoorHash or objModel == joaat('v_ilev_gb_vauldr')) and dist < 20.0 then
+                table.insert(foundDoors, {entity = obj, coords = objCoords, dist = dist, model = objModel})
+                print(string.format('^2[DEBUG] Found door at %s (model: %d, dist: %.2f)^7', tostring(objCoords), objModel, dist))
+            end
+        end
+    end
+    
+    if #foundDoors == 0 then
+        print('^1[DEBUG] No vault doors found near coordinates!^7')
+        print('^3[DEBUG] Try going inside the bank - the door might be part of an interior that loads when you enter.^7')
+    else
+        print(string.format('^2[DEBUG] Found %d door(s)^7', #foundDoors))
+        -- Register the closest one
+        table.sort(foundDoors, function(a, b) return a.dist < b.dist end)
+        local closest = foundDoors[1]
+        print(string.format('^2[DEBUG] Registering closest door at %s^7', tostring(closest.coords)))
+        RegisterFleecaDoor(heistId, closest.coords)
+    end
+end, false)
 
 -- Initial spawn (only once on resource start)
 local hasInitialSpawned = false
