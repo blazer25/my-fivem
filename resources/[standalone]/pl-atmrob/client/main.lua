@@ -1,4 +1,7 @@
-if GetResourceState('qb-core') == 'started' then
+-- Try QBox first (qbx_core), then fallback to qb-core
+if GetResourceState('qbx_core') == 'started' then
+    QBCore = exports['qbx_core']:GetCoreObject()
+elseif GetResourceState('qb-core') == 'started' then
     QBCore = exports['qb-core']:GetCoreObject()
 end
 

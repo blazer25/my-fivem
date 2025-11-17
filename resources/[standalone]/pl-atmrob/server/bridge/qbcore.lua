@@ -1,6 +1,16 @@
-local QBCore = GetResourceState('qb-core'):find('start') and exports['qb-core']:GetCoreObject() or nil
+local QBCore = nil
 
-if not QBCore then return end
+-- Try QBox first (qbx_core), then fallback to qb-core
+if GetResourceState('qbx_core') == 'started' then
+    QBCore = exports['qbx_core']:GetCoreObject()
+elseif GetResourceState('qb-core'):find('start') then
+    QBCore = exports['qb-core']:GetCoreObject()
+end
+
+if not QBCore then 
+    print('^1[pl-atmrob] ERROR: Neither qbx_core nor qb-core is available!^7')
+    return 
+end
 
 function getPlayer(target)
     local xPlayer = QBCore.Functions.GetPlayer(target)

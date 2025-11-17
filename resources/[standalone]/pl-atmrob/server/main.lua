@@ -6,7 +6,7 @@ lib.locale()
 local atmRobberyState = {}
 
 local isEsExtendedStarted = GetResourceState('es_extended') == 'started'
-local isQbCoreStarted = GetResourceState('qb-core') == 'started'
+local isQbCoreStarted = GetResourceState('qb-core') == 'started' or GetResourceState('qbx_core') == 'started'
 
 
 --credits to Lation for checkforpolice
