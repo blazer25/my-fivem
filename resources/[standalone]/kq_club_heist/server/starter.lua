@@ -20,41 +20,66 @@ function CheckDependencies()
 end
 CheckDependencies()
 
-local starter = {
-    name = 'Club heist hint',
-    renderDistance = 10.0,
-    coords = Config.starter.location,
-    radius = 0.05,
-    amount = 1,
-    regrowTime = Config.starter.respawnTime * 1000, -- in seconds
+-- Check if kq_lootareas is available
+if GetResourceState('kq_lootareas') ~= 'started' then
+    print('^1[KQ_CLUB_HEIST] ERROR: kq_lootareas is not started! Please ensure kq_lootareas is started before kq_club_heist.^7')
+    return
+end
 
-    event = 'kq_club_heist:client:triggerHeist',
-    eventType = 'client',
+-- Wait for exports to be available
+CreateThread(function()
+    local attempts = 0
+    while not exports['kq_lootareas'] or not exports['kq_lootareas'].CreateArea do
+        Wait(100)
+        attempts = attempts + 1
+        if attempts > 50 then
+            print('^1[KQ_CLUB_HEIST] ERROR: kq_lootareas exports not available after 5 seconds!^7')
+            return
+        end
+    end
+    
+    local starter = {
+        name = 'Club heist hint',
+        renderDistance = 10.0,
+        coords = Config.starter.location,
+        radius = 0.05,
+        amount = 1,
+        regrowTime = Config.starter.respawnTime * 1000, -- in seconds
 
-    items = nil,
-    props = {
-        {
-            hash = Config.starter.prop,
-            textureVariation = 0,
-            chance = 100,
-            minimumDistanceBetween = 0.1,
-            offset = vector3(0.0, 0.0, 0.0),
-            forceZCoordinate = true,
-            animation = {
-                duration = 1, -- in seconds
-                dict = 'mp_take_money_mg',
-                anim = 'put_cash_into_bag_loop',
-                flag = 17,
+        event = 'kq_club_heist:client:triggerHeist',
+        eventType = 'client',
+
+        items = nil,
+        props = {
+            {
+                hash = Config.starter.prop,
+                textureVariation = 0,
+                chance = 100,
+                minimumDistanceBetween = 0.1,
+                offset = vector3(0.0, 0.0, 0.0),
+                forceZCoordinate = true,
+                animation = {
+                    duration = 1, -- in seconds
+                    dict = 'mp_take_money_mg',
+                    anim = 'put_cash_into_bag_loop',
+                    flag = 17,
+                },
+                labelSingular = L('Rival club information'),
+                labelPlurar = L('Rival club information'),
+                collectMessage = L('Read information about a rival club'),
+                icon = 'fas fa-newspaper',
             },
-            labelSingular = L('Rival club information'),
-            labelPlurar = L('Rival club information'),
-            collectMessage = L('Read information about a rival club'),
-            icon = 'fas fa-newspaper',
         },
-    },
-}
+    }
 
-exports['kq_lootareas']:CreateArea('kq_club_heist_starter', starter)
+    local success, err = pcall(function()
+        exports['kq_lootareas']:CreateArea('kq_club_heist_starter', starter)
+    end)
+    
+    if not success then
+        print('^1[KQ_CLUB_HEIST] ERROR creating starter area: ' .. tostring(err) .. '^7')
+    end
+end)
 
 --------------------------------------------------------
 
