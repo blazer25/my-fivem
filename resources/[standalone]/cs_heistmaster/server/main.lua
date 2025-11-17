@@ -443,7 +443,8 @@ RegisterNetEvent('cs_heistmaster:requestStart', function(heistId)
             FleecaVaultState[heistId] = { spawned = true, open = false }
         end
         -- Spawn closed door when heist starts
-        TriggerClientEvent('cs_heistmaster:client:spawnVaultDoor', -1, heistId, heist.vault.coords, heist.vault.heading or 160.0, heist.vault.doorModel, false)
+        debugPrint(('Server: Triggering vault door spawn for heist: %s, coords: %s, heading: %.2f, model: %s'):format(heistId, tostring(heist.vault.coords), heist.vault.heading or 250.0, heist.vault.doorModel or 'v_ilev_gb_vauldr'))
+        TriggerClientEvent('cs_heistmaster:client:spawnVaultDoor', -1, heistId, heist.vault.coords, heist.vault.heading or 250.0, heist.vault.doorModel, false)
         debugPrint(('Vault door spawned (closed) for heist start: %s'):format(heistId))
     end
 end)

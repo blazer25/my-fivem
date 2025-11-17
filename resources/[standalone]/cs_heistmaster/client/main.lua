@@ -669,42 +669,69 @@ local function deleteDefaultVaultDoor(coords)
 end
 
 RegisterNetEvent('cs_heistmaster:client:spawnVaultDoor', function(heistId, coordsTable, heading, modelName, isOpen)
+    print(string.format('^2[VAULT DOOR] spawnVaultDoor event received for heist: %s^7', heistId))
+    print(string.format('^3[VAULT DOOR] Coords: %s, Heading: %s, Model: %s, Open: %s^7', tostring(coordsTable), tostring(heading), tostring(modelName), tostring(isOpen)))
+    
     local coords = vector3(coordsTable.x, coordsTable.y, coordsTable.z)
     
     -- Delete default doors first
     deleteDefaultVaultDoor(coords)
-    Wait(100) -- Give time for deletion
+    Wait(200) -- Give time for deletion
     
     -- Cleanup existing custom door
     if VaultDoors[heistId] and DoesEntityExist(VaultDoors[heistId]) then
+        print(string.format('^3[VAULT DOOR] Deleting existing door entity: %d^7', VaultDoors[heistId]))
         DeleteEntity(VaultDoors[heistId])
         VaultDoors[heistId] = nil
-        Wait(100)
+        Wait(200)
     end
     
     local model = joaat(modelName or 'v_ilev_gb_vauldr')
+    print(string.format('^3[VAULT DOOR] Requesting model: %s (hash: %d)^7', modelName or 'v_ilev_gb_vauldr', model))
     RequestModel(model)
-    while not HasModelLoaded(model) do Wait(0) end
+    local attempts = 0
+    while not HasModelLoaded(model) do 
+        Wait(10)
+        attempts = attempts + 1
+        if attempts > 100 then
+            print(string.format('^1[VAULT DOOR] ERROR: Model failed to load after 100 attempts!^7'))
+            return
+        end
+    end
+    print(string.format('^2[VAULT DOOR] Model loaded successfully^7'))
     
-    -- Spawn door at exact coordinates - try with and without Z offset
-    local door = CreateObjectNoOffset(model, coords.x, coords.y, coords.z, false, false, false)
+    -- Try CreateObject instead of CreateObjectNoOffset - sometimes works better
+    print(string.format('^3[VAULT DOOR] Spawning door at: %s^7', tostring(coords)))
+    local door = CreateObject(model, coords.x, coords.y, coords.z, true, true, false)
+    
+    if not door or door == 0 then
+        print(string.format('^1[VAULT DOOR] ERROR: Failed to create door object!^7'))
+        return
+    end
+    
+    print(string.format('^2[VAULT DOOR] Door entity created: %d^7', door))
     
     -- Make sure door is visible
     SetEntityAlpha(door, 255, false)
     SetEntityVisible(door, true, false)
     SetEntityCollision(door, true, true)
+    SetEntityAsMissionEntity(door, true, true)
     
     SetEntityHeading(door, heading or 250.0)
     FreezeEntityPosition(door, true)
     
     VaultDoors[heistId] = door
     
+    local finalCoords = GetEntityCoords(door)
+    local finalHeading = GetEntityHeading(door)
+    print(string.format('^2[VAULT DOOR] Door spawned successfully! Entity: %d, Final coords: %s, Final heading: %.2f^7', door, tostring(finalCoords), finalHeading))
     debugPrint(('Vault door spawned for heist %s at %s (heading: %.2f, entity: %d, open: %s)'):format(heistId, tostring(coords), heading or 250.0, door, tostring(isOpen)))
     
     if isOpen then
         local openHeading = (heading or 250.0) + 110.0
         SetEntityHeading(door, openHeading)
         SetEntityCollision(door, false, false)
+        print(string.format('^2[VAULT DOOR] Door set to open position (heading: %.2f)^7', openHeading))
     end
 end)
 
