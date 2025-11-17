@@ -1,6 +1,6 @@
 Config = {}
 
-Config.debug = false
+Config.debug = true
 
 
 -------------------------------------------------
