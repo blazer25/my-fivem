@@ -596,90 +596,99 @@ RegisterNetEvent('cs_heistmaster:client:forceStart', function(heistId)
 end)
 
 -- ============================================================
--- B) VAULT DOOR SYSTEM - Original Door Removal
+-- B) VAULT DOOR SYSTEM - Using GTA Native DoorSystem
 -- ============================================================
 
--- 1️⃣ REMOVE DEFAULT GTA VAULT DOOR
-function removeOriginalVaultDoors(coords)
-    local doorHash = GetHashKey("v_ilev_gb_vauldr")
-    local objects = GetGamePool('CObject')
+-- Fleeca vault door configuration
+local fleecaDoorHash = 2121050683 -- prop_fleeca_vaultdoor
+local fleecaDoorIds = {} -- [heistId] = doorId
+
+-- Get door ID for a heist
+local function getDoorId(heistId)
+    if not fleecaDoorIds[heistId] then
+        fleecaDoorIds[heistId] = GetHashKey("fleeca_vault_door_" .. heistId)
+    end
+    return fleecaDoorIds[heistId]
+end
+
+-- Register and control Fleeca vault door using DoorSystem
+local function RegisterFleecaDoor(heistId, coords)
+    local doorId = getDoorId(heistId)
     
-    for _, obj in ipairs(objects) do
-        if DoesEntityExist(obj) and GetEntityModel(obj) == doorHash then
-            local objCoords = GetEntityCoords(obj)
-            if #(coords - objCoords) < 15.0 then
-                SetEntityAsMissionEntity(obj, true, true)
-                SetEntityAlpha(obj, 0, false) -- Make invisible
-                SetEntityCollision(obj, false, false)
-                DeleteEntity(obj)
-            end
-        end
+    -- Register door in DoorSystem
+    AddDoorToSystem(
+        doorId,
+        fleecaDoorHash,
+        coords.x,
+        coords.y,
+        coords.z,
+        false, false, false
+    )
+    
+    -- Force it shut & locked
+    DoorSystemSetDoorState(doorId, 1, true, true)
+    DoorSystemSetOpenRatio(doorId, 0.0, true, false)
+    
+    debugPrint(('Fleeca vault door registered for heist: %s'):format(heistId))
+end
+
+-- Open the vault door after drilling
+function OpenVaultDoor(heistId)
+    local doorId = getDoorId(heistId)
+    
+    -- Unlock door
+    DoorSystemSetDoorState(doorId, 0, true, true)
+    
+    -- Animate open
+    for i = 0.0, 1.0, 0.01 do
+        DoorSystemSetOpenRatio(doorId, i, true, false)
+        Wait(10)
     end
     
-    RemoveDoorFromSystem(doorHash)
+    -- Final state: fully open
+    DoorSystemSetDoorState(doorId, 6, true, true)
+    
+    debugPrint(('Vault door opened for heist: %s'):format(heistId))
+end
+
+-- Close the vault door
+function CloseVaultDoor(heistId)
+    local doorId = getDoorId(heistId)
+    
+    DoorSystemSetDoorState(doorId, 1, true, true)
+    DoorSystemSetOpenRatio(doorId, 0.0, true, false)
+    
+    debugPrint(('Vault door closed for heist: %s'):format(heistId))
 end
 
 -- ============================================================
 -- B) VAULT DOOR SYSTEM
 -- ============================================================
 
--- 2️⃣ SPAWN CUSTOM DOOR (CLOSED)
+-- 2️⃣ REGISTER VAULT DOOR USING DOORSYSTEM
 RegisterNetEvent("cs_heistmaster:client:spawnVaultDoor", function(heistId, coords, heading, isOpen)
-    if VaultDoors[heistId] and DoesEntityExist(VaultDoors[heistId].entity) then
-        DeleteEntity(VaultDoors[heistId].entity)
-    end
-    
     local vaultCoords = vecFromTable(coords)
-    removeOriginalVaultDoors(vaultCoords)
     
-    local model = `v_ilev_gb_vauldr`
-    RequestModel(model)
-    while not HasModelLoaded(model) do Wait(0) end
+    -- Register door in DoorSystem
+    RegisterFleecaDoor(heistId, vaultCoords)
     
-    local door = CreateObjectNoOffset(model, vaultCoords.x, vaultCoords.y, vaultCoords.z - 1.0, false, false, false)
-    SetEntityHeading(door, heading)
-    
+    -- If door should be open, open it
     if isOpen then
-        SetEntityHeading(door, heading - 100.0)
-        SetEntityCollision(door, false, false)
-    else
-        SetEntityCollision(door, true, true)
+        Wait(100) -- Small delay to ensure door is registered
+        OpenVaultDoor(heistId)
     end
     
-    FreezeEntityPosition(door, true)
-    
-    VaultDoors[heistId] = { entity = door, open = isOpen }
-    
-    debugPrint(('Vault door spawned for heist: %s (open: %s)'):format(heistId, tostring(isOpen)))
+    debugPrint(('Vault door registered for heist: %s (open: %s)'):format(heistId, tostring(isOpen)))
 end)
 
 -- 3️⃣ OPEN DOOR AFTER DRILLING
 RegisterNetEvent("cs_heistmaster:client:openVaultDoor", function(heistId)
-    local data = VaultDoors[heistId]
-    if not data or data.open then return end
-    
-    local door = data.entity
-    if not DoesEntityExist(door) then return end
-    
-    FreezeEntityPosition(door, false)
-    SetEntityCollision(door, false, false)
-    
-    local startHeading = GetEntityHeading(door)
-    local target = startHeading - 100.0
-    
-    for i = 1, 50 do
-        if not DoesEntityExist(door) then break end
-        local progress = i / 50
-        local newHeading = startHeading - (100.0 * progress)
-        SetEntityHeading(door, newHeading)
-        Wait(15)
-    end
-    
-    if DoesEntityExist(door) then
-        FreezeEntityPosition(door, true)
-        data.open = true
-        debugPrint(('Vault door opened for heist: %s'):format(heistId))
-    end
+    OpenVaultDoor(heistId)
+end)
+
+-- Close vault door event
+RegisterNetEvent("cs_heistmaster:client:closeVaultDoor", function(heistId)
+    CloseVaultDoor(heistId)
 end)
 
 -- Legacy openVaultDoor handler (for compatibility)
@@ -1065,8 +1074,10 @@ local function handleDrillAction(heistId, heist, step, stepIndex)
             TriggerServerEvent('cs_heistmaster:safeReward', heistId)
         end
         
-        -- Step 2: Rotate the Door Open After Drilling - for Fleeca heists
+        -- Step 2: Open Door After Drilling - for Fleeca heists
         if heist.heistType == 'fleeca' then
+            -- Optional delay before door opens
+            Wait(1000)
             -- Trigger server event to open vault door
             TriggerServerEvent("cs_heistmaster:server:setVaultOpen", heistId)
         end
@@ -1626,17 +1637,14 @@ RegisterNetEvent('cs_heistmaster:client:startHeist', function(heistId, heistData
         type = 'success'
     })
     
-    -- CRITICAL FIX: Spawn vault door immediately when heist starts (for Fleeca banks)
-    -- Step 1: Spawn the Vault Door (Once) - for Fleeca heists
+    -- CRITICAL FIX: Register vault door immediately when heist starts (for Fleeca banks)
+    -- Step 1: Register the Vault Door (Once) - for Fleeca heists
     if heistData.heistType == 'fleeca' and heistData.vault and heistData.vault.coords then
         -- Use coordinates from config
         local vaultCoords = vecFromTable(heistData.vault.coords)
-        local vaultHeading = heistData.vault.heading or 160.0
-        local modelHash = `v_ilev_gb_vauldr`
         
-        -- Spawn vault door using the new system
-        -- Server will trigger spawnVaultDoor event, but we can also trigger it here
-        TriggerServerEvent("cs_heistmaster:server:spawnVaultDoorOnStart", heistId)
+        -- Register door in DoorSystem (ensures it's locked and closed)
+        RegisterFleecaDoor(heistId, vaultCoords)
     end
     
     -- Spawn step objects with target options
@@ -1815,10 +1823,10 @@ CreateThread(function()
                 local vaultCoords = vecFromTable(heist.vault.coords)
                 local dist = #(playerCoords - vaultCoords)
                 
-                -- If player is within 50 meters of the bank, proactively remove doors
+                -- If player is within 50 meters of the bank, ensure door is registered
                 if dist < 50.0 then
-                    -- Remove original doors even if heist hasn't started
-                    removeOriginalVaultDoors(vaultCoords)
+                    -- Register door if not already registered
+                    RegisterFleecaDoor(heistId, vaultCoords)
                 end
             end
         end
@@ -1958,15 +1966,20 @@ RegisterNetEvent('cs_heistmaster:client:cleanupHeist', function(heistId)
         end
     end
     
-    -- Heist Cleanup - Following exact code pattern
-    -- Cleanup custom vault door for Fleeca heists
+    -- Heist Cleanup - Close vault door for Fleeca heists
     if heist and heist.heistType == 'fleeca' then
+        -- Close the door using DoorSystem
+        CloseVaultDoor(heistId)
+        
+        -- Cleanup legacy door references if they exist
+        if VaultDoors[heistId] and DoesEntityExist(VaultDoors[heistId].entity) then
+            DeleteEntity(VaultDoors[heistId].entity)
+            VaultDoors[heistId] = nil
+        end
         if VaultDoor and DoesEntityExist(VaultDoor) then
             DeleteEntity(VaultDoor)
             VaultDoor = nil
-            debugPrint(('Custom vault door deleted on heist cleanup: %s'):format(heistId))
         end
-        -- Door cleanup handled by VaultDoors table
     end
     
     -- Reset state

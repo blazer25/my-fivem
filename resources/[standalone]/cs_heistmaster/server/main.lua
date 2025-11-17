@@ -555,6 +555,9 @@ RegisterNetEvent('cs_heistmaster:finishHeist', function(heistId)
         -- 6️⃣ RESET DOOR WHEN COOLDOWN EXPIRES
         if heist.heistType == 'fleeca' and FleecaVaultState[heistId] then
             FleecaVaultState[heistId].open = false
+            -- Close the door on all clients
+            TriggerClientEvent("cs_heistmaster:client:closeVaultDoor", -1, heistId)
+            -- Re-register door as closed
             if heist.vault and heist.vault.coords then
                 TriggerClientEvent("cs_heistmaster:client:spawnVaultDoor", -1, heistId, heist.vault.coords, heist.vault.heading, false)
             end
