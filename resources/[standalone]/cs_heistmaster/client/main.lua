@@ -1307,26 +1307,26 @@ local function handleDrillAction(heistId, heist, step, stepIndex)
                 return true -- Still return true to continue heist
             end
             
-            -- Rotate the vault door open
-            local currentHeading = GetEntityHeading(VaultDoor)
-            local targetHeading = currentHeading - 90.0
-            local step = 0.25
-            
+            -- Rotate Open After Drill - Following exact code pattern
             -- Unfreeze door to allow rotation
             FreezeEntityPosition(VaultDoor, false)
             
-            -- Disable collision when opening so players can pass through
+            -- Disable collision so players can pass through when open
             SetEntityCollision(VaultDoor, false, false)
             
+            local current = GetEntityHeading(VaultDoor)
+            local target = current - 90.0
+            
             CreateThread(function()
-                while math.abs(GetEntityHeading(VaultDoor) - targetHeading) > 1.0 do
+                while math.abs(GetEntityHeading(VaultDoor) - target) > 1.0 do
                     if not DoesEntityExist(VaultDoor) then break end
-                    SetEntityHeading(VaultDoor, GetEntityHeading(VaultDoor) - step)
+                    SetEntityHeading(VaultDoor, GetEntityHeading(VaultDoor) - 0.25)
                     Wait(10)
                 end
+                -- Door stays in place (not deleted) to prevent invisible walk-through
+                -- Keep collision disabled so players can pass through
                 if DoesEntityExist(VaultDoor) then
-                    -- Keep door unfrozen and collision disabled so players can pass through
-                    FreezeEntityPosition(VaultDoor, false)
+                    FreezeEntityPosition(VaultDoor, true)
                     SetEntityCollision(VaultDoor, false, false)
                     debugPrint(('Vault door opened successfully for heist: %s'):format(heistId))
                 end
@@ -1901,10 +1901,10 @@ RegisterNetEvent('cs_heistmaster:client:startHeist', function(heistId, heistData
     -- CRITICAL FIX: Spawn vault door immediately when heist starts (for Fleeca banks)
     -- Step 1: Spawn the Vault Door (Once) - for Fleeca heists
     if heistData.heistType == 'fleeca' and heistData.vault and heistData.vault.coords then
-        -- Use coordinates from config, not hardcoded
+        -- Use coordinates from config
         local vaultCoords = vecFromTable(heistData.vault.coords)
         local vaultHeading = heistData.vault.heading or 160.0
-        local model = joaat(heistData.vault.doorModel or 'v_ilev_gb_vauldr')
+        local modelHash = `v_ilev_gb_vauldr`
         
         -- CRITICAL: Remove original doors BEFORE spawning custom door
         debugPrint(('Removing original vault doors for heist: %s'):format(heistId))
@@ -1919,41 +1919,32 @@ RegisterNetEvent('cs_heistmaster:client:startHeist', function(heistId, heistData
         -- Start continuous monitoring to prevent ghost doors
         startDoorMonitoring(heistId, vaultCoords)
         
-        -- Load model
-        RequestModel(model)
-        local loadAttempts = 0
-        while not HasModelLoaded(model) and loadAttempts < 100 do
-            Wait(10)
-            loadAttempts = loadAttempts + 1
-        end
+        -- Vault Door Spawn - Following exact code pattern
+        RequestModel(modelHash)
+        while not HasModelLoaded(modelHash) do Wait(0) end
         
-        if not HasModelLoaded(model) then
-            debugPrint(('ERROR: Failed to load vault door model for heist: %s'):format(heistId))
-            return
-        end
-        
-        -- Cleanup if door exists
-        if DoesEntityExist(VaultDoor) then 
+        -- Cleanup if door exists (prevent multiple doors)
+        if VaultDoor and DoesEntityExist(VaultDoor) then 
             DeleteEntity(VaultDoor)
             VaultDoor = nil
         end
         
-        -- Spawn the vault door using CreateObjectNoOffset as requested
-        VaultDoor = CreateObjectNoOffset(model, vaultCoords.x, vaultCoords.y, vaultCoords.z, true, false, false)
+        -- Spawn the vault door at correct coords from config
+        VaultDoor = CreateObject(modelHash, vaultCoords.x, vaultCoords.y, vaultCoords.z, true, false, false)
         
         if not VaultDoor or not DoesEntityExist(VaultDoor) then
             debugPrint(('ERROR: Failed to create vault door object for heist: %s'):format(heistId))
             return
         end
         
-        -- Set heading and freeze
+        -- Set heading and freeze in place to block entry
         SetEntityHeading(VaultDoor, vaultHeading)
         FreezeEntityPosition(VaultDoor, true)
         
-        -- Enable collision when door is closed
+        -- Enable collision when door is closed (blocks entry)
         SetEntityCollision(VaultDoor, true, true)
         
-        debugPrint(('Custom vault door spawned for Fleeca heist: %s at %s (heading: %.1f)'):format(heistId, tostring(vaultCoords), vaultHeading))
+        debugPrint(('Custom vault door spawned and locked for Fleeca heist: %s at %s (heading: %.1f)'):format(heistId, tostring(vaultCoords), vaultHeading))
         
         -- Final check: remove any doors that might have appeared after spawning
         Wait(500)
@@ -2279,16 +2270,13 @@ RegisterNetEvent('cs_heistmaster:client:cleanupHeist', function(heistId)
         end
     end
     
+    -- Heist Cleanup - Following exact code pattern
     -- Cleanup custom vault door for Fleeca heists
     if heist and heist.heistType == 'fleeca' then
         if VaultDoor and DoesEntityExist(VaultDoor) then
-            -- Reset door to closed state
-            if heist.vault and heist.vault.heading then
-                SetEntityHeading(VaultDoor, heist.vault.heading)
-            end
-            SetEntityCollision(VaultDoor, true, true)
-            FreezeEntityPosition(VaultDoor, true)
-            debugPrint(('Custom vault door reset for heist: %s'):format(heistId))
+            DeleteEntity(VaultDoor)
+            VaultDoor = nil
+            debugPrint(('Custom vault door deleted on heist cleanup: %s'):format(heistId))
         end
         -- Clear door removal tracking
         OriginalDoorsRemoved[heistId] = nil
