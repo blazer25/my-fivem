@@ -541,10 +541,11 @@ RegisterNetEvent('cs_heistmaster:finishHeist', function(heistId)
         HeistCrew[heistId] = nil -- Clear crew tracking
         SafeOpened[heistId] = nil -- Clear safe opened tracking
         
-        -- 6️⃣ RESET DOOR WHEN COOLDOWN EXPIRES
-        if heist.heistType == 'fleeca' and FleecaVaultState[heistId] then
+        -- 6️⃣ RESET DOOR WHEN COOLDOWN EXPIRES - Delete and respawn door
+        if heist.heistType == 'fleeca' and FleecaVaultState[heistId] and heist.vault then
             FleecaVaultState[heistId].open = false
-            TriggerClientEvent("cs_heistmaster:client:resetVaultDoor", -1, heistId)
+            -- Delete and respawn door as closed
+            TriggerClientEvent("cs_heistmaster:client:spawnVaultDoor", -1, heistId, heist.vault.coords, heist.vault.heading or 160.0, false)
         end
         
         -- Reset to idle after cooldown
@@ -800,10 +801,6 @@ RegisterNetEvent('cs_heistmaster:server:setVaultOpen', function(heistId)
     debugPrint(('Vault door opened for heist: %s'):format(heistId))
 end)
 
-RegisterNetEvent('cs_heistmaster:fleeca:openVaultDoor', function(heistId)
-    -- Legacy event - redirect to new system
-    TriggerEvent('cs_heistmaster:server:setVaultOpen', heistId)
-end)
 
 ----------------------------------------------------------------
 -- Clerk panic / alarm handler
@@ -848,21 +845,11 @@ RegisterNetEvent('cs_heistmaster:server:syncVaultDoors', function()
     for heistId, state in pairs(FleecaVaultState) do
         local h = Config.Heists[heistId]
         if h and h.vault and h.heistType == 'fleeca' then
-            if state.open then
-                TriggerClientEvent('cs_heistmaster:client:openVaultDoor', src, heistId)
-            else
-                TriggerClientEvent('cs_heistmaster:client:resetVaultDoor', src, heistId)
-            end
+            TriggerClientEvent('cs_heistmaster:client:spawnVaultDoor', src, heistId, h.vault.coords, h.vault.heading or 160.0, state.open)
         end
     end
 end)
 
--- PROMPT B: Request sync when player loads
-AddEventHandler('qbx_core:server:playerLoaded', function()
-    local src = source
-    Wait(2000) -- Wait a bit for everything to load
-    TriggerClientEvent('cs_heistmaster:client:requestVaultSync', src)
-end)
 
 -- PATCH C: Step completion handler
 RegisterNetEvent("cs_heistmaster:server:completeStep", function(heistId, step)
