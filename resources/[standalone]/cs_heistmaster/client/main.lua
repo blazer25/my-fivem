@@ -595,17 +595,76 @@ end)
 -- ============================================================
 
 local function deleteDefaultVaultDoor(coords)
-    local model = `v_ilev_bk_vaultdoor`
-    local obj = GetClosestObjectOfType(coords.x, coords.y, coords.z, 3.0, model, false, false, false)
-    if obj ~= 0 then 
-        SetEntityAsMissionEntity(obj, true, true)
-        DeleteEntity(obj) 
-    end
+    local model1 = `v_ilev_bk_vaultdoor`
     local model2 = `v_ilev_gb_vauldr`
-    local obj2 = GetClosestObjectOfType(coords.x, coords.y, coords.z, 3.0, model2, false, false, false)
-    if obj2 ~= 0 then 
-        SetEntityAsMissionEntity(obj2, true, true)
-        DeleteEntity(obj2) 
+    local objects = GetGamePool('CObject')
+    local deletedCount = 0
+    
+    for _, obj in ipairs(objects) do
+        if DoesEntityExist(obj) then
+            local objModel = GetEntityModel(obj)
+            local objCoords = GetEntityCoords(obj)
+            local dist = #(coords - objCoords)
+            
+            -- Check if it's a vault door model and NOT our custom door
+            if (objModel == model1 or objModel == model2) and dist < 10.0 then
+                local isOurDoor = false
+                -- Check if this is one of our custom spawned doors
+                for heistId, customDoor in pairs(VaultDoors) do
+                    if customDoor == obj then
+                        isOurDoor = true
+                        break
+                    end
+                end
+                
+                -- Only delete if it's NOT our custom door
+                if not isOurDoor then
+                    SetEntityAsMissionEntity(obj, true, true)
+                    SetEntityAlpha(obj, 0, false)
+                    SetEntityCollision(obj, false, false)
+                    DeleteEntity(obj)
+                    deletedCount = deletedCount + 1
+                    debugPrint(('Deleted default vault door at %s (model: %d, dist: %.2f)'):format(tostring(objCoords), objModel, dist))
+                end
+            end
+        end
+    end
+    
+    -- Also try GetClosestObjectOfType as fallback
+    local obj1 = GetClosestObjectOfType(coords.x, coords.y, coords.z, 10.0, model1, false, false, false)
+    if obj1 ~= 0 then
+        local isOurDoor = false
+        for heistId, customDoor in pairs(VaultDoors) do
+            if customDoor == obj1 then
+                isOurDoor = true
+                break
+            end
+        end
+        if not isOurDoor then
+            SetEntityAsMissionEntity(obj1, true, true)
+            DeleteEntity(obj1)
+            deletedCount = deletedCount + 1
+        end
+    end
+    
+    local obj2 = GetClosestObjectOfType(coords.x, coords.y, coords.z, 10.0, model2, false, false, false)
+    if obj2 ~= 0 then
+        local isOurDoor = false
+        for heistId, customDoor in pairs(VaultDoors) do
+            if customDoor == obj2 then
+                isOurDoor = true
+                break
+            end
+        end
+        if not isOurDoor then
+            SetEntityAsMissionEntity(obj2, true, true)
+            DeleteEntity(obj2)
+            deletedCount = deletedCount + 1
+        end
+    end
+    
+    if deletedCount > 0 then
+        debugPrint(('deleteDefaultVaultDoor: Removed %d default door(s) at %s'):format(deletedCount, tostring(coords)))
     end
 end
 
@@ -697,6 +756,29 @@ RegisterNetEvent('cs_heistmaster:client:resetVaultDoor', function(heistId, coord
     VaultDoors[heistId] = door
     
     debugPrint(('Vault door reset to closed for heist: %s at %s (heading: %.2f)'):format(heistId, tostring(coords), heist.vault.heading or heading or 160.0))
+end)
+
+-- Continuous monitoring to prevent default doors from respawning
+CreateThread(function()
+    Wait(3000) -- Wait for game to load
+    while true do
+        Wait(5000) -- Check every 5 seconds
+        
+        local playerCoords = GetEntityCoords(PlayerPedId())
+        
+        -- Check all fleeca/bank heists
+        for heistId, heist in pairs(Config.Heists) do
+            if (heist.heistType == 'fleeca' or heist.heistType == 'bank') and heist.vault and heist.vault.coords then
+                local vaultCoords = vector3(heist.vault.coords.x, heist.vault.coords.y, heist.vault.coords.z)
+                local dist = #(playerCoords - vaultCoords)
+                
+                -- Only monitor if player is within 100m of the bank
+                if dist < 100.0 then
+                    deleteDefaultVaultDoor(vaultCoords)
+                end
+            end
+        end
+    end
 end)
 
 -- ============================================================
