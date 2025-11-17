@@ -703,22 +703,49 @@ local function FindDefaultVaultDoor(coords, heistId)
     return foundDoor, foundCoords
 end
 
+-- Request Fleeca bank interior/IPL
+local function RequestFleecaInterior()
+    -- Request the Fleeca bank interior (Legion Square)
+    -- These IPLs might not be the exact ones, but they're common bank interior IPLs
+    RequestIpl("v_int_bank")
+    RequestIpl("v_int_bank_vault")
+    
+    -- Also try requesting the interior by coordinates
+    local interiorId = GetInteriorAtCoords(148.025, -1044.364, 29.506)
+    if interiorId ~= 0 then
+        LoadInterior(interiorId)
+        while not IsInteriorReady(interiorId) do
+            Wait(100)
+        end
+        debugPrint(('Loaded interior ID: %d'):format(interiorId))
+    end
+    
+    -- Wait a bit for IPL to load
+    Wait(500)
+    
+    debugPrint('Requested Fleeca bank interior/IPL')
+end
+
 -- Register and control Fleeca vault door using DoorSystem (controls the DEFAULT door, doesn't spawn props)
 local function RegisterFleecaDoor(heistId, coords)
     local doorId = getDoorId(heistId)
     
+    -- CRITICAL: Request interior first (door might be part of MLO/IPL)
+    RequestFleecaInterior()
+    
     -- CRITICAL: Remove only PROP doors we spawned (not the default door)
     RemovePropVaultDoors(coords)
-    Wait(100)
+    Wait(200)
     
     -- Try multiple times to find the door (it might load later with the interior)
     local defaultDoor, defaultCoords = nil, nil
-    for attempt = 1, 5 do
+    for attempt = 1, 10 do
         defaultDoor, defaultCoords = FindDefaultVaultDoor(coords, heistId)
         if defaultDoor and defaultCoords then
+            debugPrint(('Found door on attempt %d'):format(attempt))
             break
         end
-        Wait(500) -- Wait for interior/doors to load
+        Wait(300) -- Wait for interior/doors to load
     end
     
     -- Use the actual door coordinates if found, otherwise use config coordinates
@@ -727,7 +754,7 @@ local function RegisterFleecaDoor(heistId, coords)
     -- If we found the door, use its exact coordinates; otherwise try multiple Z levels
     if not defaultCoords then
         -- Try common Z offsets for Fleeca doors
-        local zOffsets = {0.0, 1.0, 1.16, -1.0}
+        local zOffsets = {0.0, 1.0, 1.16, 1.2, -1.0, -0.5}
         for _, zOffset in ipairs(zOffsets) do
             local testCoords = vector3(coords.x, coords.y, coords.z + zOffset)
             local testDoor, testCoords = FindDefaultVaultDoor(testCoords, heistId)
@@ -738,6 +765,12 @@ local function RegisterFleecaDoor(heistId, coords)
                 break
             end
         end
+    end
+    
+    -- If still no door found, the door might already be in DoorSystem - try to use it directly
+    if not defaultDoor then
+        debugPrint(('WARNING: Could not find vault door entity. Attempting to register with DoorSystem anyway...'))
+        debugPrint(('This may work if the door is already part of the game\'s door system.'))
     end
     
     -- Remove from DoorSystem first
@@ -755,7 +788,7 @@ local function RegisterFleecaDoor(heistId, coords)
         false, false, false
     )
     
-    Wait(300) -- Give DoorSystem more time to register
+    Wait(500) -- Give DoorSystem more time to register
     
     -- Set door to opening state first (required by DoorSystem)
     DoorSystemSetDoorState(doorId, 4, false, false)
@@ -773,7 +806,7 @@ local function RegisterFleecaDoor(heistId, coords)
         debugPrint(('Fleeca vault door registered (DEFAULT door found) for heist: %s at %s (state: %d, ratio: %.2f)'):format(heistId, tostring(doorCoords), doorState, openRatio))
     else
         debugPrint(('Fleeca vault door registered (using config coords - door not found) for heist: %s at %s (state: %d, ratio: %.2f)'):format(heistId, tostring(doorCoords), doorState, openRatio))
-        debugPrint(('WARNING: Could not find existing vault door entity. Door may not appear. Check coordinates.'))
+        debugPrint(('NOTE: Door entity not found, but DoorSystem registration attempted. Door may appear when you enter the bank interior.'))
     end
 end
 
