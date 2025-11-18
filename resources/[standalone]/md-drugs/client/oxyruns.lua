@@ -56,10 +56,33 @@ for k, v in pairs(locations.OxyPayForTruck) do
 				if not paid then return end
 				local oxycar = CreateVehicle("burrito3",v.truckSpawn.x, v.truckSpawn.y, v.truckSpawn.z, v.truckSpawn.w, true, false)
 
+    			-- Set fuel based on fuel script type
     			if Config.Fuel == "ox_fuel" then
 					Entity(oxycar).state.fuel = 100.0
+				elseif Config.Fuel == "cdn-fuel" or Config.Fuel == "ps-fuel" then
+					-- cdn-fuel and ps-fuel use SetFuel export
+					if GetResourceState(Config.Fuel) == 'started' and exports[Config.Fuel] and exports[Config.Fuel].SetFuel then
+						exports[Config.Fuel]:SetFuel(oxycar, 100.0)
+					else
+						-- Fallback to native if export doesn't exist
+						SetVehicleFuelLevel(oxycar, 100.0)
+					end
+				elseif Config.Fuel == "LegacyFuel" then
+					-- LegacyFuel might not have SetFuel export, use native instead
+					SetVehicleFuelLevel(oxycar, 100.0)
 				else
-    				exports[Config.Fuel]:SetFuel(oxycar, 100.0)
+					-- Try the export first, fallback to native if it fails
+					local success, err = pcall(function()
+						if exports[Config.Fuel] and exports[Config.Fuel].SetFuel then
+							exports[Config.Fuel]:SetFuel(oxycar, 100.0)
+						else
+							SetVehicleFuelLevel(oxycar, 100.0)
+						end
+					end)
+					if not success then
+						-- If export fails, use native function
+						SetVehicleFuelLevel(oxycar, 100.0)
+					end
 				end
     			TriggerEvent("vehiclekeys:client:SetOwner", GetVehicleNumberPlateText(oxycar))
 				ps.notify(ps.lang('oxy.keys'), 'success')
