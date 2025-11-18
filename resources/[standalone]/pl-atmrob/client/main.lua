@@ -371,18 +371,18 @@ AddEventHandler('pl_atmrobbery_drill', function(data)
                 end
                 -- Check if M-drilling resource is available
                 if GetResourceState('M-drilling') == 'started' then
-                TriggerEvent("Drilling:Start",function(success)
-                    if (success) then
-                        TriggerServerEvent('pl_atmrobbery:MinigameResult', true, 'drill')
-                        if not Config.MoneyDrop then
-                            LootATM(atmCoords)
+                    TriggerEvent("Drilling:Start",function(success)
+                        if (success) then
+                            TriggerServerEvent('pl_atmrobbery:MinigameResult', true, 'drill')
+                            if not Config.MoneyDrop then
+                                LootATM(atmCoords)
+                            else
+                                TriggerEvent('pl_atmrobbery_drill:success',entity, atmCoords, atmModel)
+                            end
                         else
-                            TriggerEvent('pl_atmrobbery_drill:success',entity, atmCoords, atmModel)
+                            TriggerServerEvent('pl_atmrobbery:MinigameResult', false, 'drill')
                         end
-                    else
-                      TriggerServerEvent('pl_atmrobbery:MinigameResult', false, 'drill')
-                    end
-                end)
+                    end)
                 else
                     -- Fallback to ox_lib skillcheck if M-drilling is not available
                     local success = lib.skillCheck({'easy', 'medium', { areaSize = 60, speedMultiplier = 1 }, 'medium'}, { 'w', 'a', 's', 'd' })
@@ -488,9 +488,9 @@ RegisterNetEvent('pl_atmrobbery:StartMinigame', function(entity, atmCoords, atmM
 
     if minigame == 'utk_fingerprint' then
         if GetResourceState('utk_fingerprint') == 'started' then
-        TriggerEvent("utk_fingerprint:Start", 1, 6, 1, function(outcome, _)
-            handleResult(outcome == true)
-        end)
+            TriggerEvent("utk_fingerprint:Start", 1, 6, 1, function(outcome, _)
+                handleResult(outcome == true)
+            end)
         else
             TriggerEvent('pl_atmrobbery:notification', 'utk_fingerprint resource is not available. Falling back to ox_lib.', 'error')
             local outcome = lib.skillCheck({'easy', 'easy', { areaSize = 60, speedMultiplier = 1 }, 'easy'}, { 'w', 'a', 's', 'd' })
@@ -503,9 +503,9 @@ RegisterNetEvent('pl_atmrobbery:StartMinigame', function(entity, atmCoords, atmM
 
     elseif minigame == 'ps-ui-circle' then
         if GetResourceState('ps-ui') == 'started' then
-        exports['ps-ui']:Circle(function(success)
-            handleResult(success)
-        end, 4, 60)
+            exports['ps-ui']:Circle(function(success)
+                handleResult(success)
+            end, 4, 60)
         else
             TriggerEvent('pl_atmrobbery:notification', 'ps-ui resource is not available. Falling back to ox_lib.', 'error')
             local outcome = lib.skillCheck({'easy', 'easy', { areaSize = 60, speedMultiplier = 1 }, 'easy'}, { 'w', 'a', 's', 'd' })
@@ -514,9 +514,9 @@ RegisterNetEvent('pl_atmrobbery:StartMinigame', function(entity, atmCoords, atmM
 
     elseif minigame == 'ps-ui-maze' then
         if GetResourceState('ps-ui') == 'started' then
-        exports['ps-ui']:Maze(function(success)
-            handleResult(success)
-        end, 120)
+            exports['ps-ui']:Maze(function(success)
+                handleResult(success)
+            end, 120)
         else
             TriggerEvent('pl_atmrobbery:notification', 'ps-ui resource is not available. Falling back to ox_lib.', 'error')
             local outcome = lib.skillCheck({'easy', 'easy', { areaSize = 60, speedMultiplier = 1 }, 'easy'}, { 'w', 'a', 's', 'd' })
@@ -525,9 +525,9 @@ RegisterNetEvent('pl_atmrobbery:StartMinigame', function(entity, atmCoords, atmM
 
     elseif minigame == 'ps-ui-scrambler' then
         if GetResourceState('ps-ui') == 'started' then
-        exports['ps-ui']:Scrambler(function(success)
-            handleResult(success)
-        end, 'numeric', 120, 1)
+            exports['ps-ui']:Scrambler(function(success)
+                handleResult(success)
+            end, 'numeric', 120, 1)
         else
             TriggerEvent('pl_atmrobbery:notification', 'ps-ui resource is not available. Falling back to ox_lib.', 'error')
             local outcome = lib.skillCheck({'easy', 'easy', { areaSize = 60, speedMultiplier = 1 }, 'easy'}, { 'w', 'a', 's', 'd' })

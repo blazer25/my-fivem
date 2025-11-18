@@ -44,10 +44,10 @@ end
 
 -- Check if Config and Config.Drugs exist before iterating
 if Config and Config.Drugs then
-for scriptName, toggle in pairs(Config.Drugs) do
-    if not toggle then goto continue end
-    loadFile('server/' .. scriptName .. '.lua')
-    ::continue::
+    for scriptName, toggle in pairs(Config.Drugs) do
+        if not toggle then goto continue end
+        loadFile('server/' .. scriptName .. '.lua')
+        ::continue::
     end
 else
     print("^1[md-drugs] ERROR: Config or Config.Drugs is nil. Cannot load drug scripts.^0")
