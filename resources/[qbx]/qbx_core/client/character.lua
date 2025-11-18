@@ -146,7 +146,7 @@ local function capString(str)
 end
 
 local function spawnDefault() -- We use a callback to make the server wait on this to be done
-    if exports['byte-appearance']:isCreatorOpen() then
+    if exports['fivem-appearance']:isCreatorOpen() then
         return
     end
 
@@ -169,12 +169,12 @@ local function spawnDefault() -- We use a callback to make the server wait on th
         Wait(0)
     end
 
-    -- ByteLabs Character Creator
-    exports['byte-appearance']:startCreator()
+    -- fivem-appearance Character Creator
+    exports['fivem-appearance']:startPlayerCreator()
     
     -- Wait for creator to finish before loading player
     CreateThread(function()
-        while exports['byte-appearance']:isCreatorOpen() do
+        while exports['fivem-appearance']:isCreatorOpen() do
             Wait(100)
         end
         TriggerServerEvent('QBCore:Server:OnPlayerLoaded')
@@ -400,12 +400,12 @@ RegisterNetEvent('qbx_core:client:spawnNoApartments', function() -- This event i
     DoScreenFadeIn(250)
     TriggerEvent('qb-weathersync:client:EnableSync')
 
-    -- ByteLabs Character Creator
-    exports['byte-appearance']:startCreator()
+    -- fivem-appearance Character Creator
+    exports['fivem-appearance']:startPlayerCreator()
     
     -- Wait for creator to finish before loading player
     CreateThread(function()
-        while exports['byte-appearance']:isCreatorOpen() do
+        while exports['fivem-appearance']:isCreatorOpen() do
             Wait(100)
         end
         TriggerServerEvent('QBCore:Server:OnPlayerLoaded')
