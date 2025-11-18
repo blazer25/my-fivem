@@ -156,13 +156,6 @@ local function spawnDefault() -- We use a callback to make the server wait on th
         end
     end
 
-    -- Check if creator is already open
-    if pcall(function() return exports['fivem-appearance']:isCreatorOpen() end) then
-        if exports['fivem-appearance']:isCreatorOpen() then
-            return
-        end
-    end
-
     DoScreenFadeOut(500)
 
     while not IsScreenFadedOut() do
@@ -176,27 +169,22 @@ local function spawnDefault() -- We use a callback to make the server wait on th
     SetEntityCoordsNoOffset(ped, defaultSpawn.x, defaultSpawn.y, defaultSpawn.z, false, false, false)
     SetEntityHeading(ped, defaultSpawn.w)
     NetworkResurrectLocalPlayer(defaultSpawn.x, defaultSpawn.y, defaultSpawn.z, defaultSpawn.w, true, true)
-    FreezeEntityPosition(ped, true)
-    SetEntityInvincible(ped, true)
-    ClearPedTasksImmediately(ped)
     
     -- Wait a brief moment for position to be set
-    Wait(100)
+    Wait(200)
 
-    -- Open fivem-appearance creator immediately - it will handle the ped model
-    if pcall(function() exports['fivem-appearance']:startPlayerCreator() end) then
-        -- Wait for creator to finish before loading player
-        CreateThread(function()
-            while true do
-                if pcall(function() return exports['fivem-appearance']:isCreatorOpen() end) then
-                    if not exports['fivem-appearance']:isCreatorOpen() then
-                        break
-                    end
-                else
-                    -- Export doesn't exist, break out
-                    break
-                end
-                Wait(100)
+    -- Open fivem-appearance creator using startPlayerCustomization with callback
+    -- This is the correct export for fivem-appearance (not startPlayerCreator)
+    local success, err = pcall(function()
+        exports['fivem-appearance']:startPlayerCustomization(function(appearance)
+            -- This callback runs when the creator is closed (either saved or cancelled)
+            if appearance then
+                -- Character was saved - save appearance to server if needed
+                -- fivem-appearance already applied it to the ped
+                print('[qbx_core] Character appearance saved')
+            else
+                -- Character was cancelled - appearance was reverted
+                print('[qbx_core] Character customization cancelled')
             end
             
             -- Unfreeze player after creator closes
@@ -209,13 +197,17 @@ local function spawnDefault() -- We use a callback to make the server wait on th
                 Wait(0)
             end
             
+            -- Load player data after character creation is complete
             TriggerServerEvent('QBCore:Server:OnPlayerLoaded')
             TriggerEvent('QBCore:Client:OnPlayerLoaded')
             TriggerServerEvent('qb-houses:server:SetInsideMeta', 0, false)
             TriggerServerEvent('qb-apartments:server:SetInsideMeta', 0, 0, false)
         end)
-    else
-        print('[qbx_core] ERROR: Failed to open fivem-appearance creator. Make sure fivem-appearance is properly installed.')
+    end)
+    
+    if not success then
+        print('[qbx_core] ERROR: Failed to open fivem-appearance creator: ' .. tostring(err))
+        print('[qbx_core] Make sure fivem-appearance is properly installed and exports are available')
         FreezeEntityPosition(ped, false)
         SetEntityInvincible(ped, false)
         DoScreenFadeIn(500)
@@ -445,28 +437,24 @@ RegisterNetEvent('qbx_core:client:spawnNoApartments', function() -- This event i
     SetEntityCoordsNoOffset(ped, defaultSpawn.x, defaultSpawn.y, defaultSpawn.z, false, false, false)
     SetEntityHeading(ped, defaultSpawn.w)
     NetworkResurrectLocalPlayer(defaultSpawn.x, defaultSpawn.y, defaultSpawn.z, defaultSpawn.w, true, true)
-    FreezeEntityPosition(ped, true)
-    SetEntityInvincible(ped, true)
     
     Wait(500)
     destroyPreviewCam()
     SetEntityVisible(ped, true, false)
     Wait(500)
 
-    -- Open fivem-appearance creator - it will handle the ped model
-    if pcall(function() exports['fivem-appearance']:startPlayerCreator() end) then
-        -- Wait for creator to finish before loading player
-        CreateThread(function()
-            while true do
-                if pcall(function() return exports['fivem-appearance']:isCreatorOpen() end) then
-                    if not exports['fivem-appearance']:isCreatorOpen() then
-                        break
-                    end
-                else
-                    -- Export doesn't exist, break out
-                    break
-                end
-                Wait(100)
+    -- Open fivem-appearance creator using startPlayerCustomization with callback
+    -- This is the correct export for fivem-appearance (not startPlayerCreator)
+    local success, err = pcall(function()
+        exports['fivem-appearance']:startPlayerCustomization(function(appearance)
+            -- This callback runs when the creator is closed (either saved or cancelled)
+            if appearance then
+                -- Character was saved - save appearance to server if needed
+                -- fivem-appearance already applied it to the ped
+                print('[qbx_core] Character appearance saved')
+            else
+                -- Character was cancelled - appearance was reverted
+                print('[qbx_core] Character customization cancelled')
             end
             
             -- Unfreeze player after creator closes
@@ -485,8 +473,11 @@ RegisterNetEvent('qbx_core:client:spawnNoApartments', function() -- This event i
             TriggerServerEvent('qb-houses:server:SetInsideMeta', 0, false)
             TriggerServerEvent('qb-apartments:server:SetInsideMeta', 0, 0, false)
         end)
-    else
-        print('[qbx_core] ERROR: Failed to open fivem-appearance creator. Make sure fivem-appearance is properly installed.')
+    end)
+    
+    if not success then
+        print('[qbx_core] ERROR: Failed to open fivem-appearance creator: ' .. tostring(err))
+        print('[qbx_core] Make sure fivem-appearance is properly installed and exports are available')
         FreezeEntityPosition(ped, false)
         SetEntityInvincible(ped, false)
         DoScreenFadeIn(250)
