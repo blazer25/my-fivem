@@ -62,7 +62,7 @@ onNet('onResourceStart', async (resource: string) => {
 const frameworkName = bl_bridge.getFramework('core')
 const core = format(GetConvar('bl:framework', 'qb'))
 
-if ((core == 'qb' || core == 'qbx') && GetResourceState(frameworkName) == 'started') {
+if (core == 'qb' || core == 'qbx' && GetResourceState(frameworkName) == 'started') {
     QBBridge();
 } else if (core == 'esx' && GetResourceState(frameworkName) == 'started') {
     ESXBridge();

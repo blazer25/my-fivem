@@ -128,15 +128,7 @@ local stores = {
 
 local key = Config.openControl
 local control = Config.openControl
-local textUi = nil
-if Config.textUi then
-    local success, result = pcall(function()
-        return exports.bl_bridge:textui()
-    end)
-    if success and result then
-        textUi = result
-    end
-end
+local textUi = Config.textUi and exports.bl_bridge:textui()
 local currentZone = nil
 local sprites = {}
 

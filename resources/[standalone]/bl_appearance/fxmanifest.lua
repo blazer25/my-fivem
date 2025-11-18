@@ -14,12 +14,12 @@ ui_page 'build/index.html'
 server_scripts {
     'data/config.lua',
     'data/commands.lua',
-    'dist/server/init.js'
+    'dist/server/**/*.js'
 }
 
 shared_scripts {
     '@ox_lib/init.lua',
-    'dist/shared/init.js',
+    'dist/shared/**/*.js',
 }
 
 client_scripts {
@@ -29,8 +29,7 @@ client_scripts {
     'data/models.lua',
     'data/tattoos.lua',
     'data/zones.lua',
-    'dist/client/init.js'
-}
+    'dist/client/**/*.js'}
 
 files {
     'build/**',
