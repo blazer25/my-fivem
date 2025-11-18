@@ -1,3 +1,11 @@
+-- Check if ps_lib is available before loading any scripts
+if not ps then
+    print("^1[md-drugs] ERROR: ps_lib is not available. Cannot load drug scripts.^0")
+    print("^1[md-drugs] Please install and start ps_lib before md-drugs.^0")
+    print("^1[md-drugs] Download from: https://github.com/Project-Sloth/ps_lib^0")
+    return
+end
+
 function loadFile(filePath)
     local resourceName = 'md-drugs'
     local fullScript = LoadResourceFile(resourceName, filePath)

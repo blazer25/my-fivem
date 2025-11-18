@@ -1,3 +1,9 @@
+-- Check if ps is available before defining functions
+if not ps then
+    print("^1[md-drugs] ERROR: ps_lib is not available. Functions cannot be loaded.^0")
+    return
+end
+
 local timeOutPlayers = {}
 
 local function timeOutThread(src)
