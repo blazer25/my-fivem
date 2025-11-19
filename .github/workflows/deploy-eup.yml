@@ -1,0 +1,39 @@
+name: Deploy EUP Only
+
+on:
+  push:
+    paths:
+      - 'resources/[EUP]/**'
+      - 'resources/**/eup-stream/**'
+      - 'resources/**/stream/**'
+
+jobs:
+  deploy-eup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Upload EUP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.2
+        with:
+          server: ${{ secrets.ZAP_HOST }}
+          username: ${{ secrets.ZAP_USER }}
+          password: ${{ secrets.ZAP_PASS }}
+
+          server-dir: /g686818/fivem/Qbox_052EBB.base/resources/
+          local-dir: ./resources/
+
+          protocol: ftp
+          port: 21
+          dangerous-clean-slate: false
+
+          exclude: |
+            **/node_modules/**
+            **/.github/**
+            **/.git/**
+            **/README.md
+            **/LICENSE
+            **/[[]*[]]**
+            resources/[standalone]/**
+            resources/**/[standalone]/**
