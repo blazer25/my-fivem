@@ -1,31 +1,85 @@
-name: Deploy to ZAP Hosting
+<<<<<<< HEAD
+name: Deploy to ZAP Hosting (Fast)
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "main" ]
+    paths-ignore:
+      - 'resources/[EUP]/**'
+      - 'resources/**/eup-stream/**'
+      - 'resources/**/stream/**'
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Upload to ZAP via FTP
+      - name: Upload to ZAP (FAST)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.2
         with:
           server: ${{ secrets.ZAP_HOST }}
           username: ${{ secrets.ZAP_USER }}
           password: ${{ secrets.ZAP_PASS }}
+
           server-dir: /g686818/fivem/Qbox_052EBB.base/resources/
           local-dir: ./resources/
-          port: 21
+
           protocol: ftp
-          # 🧹 Automatically remove deleted files/folders on next deploy
+          port: 21
           dangerous-clean-slate: false
-          # 🚀 Optional – speeds up uploads by skipping identical files
+
           exclude: |
-            **/.git*
-            **/.github*
             **/node_modules/**
+            **/.github/**
+            **/.git/**
             **/README.md
+            **/LICENSE
+            **/[[]*[]]**
+            resources/[EUP]/**
+            resources/**/eup-stream/**
+            resources/**/stream/**
+=======
+name: Deploy to ZAP Hosting (Fast)
+
+on:
+  push:
+    branches: [ "main" ]
+    paths-ignore:
+      - 'resources/[EUP]/**'
+      - 'resources/**/eup-stream/**'
+      - 'resources/**/stream/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Upload to ZAP (FAST)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.2
+        with:
+          server: ${{ secrets.ZAP_HOST }}
+          username: ${{ secrets.ZAP_USER }}
+          password: ${{ secrets.ZAP_PASS }}
+
+          server-dir: /g686818/fivem/Qbox_052EBB.base/resources/
+          local-dir: ./resources/
+
+          protocol: ftp
+          port: 21
+          dangerous-clean-slate: false
+
+          exclude: |
+            **/node_modules/**
+            **/.github/**
+            **/.git/**
+            **/README.md
+            **/LICENSE
+            **/[[]*[]]**
+            resources/[EUP]/**
+            resources/**/eup-stream/**
+            resources/**/stream/**
+>>>>>>> 607e97afa4f454629f9184af2a8f2e8602e5db3f
