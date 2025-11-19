@@ -33,7 +33,19 @@ jobs:
             **/.github/**
             **/.git/**
             **/README.md
-            **/LICENSE
-            **/[[]*[]]**
+            **/LICENSE**
+
+            # Ignore bracketed folders in GitHub repo
             resources/[standalone]/**
-            resources/**/[standalone]/**
+            resources/[EUP]/**
+
+            # Ignore actual ZAP Hosting folders (brackets removed)
+            resources/standalone/**
+            resources/EUP/**
+
+            # Ignore all EUP sub-stream folders during full deploy
+            resources/**/stream/**
+            resources/**/eup-stream/**
+
+            # Ignore ANY folder that contains brackets (safety)
+            **/[[]*[]]**
