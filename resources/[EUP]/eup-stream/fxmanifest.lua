@@ -10,6 +10,3 @@ files {
 
 data_file 'DLC_ITYP_REQUEST' 'stream/*.ymt'
 
-client_scripts {
-    'client.lua'
-}

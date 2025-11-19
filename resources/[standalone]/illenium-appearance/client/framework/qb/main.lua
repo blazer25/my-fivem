@@ -90,7 +90,13 @@ RegisterNetEvent("qb-clothes:client:CreateFirstCharacter", function()
     QBCore.Functions.GetPlayerData(function(pd)
         PlayerData = pd
         setClientParams()
-        InitializeCharacter(Framework.GetGender(true))
+        InitializeCharacter(Framework.GetGender(true), function()
+            -- Appearance completed callback
+            TriggerEvent('qbx_core:client:appearanceCompleted')
+        end, function()
+            -- Appearance cancelled callback
+            TriggerEvent('qbx_core:client:appearanceCancelled')
+        end)
     end)
 end)
 

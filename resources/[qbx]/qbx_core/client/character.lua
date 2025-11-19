@@ -152,7 +152,56 @@ local function randomPed()
     local ped = randomPeds[math.random(1, #randomPeds)]
     lib.requestModel(ped.model, config.loadingModelsTimeout)
     SetPlayerModel(cache.playerId, ped.model)
-    pcall(function() exports['illenium-appearance']:setPedAppearance(PlayerPedId(), ped) end)
+    local playerPed = PlayerPedId()
+    
+    -- Set head blend data if available
+    if ped.headBlend then
+        SetPedHeadBlendData(playerPed, ped.headBlend.shapeFirst, ped.headBlend.shapeSecond, ped.headBlend.shapeThird,
+            ped.headBlend.skinFirst, ped.headBlend.skinSecond, ped.headBlend.skinThird,
+            ped.headBlend.shapeMix, ped.headBlend.skinMix, ped.headBlend.thirdMix, false)
+    end
+    
+    -- Set hair if available
+    if ped.hair then
+        SetPedComponentVariation(playerPed, 2, ped.hair.style, ped.hair.texture, 0)
+        SetPedHairColor(playerPed, ped.hair.color, ped.hair.highlight)
+    end
+    
+    -- Set head overlays
+    if ped.headOverlays then
+        for overlayName, overlayData in pairs(ped.headOverlays) do
+            local overlayId = ({
+                blemishes = 0, beard = 1, eyebrows = 2, ageing = 3, makeUp = 4, blush = 5,
+                complexion = 6, sunDamage = 7, lipstick = 8, moleAndFreckles = 9, chestHair = 10,
+                bodyBlemishes = 11
+            })[overlayName]
+            if overlayId ~= nil then
+                SetPedHeadOverlay(playerPed, overlayId, overlayData.style, overlayData.opacity)
+                if overlayData.color then
+                    SetPedHeadOverlayColor(playerPed, overlayId, 1, overlayData.color, overlayData.secondColor or 0)
+                end
+            end
+        end
+    end
+    
+    -- Set components
+    if ped.components then
+        for _, component in ipairs(ped.components) do
+            SetPedComponentVariation(playerPed, component.component_id, component.drawable, component.texture, 0)
+        end
+    end
+    
+    -- Set props
+    if ped.props then
+        for _, prop in ipairs(ped.props) do
+            if prop.drawable == -1 then
+                ClearPedProp(playerPed, prop.prop_id)
+            else
+                SetPedPropIndex(playerPed, prop.prop_id, prop.drawable, prop.texture, true)
+            end
+        end
+    end
+    
     SetModelAsNoLongerNeeded(ped.model)
 end
 
@@ -164,7 +213,58 @@ local function previewPed(citizenId)
     if model and clothing then
         lib.requestModel(model, config.loadingModelsTimeout)
         SetPlayerModel(cache.playerId, model)
-        pcall(function() exports['illenium-appearance']:setPedAppearance(PlayerPedId(), json.decode(clothing)) end)
+        local playerPed = PlayerPedId()
+        local appearance = json.decode(clothing)
+        
+        -- Use illenium-appearance export if available, otherwise use native functions
+        if GetResourceState('illenium-appearance') == 'started' then
+            local success, result = pcall(function()
+                return exports['illenium-appearance']:setPedAppearance(playerPed, appearance)
+            end)
+            if not success then
+                -- Fallback to native functions if export fails
+                if appearance.headBlend then
+                    SetPedHeadBlendData(playerPed, appearance.headBlend.shapeFirst, appearance.headBlend.shapeSecond, appearance.headBlend.shapeThird,
+                        appearance.headBlend.skinFirst, appearance.headBlend.skinSecond, appearance.headBlend.skinThird,
+                        appearance.headBlend.shapeMix, appearance.headBlend.skinMix, appearance.headBlend.thirdMix, false)
+                end
+                if appearance.components then
+                    for _, component in ipairs(appearance.components) do
+                        SetPedComponentVariation(playerPed, component.component_id, component.drawable, component.texture, 0)
+                    end
+                end
+                if appearance.props then
+                    for _, prop in ipairs(appearance.props) do
+                        if prop.drawable == -1 then
+                            ClearPedProp(playerPed, prop.prop_id)
+                        else
+                            SetPedPropIndex(playerPed, prop.prop_id, prop.drawable, prop.texture, true)
+                        end
+                    end
+                end
+            end
+        else
+            -- Use native functions if illenium-appearance is not available
+            if appearance.headBlend then
+                SetPedHeadBlendData(playerPed, appearance.headBlend.shapeFirst, appearance.headBlend.shapeSecond, appearance.headBlend.shapeThird,
+                    appearance.headBlend.skinFirst, appearance.headBlend.skinSecond, appearance.headBlend.skinThird,
+                    appearance.headBlend.shapeMix, appearance.headBlend.skinMix, appearance.headBlend.thirdMix, false)
+            end
+            if appearance.components then
+                for _, component in ipairs(appearance.components) do
+                    SetPedComponentVariation(playerPed, component.component_id, component.drawable, component.texture, 0)
+                end
+            end
+            if appearance.props then
+                for _, prop in ipairs(appearance.props) do
+                    if prop.drawable == -1 then
+                        ClearPedProp(playerPed, prop.prop_id)
+                    else
+                        SetPedPropIndex(playerPed, prop.prop_id, prop.drawable, prop.texture, true)
+                    end
+                end
+            end
+        end
         SetModelAsNoLongerNeeded(model)
     else
         randomPed()
@@ -284,7 +384,7 @@ local function spawnDefault() -- We use a callback to make the server wait on th
     while not IsScreenFadedIn() do
         Wait(0)
     end
-    TriggerEvent('qb-clothes:client:CreateFirstCharacter')
+    -- Appearance menu is now handled during character creation, not here
 end
 
 local function spawnLastLocation()
@@ -312,6 +412,16 @@ local function spawnLastLocation()
         Wait(0)
     end
 end
+
+-- Track if appearance is being customized
+local isCustomizingAppearance = false
+local appearanceCompleted = false
+
+-- Event handler for appearance completion
+RegisterNetEvent('qbx_core:client:appearanceCompleted', function()
+    appearanceCompleted = true
+    isCustomizingAppearance = false
+end)
 
 ---@param cid integer
 ---@return boolean
@@ -342,6 +452,49 @@ local function createCharacter(cid)
         cid = cid
     })
 
+    if not newData then return false end
+
+    -- Wait for fade out to complete
+    while not IsScreenFadedOut() do
+        Wait(0)
+    end
+
+    -- Destroy preview cam before appearance menu
+    destroyPreviewCam()
+
+    -- Determine gender for appearance system
+    local gender = dialog[4] == locale('info.char_male') and 'Male' or 'Female'
+    
+    -- Trigger appearance menu BEFORE spawn
+    isCustomizingAppearance = true
+    appearanceCompleted = false
+    
+    -- Wait a moment for character data to be fully loaded
+    Wait(500)
+    
+    -- Trigger the appearance creation event (illenium-appearance listens for this)
+    if GetResourceState('illenium-appearance') == 'started' then
+        TriggerEvent('qb-clothes:client:CreateFirstCharacter')
+        
+        -- Wait for appearance to be completed
+        local timeout = 0
+        while isCustomizingAppearance and timeout < 300000 do -- 5 minute timeout
+            Wait(100)
+            timeout = timeout + 100
+        end
+        
+        -- If appearance wasn't completed, proceed anyway (user might have cancelled)
+        if not appearanceCompleted then
+            Wait(1000) -- Give a moment for any final saves
+        end
+    else
+        -- If illenium-appearance is not available, proceed to spawn
+        Wait(1000)
+    end
+
+    DoScreenFadeIn(500)
+    
+    -- Now proceed with spawn logic
     if GetResourceState('lSpawnSelector') == 'started' then
         TriggerEvent('spawnselector:open')
     elseif GetResourceState('qbx_spawn') == 'missing' then
@@ -354,7 +507,6 @@ local function createCharacter(cid)
         end
     end
 
-    destroyPreviewCam()
     return true
 end
 
@@ -505,7 +657,7 @@ RegisterNetEvent('qbx_core:client:spawnNoApartments', function() -- This event i
     TriggerServerEvent('qb-houses:server:SetInsideMeta', 0, false)
     TriggerServerEvent('qb-apartments:server:SetInsideMeta', 0, 0, false)
     TriggerEvent('qb-weathersync:client:EnableSync')
-    TriggerEvent('qb-clothes:client:CreateFirstCharacter')
+    -- Appearance menu is now handled during character creation, not here
 end)
 
 RegisterNetEvent('qbx_core:client:playerLoggedOut', function()
