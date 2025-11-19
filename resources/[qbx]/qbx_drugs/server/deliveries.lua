@@ -252,8 +252,20 @@ CreateThread(function()
     if dealers and #dealers ~= 0 then
         for i = 1, #dealers do
             local data = dealers[i]
-            local coords = json.decode(data.coords)
-            local time = json.decode(data.time)
+            local coords = data.coords and json.decode(data.coords) or nil
+            local time = data.time and json.decode(data.time) or nil
+
+            -- Validate coords
+            if not coords or not coords.x or not coords.y or not coords.z then
+                print(('[qbx_drugs] Warning: Skipping dealer "%s" - Invalid or missing coords'):format(data.name or 'unknown'))
+                goto continue
+            end
+
+            -- Validate time or use defaults
+            if not time or not time.min or not time.max then
+                print(('[qbx_drugs] Warning: Dealer "%s" has invalid time data, using defaults (min: 20, max: 5)'):format(data.name or 'unknown'))
+                time = { min = 20, max = 5 }
+            end
 
             sharedConfig.dealers[data.name] = {
                 name = data.name,
@@ -261,6 +273,7 @@ CreateThread(function()
                 time = { min = time.min, max = time.max },
                 products = config.products
             }
+            ::continue::
         end
     end
     TriggerClientEvent('qb-drugs:client:RefreshDealers', -1, sharedConfig.dealers)
