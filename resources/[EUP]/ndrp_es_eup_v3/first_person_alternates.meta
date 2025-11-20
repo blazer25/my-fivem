@@ -1,0 +1,20 @@
+<FirstPersonAlternateData>
+  <alternates>
+    <Item>
+      <assetName>MP_M_Freemode_01_mp_m_ndrp_esg_eup_v3/jbib_000_u</assetName>
+      <alternate value="1" />
+    </Item>
+    <Item>
+      <assetName>MP_M_Freemode_01_mp_m_ndrp_esg_eup_v3/jbib_001_u</assetName>
+      <alternate value="1" />
+    </Item>
+    <Item>
+      <assetName>MP_M_Freemode_01_mp_m_ndrp_esg_eup_v3/jbib_009_u</assetName>
+      <alternate value="1" />
+    </Item>
+    <Item>
+      <assetName>MP_F_Freemode_01_mp_f_ndrp_esg_eup_v3/jbib_003_u</assetName>
+      <alternate value="1" />
+    </Item>
+  </alternates>
+</FirstPersonAlternateData>
