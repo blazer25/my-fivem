@@ -37,3 +37,4 @@ escrow_ignore {
 }
 
 dependency '/assetpacks'
+dependency 'qbx_idcard'
