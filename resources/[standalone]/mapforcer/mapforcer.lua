@@ -20,7 +20,9 @@ local maps = {
     'Mirror-Park-Clubhouse',
     'anarchy_rexdiner',
     'anarchy_TrapHouse',
-    'henhouse_milo'
+    'henhouse_milo',
+    'anarchy_LittleHouse'
+
 }
 
 CreateThread(function()
