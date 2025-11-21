@@ -19,7 +19,11 @@ local maps = {
     'floresta',
     'Mirror-Park-Clubhouse',
     'anarchy_rexdiner',
-    'anarchy_TrapHouse'
+    'anarchy_TrapHouse',
+    'henhouse_milo',
+    'anarchy_LittleHouse',
+    'anarchy_Townhall'
+
 }
 
 CreateThread(function()
