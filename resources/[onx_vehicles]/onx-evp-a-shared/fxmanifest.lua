@@ -25,4 +25,4 @@ escrow_ignore {
 server_scripts {
   'version.lua',
 }
-dependency '/assetpacks'
+-- dependency '/assetpacks' -- Commented out - assetpacks not available
