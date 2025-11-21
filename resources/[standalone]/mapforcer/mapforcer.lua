@@ -21,7 +21,8 @@ local maps = {
     'anarchy_rexdiner',
     'anarchy_TrapHouse',
     'henhouse_milo',
-    'anarchy_LittleHouse'
+    'anarchy_LittleHouse',
+    'anarchy_Townhall'
 
 }
 
