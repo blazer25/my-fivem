@@ -4,6 +4,30 @@
 local QBXCore = nil
 local bridgeReady = false
 
+-- Bridge exports for illenium-appearance
+-- Register exports immediately so they're available even before initialization completes
+
+local BridgeExports = {
+    -- Get player data using QBX Core
+    GetPlayerData = function()
+        if not bridgeReady or not QBXCore then return nil end
+        return QBXCore.Functions.GetPlayerData()
+    end,
+    
+    -- Check if bridge is ready
+    IsReady = function()
+        return bridgeReady
+    end,
+    
+    -- Get QBX Core directly
+    GetQBXCore = function()
+        return QBXCore
+    end
+}
+
+-- Register the exports table immediately (before initialization)
+exports('illenium-qbx-bridge', BridgeExports)
+
 -- Initialize bridge
 CreateThread(function()
     -- Wait for qbx_core to be ready
@@ -22,22 +46,3 @@ CreateThread(function()
     bridgeReady = true
     print("^2[illenium-qbx-bridge] Client bridge initialized successfully!^7")
 end)
-
--- Bridge exports for illenium-appearance
-exports('illenium-qbx-bridge', {
-    -- Get player data using QBX Core
-    GetPlayerData = function()
-        if not bridgeReady or not QBXCore then return nil end
-        return QBXCore.Functions.GetPlayerData()
-    end,
-    
-    -- Check if bridge is ready
-    IsReady = function()
-        return bridgeReady
-    end,
-    
-    -- Get QBX Core directly
-    GetQBXCore = function()
-        return QBXCore
-    end
-})

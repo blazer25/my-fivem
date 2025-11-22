@@ -6,15 +6,25 @@ local usingBridge = false
 
 if GetResourceState('illenium-qbx-bridge') == 'started' then
     -- Use the bridge for QBX Core compatibility
-    local bridge = exports['illenium-qbx-bridge']
-    if bridge and bridge.IsReady() then
-        local qbxCore = bridge.GetQBXCore()
-        if qbxCore then
+    -- Try to access bridge exports with error handling
+    local success, bridgeIsReady = pcall(function()
+        return exports['illenium-qbx-bridge']:IsReady()
+    end)
+    
+    if success and bridgeIsReady then
+        local success2, qbxCore = pcall(function()
+            return exports['illenium-qbx-bridge']:GetQBXCore()
+        end)
+        
+        if success2 and qbxCore then
             -- Create QB Core compatible object using bridge
             QBCore = {
                 Functions = {
                     GetPlayer = function(src)
-                        return bridge.GetPlayer(src)
+                        local success3, player = pcall(function()
+                            return exports['illenium-qbx-bridge']:GetPlayer(src)
+                        end)
+                        return success3 and player or nil
                     end
                 },
                 Shared = qbxCore.Shared or {}
