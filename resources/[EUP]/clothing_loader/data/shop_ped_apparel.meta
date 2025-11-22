@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CShopPedApparelMetaFile>
+  <residentTxd>shop_ped_apparel</residentTxd>
+  <hasGlobalTextureList value="false" />
+  <globalTextures />
+  <characterCloth>
+    <Unk_2834549053>
+      <!-- Auto-generated clothing components will be inserted here -->
+    </Unk_2834549053>
+  </characterCloth>
+  <pedOutfits />
+  <dlcName>clothing_loader</dlcName>
+</CShopPedApparelMetaFile>
