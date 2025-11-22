@@ -6,9 +6,9 @@ local client = client
 local QBCore = nil
 local usingBridge = false
 
+-- Check for bridge immediately (it should be ready since it loads before this)
 if GetResourceState('illenium-qbx-bridge') == 'started' then
-    -- Use the bridge for QBX Core compatibility
-    -- Try to access bridge exports with error handling
+    -- Try to access bridge exports
     local success, bridgeIsReady = pcall(function()
         return exports['illenium-qbx-bridge']:IsReady()
     end)
