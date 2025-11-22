@@ -23,50 +23,86 @@ if not QBCore or not QBCore.Functions then
 end
 
 function Framework.GetPlayerID(src)
-    if not QBCore or not QBCore.Functions then return nil end
-    
-    local Player = QBCore.Functions.GetPlayer(src)
-    if Player then
-        return Player.PlayerData.citizenid
+    if GetResourceState('qbx_core') == 'started' then
+        -- QBX Core method
+        local Player = exports.qbx_core:GetPlayer(src)
+        if Player then
+            return Player.PlayerData.citizenid
+        end
+    elseif QBCore and QBCore.Functions then
+        -- QB Core method
+        local Player = QBCore.Functions.GetPlayer(src)
+        if Player then
+            return Player.PlayerData.citizenid
+        end
     end
+    return nil
 end
 
 function Framework.HasMoney(src, type, money)
-    if not QBCore or not QBCore.Functions then return false end
-    
-    local Player = QBCore.Functions.GetPlayer(src)
-    if Player and Player.PlayerData and Player.PlayerData.money then
-        return Player.PlayerData.money[type] >= money
+    if GetResourceState('qbx_core') == 'started' then
+        -- QBX Core method
+        local Player = exports.qbx_core:GetPlayer(src)
+        if Player and Player.PlayerData and Player.PlayerData.money then
+            return Player.PlayerData.money[type] >= money
+        end
+    elseif QBCore and QBCore.Functions then
+        -- QB Core method
+        local Player = QBCore.Functions.GetPlayer(src)
+        if Player and Player.PlayerData and Player.PlayerData.money then
+            return Player.PlayerData.money[type] >= money
+        end
     end
     return false
 end
 
 function Framework.RemoveMoney(src, type, money)
-    if not QBCore or not QBCore.Functions then return false end
-    
-    local Player = QBCore.Functions.GetPlayer(src)
-    if Player and Player.Functions then
-        return Player.Functions.RemoveMoney(type, money)
+    if GetResourceState('qbx_core') == 'started' then
+        -- QBX Core method
+        local Player = exports.qbx_core:GetPlayer(src)
+        if Player and Player.Functions then
+            return Player.Functions.RemoveMoney(type, money)
+        end
+    elseif QBCore and QBCore.Functions then
+        -- QB Core method
+        local Player = QBCore.Functions.GetPlayer(src)
+        if Player and Player.Functions then
+            return Player.Functions.RemoveMoney(type, money)
+        end
     end
     return false
 end
 
 function Framework.GetJob(src)
-    if not QBCore or not QBCore.Functions then return nil end
-    
-    local Player = QBCore.Functions.GetPlayer(src)
-    if Player and Player.PlayerData then
-        return Player.PlayerData.job
+    if GetResourceState('qbx_core') == 'started' then
+        -- QBX Core method
+        local Player = exports.qbx_core:GetPlayer(src)
+        if Player and Player.PlayerData then
+            return Player.PlayerData.job
+        end
+    elseif QBCore and QBCore.Functions then
+        -- QB Core method
+        local Player = QBCore.Functions.GetPlayer(src)
+        if Player and Player.PlayerData then
+            return Player.PlayerData.job
+        end
     end
     return nil
 end
 
 function Framework.GetGang(src)
-    if not QBCore or not QBCore.Functions then return nil end
-    
-    local Player = QBCore.Functions.GetPlayer(src)
-    if Player and Player.PlayerData then
-        return Player.PlayerData.gang
+    if GetResourceState('qbx_core') == 'started' then
+        -- QBX Core method
+        local Player = exports.qbx_core:GetPlayer(src)
+        if Player and Player.PlayerData then
+            return Player.PlayerData.gang
+        end
+    elseif QBCore and QBCore.Functions then
+        -- QB Core method
+        local Player = QBCore.Functions.GetPlayer(src)
+        if Player and Player.PlayerData then
+            return Player.PlayerData.gang
+        end
     end
     return nil
 end
