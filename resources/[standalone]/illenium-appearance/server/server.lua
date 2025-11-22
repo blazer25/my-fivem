@@ -164,28 +164,14 @@ end)
 
 RegisterServerEvent("illenium-appearance:server:saveAppearance", function(appearance)
     local src = source
-    
-    -- Safety check for Framework
-    if not Framework or not Framework.GetPlayerID then
-        print("^1[illenium-appearance] Framework not initialized properly!^7")
-        return
-    end
-    
     local citizenID = Framework.GetPlayerID(src)
-    if appearance ~= nil and citizenID then
+    if appearance ~= nil then
         Framework.SaveAppearance(appearance, citizenID)
     end
 end)
 
 RegisterServerEvent("illenium-appearance:server:chargeCustomer", function(shopType)
     local src = source
-    
-    -- Safety check for Framework
-    if not Framework or not Framework.RemoveMoney then
-        print("^1[illenium-appearance] Framework not initialized for money operations!^7")
-        return
-    end
-    
     local money = getMoneyForShop(shopType)
     if Framework.RemoveMoney(src, "cash", money) then
         lib.notify(src, {

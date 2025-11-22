@@ -2,26 +2,9 @@ if not Framework.QBCore() then return end
 
 local client = client
 
--- Try QBX Core first, then fall back to QB Core
-local QBCore
-if GetResourceState('qbx_core') == 'started' then
-    -- Use QBX Core
-    QBCore = exports.qbx_core
-elseif GetResourceState('qb-core') == 'started' then
-    -- Use QB Core
-    QBCore = exports["qb-core"]:GetCoreObject()
-else
-    -- No compatible framework found
-    print("^1[illenium-appearance] No compatible QB framework found!^7")
-    return
-end
+local QBCore = exports["qb-core"]:GetCoreObject()
 
-local PlayerData = {}
-if GetResourceState('qbx_core') == 'started' then
-    PlayerData = QBCore.Functions.GetPlayerData() or {}
-elseif QBCore and QBCore.Functions then
-    PlayerData = QBCore.Functions.GetPlayerData() or {}
-end
+local PlayerData = QBCore.Functions.GetPlayerData()
 
 local function getRankInputValues(rankList)
     local rankValues = {}
@@ -48,26 +31,12 @@ function Framework.GetPlayerGender()
 end
 
 function Framework.UpdatePlayerData()
-    if GetResourceState('qbx_core') == 'started' then
-        PlayerData = QBCore.Functions.GetPlayerData() or {}
-    elseif QBCore and QBCore.Functions then
-        PlayerData = QBCore.Functions.GetPlayerData() or {}
-    end
+    PlayerData = QBCore.Functions.GetPlayerData()
     setClientParams()
 end
 
 function Framework.HasTracker()
-    if GetResourceState('qbx_core') == 'started' then
-        -- QBX Core method
-        local playerData = QBCore.Functions.GetPlayerData()
-        if playerData and playerData.metadata then
-            return playerData.metadata["tracker"] or false
-        end
-        return false
-    else
-        -- QB Core method
-        return QBCore.Functions.GetPlayerData().metadata["tracker"] or false
-    end
+    return QBCore.Functions.GetPlayerData().metadata["tracker"]
 end
 
 function Framework.CheckPlayerMeta()
@@ -121,13 +90,7 @@ RegisterNetEvent("qb-clothes:client:CreateFirstCharacter", function()
     QBCore.Functions.GetPlayerData(function(pd)
         PlayerData = pd
         setClientParams()
-        InitializeCharacter(Framework.GetGender(true), function()
-            -- Appearance completed callback
-            TriggerEvent('qbx_core:client:appearanceCompleted')
-        end, function()
-            -- Appearance cancelled callback
-            TriggerEvent('qbx_core:client:appearanceCancelled')
-        end)
+        InitializeCharacter(Framework.GetGender(true))
     end)
 end)
 

@@ -1,110 +1,32 @@
 if not Framework.QBCore() then return end
 
--- Try QBX Core first, then fall back to QB Core
-local QBCore
-if GetResourceState('qbx_core') == 'started' then
-    -- Use QBX Core
-    QBCore = exports.qbx_core
-    print("^2[illenium-appearance] Using QBX Core on server^7")
-elseif GetResourceState('qb-core') == 'started' then
-    -- Use QB Core
-    QBCore = exports["qb-core"]:GetCoreObject()
-    print("^2[illenium-appearance] Using QB Core on server^7")
-else
-    -- No compatible framework found
-    print("^1[illenium-appearance] No compatible QB framework found on server!^7")
-    return
-end
-
--- Verify QBCore is properly loaded
-if not QBCore or not QBCore.Functions then
-    print("^1[illenium-appearance] QBCore functions not available on server!^7")
-    return
-end
+local QBCore = exports["qb-core"]:GetCoreObject()
 
 function Framework.GetPlayerID(src)
-    if GetResourceState('qbx_core') == 'started' then
-        -- QBX Core method
-        local Player = exports.qbx_core:GetPlayer(src)
-        if Player then
-            return Player.PlayerData.citizenid
-        end
-    elseif QBCore and QBCore.Functions then
-        -- QB Core method
-        local Player = QBCore.Functions.GetPlayer(src)
-        if Player then
-            return Player.PlayerData.citizenid
-        end
+    local Player = QBCore.Functions.GetPlayer(src)
+    if Player then
+        return Player.PlayerData.citizenid
     end
-    return nil
 end
 
 function Framework.HasMoney(src, type, money)
-    if GetResourceState('qbx_core') == 'started' then
-        -- QBX Core method
-        local Player = exports.qbx_core:GetPlayer(src)
-        if Player and Player.PlayerData and Player.PlayerData.money then
-            return Player.PlayerData.money[type] >= money
-        end
-    elseif QBCore and QBCore.Functions then
-        -- QB Core method
-        local Player = QBCore.Functions.GetPlayer(src)
-        if Player and Player.PlayerData and Player.PlayerData.money then
-            return Player.PlayerData.money[type] >= money
-        end
-    end
-    return false
+    local Player = QBCore.Functions.GetPlayer(src)
+    return Player.PlayerData.money[type] >= money
 end
 
 function Framework.RemoveMoney(src, type, money)
-    if GetResourceState('qbx_core') == 'started' then
-        -- QBX Core method
-        local Player = exports.qbx_core:GetPlayer(src)
-        if Player and Player.Functions then
-            return Player.Functions.RemoveMoney(type, money)
-        end
-    elseif QBCore and QBCore.Functions then
-        -- QB Core method
-        local Player = QBCore.Functions.GetPlayer(src)
-        if Player and Player.Functions then
-            return Player.Functions.RemoveMoney(type, money)
-        end
-    end
-    return false
+    local Player = QBCore.Functions.GetPlayer(src)
+    return Player.Functions.RemoveMoney(type, money)
 end
 
 function Framework.GetJob(src)
-    if GetResourceState('qbx_core') == 'started' then
-        -- QBX Core method
-        local Player = exports.qbx_core:GetPlayer(src)
-        if Player and Player.PlayerData then
-            return Player.PlayerData.job
-        end
-    elseif QBCore and QBCore.Functions then
-        -- QB Core method
-        local Player = QBCore.Functions.GetPlayer(src)
-        if Player and Player.PlayerData then
-            return Player.PlayerData.job
-        end
-    end
-    return nil
+    local Player = QBCore.Functions.GetPlayer(src)
+    return Player.PlayerData.job
 end
 
 function Framework.GetGang(src)
-    if GetResourceState('qbx_core') == 'started' then
-        -- QBX Core method
-        local Player = exports.qbx_core:GetPlayer(src)
-        if Player and Player.PlayerData then
-            return Player.PlayerData.gang
-        end
-    elseif QBCore and QBCore.Functions then
-        -- QB Core method
-        local Player = QBCore.Functions.GetPlayer(src)
-        if Player and Player.PlayerData then
-            return Player.PlayerData.gang
-        end
-    end
-    return nil
+    local Player = QBCore.Functions.GetPlayer(src)
+    return Player.PlayerData.gang
 end
 
 function Framework.SaveAppearance(appearance, citizenID)

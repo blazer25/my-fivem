@@ -35,7 +35,7 @@ function GetDefaultConfig()
         propConfig = getPropConfig(),
         tattoos = false,
         enableExit = true,
-        hasTracker = Config.PreventTrackerRemoval and Framework.HasTracker and Framework.HasTracker() or false,
+        hasTracker = Config.PreventTrackerRemoval and Framework.HasTracker(),
         automaticFade = Config.AutomaticFade
     }
 end
