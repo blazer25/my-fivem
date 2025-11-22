@@ -134,21 +134,47 @@ local function randomPed()
     local ped = randomPeds[math.random(1, #randomPeds)]
     lib.requestModel(ped.model, config.loadingModelsTimeout)
     SetPlayerModel(cache.playerId, ped.model)
-    pcall(function() exports['illenium-appearance']:setPedAppearance(PlayerPedId(), ped) end)
+    
+    -- Try to apply appearance if illenium-appearance is available
+    if GetResourceState('illenium-appearance') == 'started' then
+        pcall(function() 
+            exports['illenium-appearance']:setPedAppearance(PlayerPedId(), ped) 
+        end)
+    end
+    
     SetModelAsNoLongerNeeded(ped.model)
 end
 
 ---@param citizenId? string
 local function previewPed(citizenId)
-    if not citizenId then randomPed() return end
+    if not citizenId then 
+        randomPed() 
+        return 
+    end
 
     local clothing, model = lib.callback.await('bub-multichar:server:getPreviewPedData', false, citizenId)
-    if model and clothing then
+    
+    -- If we have model data, use it
+    if model then
         lib.requestModel(model, config.loadingModelsTimeout)
         SetPlayerModel(cache.playerId, model)
-        pcall(function() exports['illenium-appearance']:setPedAppearance(PlayerPedId(), json.decode(clothing)) end)
+        
+        -- Try to apply appearance if we have clothing data and illenium-appearance is available
+        if clothing and GetResourceState('illenium-appearance') == 'started' then
+            local success, err = pcall(function() 
+                local appearanceData = type(clothing) == 'string' and json.decode(clothing) or clothing
+                if appearanceData then
+                    exports['illenium-appearance']:setPedAppearance(PlayerPedId(), appearanceData) 
+                end
+            end)
+            if not success then
+                print("^3[bub-multichar] Could not apply appearance: " .. tostring(err) .. "^7")
+            end
+        end
+        
         SetModelAsNoLongerNeeded(model)
     else
+        -- No model data, use random ped
         randomPed()
     end
 end
@@ -185,8 +211,23 @@ local function spawnDefault() -- We use a callback to make the server wait on th
     while not IsScreenFadedIn() do
         Wait(0)
     end
-    TriggerEvent('qb-clothes:client:CreateFirstCharacter')
+    -- Trigger appearance menu if available
+    if GetResourceState('illenium-appearance') == 'started' then
+        TriggerEvent('illenium-appearance:client:startAppearance')
+    elseif GetResourceState('qb-clothes') == 'started' then
+        TriggerEvent('qb-clothes:client:CreateFirstCharacter')
+    else
+        -- No appearance system, just fade in
+        DoScreenFadeIn(500)
+    end
 end
+
+local playerDataReady = false
+
+-- Listen for player data to be ready
+RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
+    playerDataReady = true
+end)
 
 local function spawnLastLocation()
     DoScreenFadeOut(500)
@@ -197,18 +238,57 @@ local function spawnLastLocation()
 
     destroyPreviewCam()
 
-    pcall(function() exports.spawnmanager:spawnPlayer({
-        x = QBX.PlayerData.position.x,
-        y = QBX.PlayerData.position.y,
-        z = QBX.PlayerData.position.z,
-        heading = QBX.PlayerData.position.w
-    }) end)
+    -- Wait for PlayerData to be available (with timeout)
+    local maxWait = 100 -- 10 seconds max wait
+    local waited = 0
+    playerDataReady = false
+    
+    -- Wait for either PlayerData to be available or OnPlayerLoaded event
+    while (not QBX or not QBX.PlayerData or not QBX.PlayerData.position) and not playerDataReady and waited < maxWait do
+        Wait(100)
+        waited = waited + 1
+    end
 
+    local spawnPos = defaultSpawn
+    if QBX and QBX.PlayerData and QBX.PlayerData.position then
+        spawnPos = {
+            x = QBX.PlayerData.position.x,
+            y = QBX.PlayerData.position.y,
+            z = QBX.PlayerData.position.z,
+            w = QBX.PlayerData.position.w or 0.0
+        }
+    end
+
+    -- Spawn player
+    pcall(function() 
+        exports.spawnmanager:spawnPlayer({
+            x = spawnPos.x,
+            y = spawnPos.y,
+            z = spawnPos.z,
+            heading = spawnPos.w
+        }) 
+    end)
+
+    -- Wait for spawn to complete
+    Wait(1000)
+    
+    -- Ensure we're in the correct position
+    local ped = PlayerPedId()
+    SetEntityCoords(ped, spawnPos.x, spawnPos.y, spawnPos.z, false, false, false, false)
+    SetEntityHeading(ped, spawnPos.w)
+
+    -- Trigger loaded events
     TriggerServerEvent('QBCore:Server:OnPlayerLoaded')
     TriggerEvent('QBCore:Client:OnPlayerLoaded')
     TriggerServerEvent('qb-houses:server:SetInsideMeta', 0, false)
     TriggerServerEvent('qb-apartments:server:SetInsideMeta', 0, 0, false)
 
+    -- Wait a bit more for everything to sync
+    Wait(500)
+    
+    -- Fade in
+    DoScreenFadeIn(1000)
+    
     while not IsScreenFadedIn() do
         Wait(0)
     end
@@ -275,10 +355,28 @@ end)
 
 RegisterNuiCallback('playCharacter', function(data, cb)
   SetNuiFocus(false, false)
-  DoScreenFadeOut(10)
-  lib.callback.await('bub-multichar:server:loadCharacter', false, data.citizenid)
-  spawnLastLocation()
+  DoScreenFadeOut(500)
+  
+  -- Wait for fade out
+  while not IsScreenFadedOut() do
+    Wait(0)
+  end
+  
+  -- Load character on server
+  local success = lib.callback.await('bub-multichar:server:loadCharacter', false, data.citizenid)
+  
+  if not success then
+    print("^1[bub-multichar] Failed to load character!^7")
+    DoScreenFadeIn(500)
+    cb(0)
+    return
+  end
+  
+  -- Wait a bit for player data to sync
+  Wait(500)
+  
   destroyPreviewCam()
+  spawnLastLocation()
   cb(1)
 end)
 

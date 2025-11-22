@@ -104,10 +104,14 @@ end)
 
 lib.callback.register('bub-multichar:server:loadCharacter', function(source, citizenId)
   local success = exports.qbx_core:Login(source, citizenId)
-  if not success then return end
+  if not success then 
+    lib.print.error(('Failed to load character %s for player %s'):format(citizenId, GetPlayerName(source)))
+    return false
+  end
 
   exports.qbx_core:SetPlayerBucket(source, 0)
   lib.print.info(('%s (Citizen ID: %s) has successfully loaded!'):format(GetPlayerName(source), citizenId))
+  return true
 end)
 
 ---@param data unknown
