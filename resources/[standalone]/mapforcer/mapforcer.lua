@@ -23,7 +23,8 @@ local maps = {
     'henhouse_milo',
     'anarchy_LittleHouse',
     'anarchy_Townhall',
-    'int_yellowjack'
+    'int_yellowjack',
+    'thunder_medicalcenter'
 
 }
 
