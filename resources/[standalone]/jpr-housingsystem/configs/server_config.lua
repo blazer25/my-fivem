@@ -386,7 +386,7 @@ AddEventHandler("jpr-housingsystem:server:UsingNewQBInv",function(name, infos)
 end)
 
 function LogoutPlayer(src)
-    TriggerClientEvent('bub-multichar:client:chooseChar', src)
+    TriggerClientEvent('qb-multicharacter:client:chooseChar', src)
 end
 
 function CheckPoliceJob(xPlayer)
