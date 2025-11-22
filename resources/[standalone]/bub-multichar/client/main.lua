@@ -121,13 +121,21 @@ local function setupPreviewCam()
 end
 
 local function destroyPreviewCam()
-    if not previewCam then return end
-
-    SetTimecycleModifier('default')
-    SetCamActive(previewCam, false)
-    DestroyCam(previewCam, true)
-    RenderScriptCams(false, false, 1, true, true)
-    FreezeEntityPosition(cache.ped, false)
+    if previewCam then
+        SetTimecycleModifier('default')
+        ClearTimecycleModifier()
+        SetCamActive(previewCam, false)
+        DestroyCam(previewCam, true)
+        previewCam = nil
+    end
+    
+    RenderScriptCams(false, true, 1000, true, true)
+    DestroyAllCams(true)
+    
+    local ped = PlayerPedId()
+    FreezeEntityPosition(ped, false)
+    SetEntityVisible(ped, true, false)
+    NetworkSetEntityVisible(ped, true, false)
 end
 
 local function randomPed()
@@ -272,11 +280,32 @@ local function spawnLastLocation()
     -- Wait for spawn to complete
     Wait(1000)
     
-    -- Ensure we're in the correct position
+    -- Get player ped and ensure it exists
     local ped = PlayerPedId()
+    
+    -- Ensure we're in the correct position
     SetEntityCoords(ped, spawnPos.x, spawnPos.y, spawnPos.z, false, false, false, false)
     SetEntityHeading(ped, spawnPos.w)
-
+    
+    -- Make sure player is visible and controllable
+    SetEntityVisible(ped, true, false)
+    NetworkSetEntityVisible(ped, true, false)
+    FreezeEntityPosition(ped, false)
+    SetPlayerControl(PlayerId(), true, 0)
+    
+    -- Reset camera to follow player
+    RenderScriptCams(false, true, 1000, true, true)
+    DestroyAllCams(true)
+    SetCamActive(previewCam, false)
+    if previewCam then
+        DestroyCam(previewCam, true)
+        previewCam = nil
+    end
+    
+    -- Reset timecycle modifier
+    SetTimecycleModifier('default')
+    ClearTimecycleModifier()
+    
     -- Trigger loaded events
     TriggerServerEvent('QBCore:Server:OnPlayerLoaded')
     TriggerEvent('QBCore:Client:OnPlayerLoaded')
@@ -286,12 +315,24 @@ local function spawnLastLocation()
     -- Wait a bit more for everything to sync
     Wait(500)
     
+    -- Ensure player is still visible and unfrozen
+    SetEntityVisible(ped, true, false)
+    FreezeEntityPosition(ped, false)
+    SetPlayerControl(PlayerId(), true, 0)
+    
     -- Fade in
     DoScreenFadeIn(1000)
     
     while not IsScreenFadedIn() do
         Wait(0)
     end
+    
+    -- Final check - ensure player is visible and controllable
+    Wait(500)
+    local finalPed = PlayerPedId()
+    SetEntityVisible(finalPed, true, false)
+    FreezeEntityPosition(finalPed, false)
+    SetPlayerControl(PlayerId(), true, 0)
 end
 
 ---@param cid integer
@@ -355,6 +396,10 @@ end)
 
 RegisterNuiCallback('playCharacter', function(data, cb)
   SetNuiFocus(false, false)
+  
+  -- Destroy preview cam first to ensure clean state
+  destroyPreviewCam()
+  
   DoScreenFadeOut(500)
   
   -- Wait for fade out
@@ -375,7 +420,6 @@ RegisterNuiCallback('playCharacter', function(data, cb)
   -- Wait a bit for player data to sync
   Wait(500)
   
-  destroyPreviewCam()
   spawnLastLocation()
   cb(1)
 end)
