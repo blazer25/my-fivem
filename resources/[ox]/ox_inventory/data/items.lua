@@ -3617,27 +3617,16 @@ return {
         },
     },
 
-    ['backmarket-password'] = {
-        label = 'Cardboard Note (Password)',
+    ['cardboard'] = {
+        label = 'Cardboard Note',
         weight = 1,
         stack = false,
         close = true,
         description = 'A dirty piece of cardboard with something written on it.',
         consume = 0,
         client = {
-            event = 'cardboard:password'
-        },
-    },
-
-    ['backmarket-location'] = {
-        label = 'Cardboard Note (Location)',
-        weight = 1,
-        stack = false,
-        close = true,
-        description = 'A dirty piece of cardboard with something written on it.',
-        consume = 0,
-        client = {
-            event = 'cardboard:location'
+            event = 'cardboard:read',
+            image = 'cardboard.png'
         },
     },
 }

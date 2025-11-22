@@ -6,12 +6,11 @@ local function showCardboardImage(image)
     SetNuiFocus(true, true)
 end
 
-RegisterNetEvent('cardboard:password', function()
+RegisterNetEvent('cardboard:read', function()
+    print('[Cardboard] Event triggered - showing image')
+    -- Default to password image
+    -- You can modify this to check metadata if needed
     showCardboardImage('backmarket-password.png')
-end)
-
-RegisterNetEvent('cardboard:location', function()
-    showCardboardImage('backmarket-location.png')
 end)
 
 RegisterNUICallback('closeCardboard', function()
