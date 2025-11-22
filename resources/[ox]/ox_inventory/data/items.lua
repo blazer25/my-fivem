@@ -3616,5 +3616,29 @@ return {
             image = 'yellow_uninflated_balloon.png'
         },
     },
+
+    ['backmarket-password'] = {
+        label = 'Cardboard Note (Password)',
+        weight = 1,
+        stack = false,
+        close = true,
+        description = 'A dirty piece of cardboard with something written on it.',
+        consume = 0,
+        client = {
+            event = 'cardboard:password'
+        },
+    },
+
+    ['backmarket-location'] = {
+        label = 'Cardboard Note (Location)',
+        weight = 1,
+        stack = false,
+        close = true,
+        description = 'A dirty piece of cardboard with something written on it.',
+        consume = 0,
+        client = {
+            event = 'cardboard:location'
+        },
+    },
 }
 
