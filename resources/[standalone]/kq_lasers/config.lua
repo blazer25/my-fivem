@@ -4,14 +4,14 @@ Config.debug = false
 
 --- SETTINGS FOR ESX
 Config.esxSettings = {
-    enabled = true,
+    enabled = false,
     -- Whether or not to use the new ESX export method
     useNewESXExport = true,
 }
 
 --- SETTINGS FOR QBCORE
 Config.qbSettings = {
-    enabled = false,
+    enabled = true,
 }
 
 --- IF USING A STANDALONE SOLUTION. SIMPLY DISABLE BOTH FRAMEWORKS

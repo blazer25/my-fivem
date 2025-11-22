@@ -59,13 +59,13 @@ function LoadJobOutfit(oData)
     local tracker = Config.TrackerClothingOptions
 
     if data["accessory"] ~= nil then
-        if Framework.HasTracker() then
+        if Framework.HasTracker and Framework.HasTracker() then
             SetPedComponentVariation(ped, 7, tracker.drawable, tracker.texture, 0)
         else
             SetPedComponentVariation(ped, 7, data["accessory"].item, data["accessory"].texture, 0)
         end
     else
-        if Framework.HasTracker() then
+        if Framework.HasTracker and Framework.HasTracker() then
             SetPedComponentVariation(ped, 7, tracker.drawable, tracker.texture, 0)
         else
             local drawableId = GetPedDrawableVariation(ped, 7)
