@@ -7,7 +7,6 @@ local maps = {
     'anarchy_Cardealer',
     'anarchy_MRPD',
     'anarchy_underground',
-    'anarchy_Unicorn',
     'anarchy_LsCustoms',
     'jpr-casinosystem',
     'jpr-libsss',
