@@ -983,10 +983,83 @@ RegisterServerEvent("919-admin:server:SetJobGradeByCitizenId", function(citizenI
     end
 end)
 
+
 RegisterServerEvent("919-admin:server:AddVehicleToGarage", function(targetId)
     local src = source
     if AdminPanel.HasPermission(src, "savecar") then
-        TriggerClientEvent("919-admin:client:SaveCar", targetId, src)
+        -- Get vehicle info from admin (who is in the vehicle)
+        local vehicleInfo = lib.callback.await('919-admin:server:GetVehicleInfoFromAdmin', src)
+        if not vehicleInfo then
+            TriggerClientEvent("919-admin:client:ShowPanelAlert", src, "danger", "<strong>Error</strong> You must be in a vehicle to use this feature.")
+            return
+        end
+
+        -- Get target player
+        local targetPlayer = Compat.GetPlayer(targetId)
+        if not targetPlayer then
+            TriggerClientEvent("919-admin:client:ShowPanelAlert", src, "danger", "<strong>Error</strong> Target player not found.")
+            return
+        end
+
+        -- Check if using qbx_vehicles (QBox)
+        if GetResourceState('qbx_vehicles') == 'started' then
+            -- Check if vehicle already exists by plate
+            local existingVehicleId = exports.qbx_vehicles:GetVehicleIdByPlate(vehicleInfo.plate)
+            
+            if existingVehicleId then
+                -- Vehicle exists, transfer ownership
+                local success, err = exports.qbx_vehicles:SetPlayerVehicleOwner(existingVehicleId, targetPlayer.PlayerData.citizenid)
+                if success then
+                    TriggerClientEvent("919-admin:client:ShowPanelAlert", src, "success", "<strong>Success</strong> Vehicle transferred to " .. GetPlayerName(targetId) .. "'s garage!")
+                    if Compat and Compat.Notify then
+                        Compat.Notify(targetId, "You have received a vehicle in your garage!", "success")
+                    end
+                else
+                    TriggerClientEvent("919-admin:client:ShowPanelAlert", src, "danger", "<strong>Error</strong> " .. tostring(err or "Failed to transfer vehicle."))
+                end
+            else
+                -- Create new vehicle entry
+                local vehicleId, err = exports.qbx_vehicles:CreatePlayerVehicle({
+                    model = vehicleInfo.model,
+                    citizenid = targetPlayer.PlayerData.citizenid,
+                    props = vehicleInfo.props,
+                })
+                
+                if vehicleId then
+                    -- Link the vehicle entity to the database entry
+                    local adminVehicle = GetVehiclePedIsIn(GetPlayerPed(src), false)
+                    if adminVehicle ~= 0 then
+                        Entity(adminVehicle).state:set('vehicleid', vehicleId, true)
+                    end
+                    TriggerClientEvent("919-admin:client:ShowPanelAlert", src, "success", "<strong>Success</strong> Vehicle added to " .. GetPlayerName(targetId) .. "'s garage!")
+                    if Compat and Compat.Notify then
+                        Compat.Notify(targetId, "You have received a vehicle in your garage!", "success")
+                    end
+                else
+                    TriggerClientEvent("919-admin:client:ShowPanelAlert", src, "danger", "<strong>Error</strong> " .. tostring(err or "Failed to add vehicle to garage."))
+                end
+            end
+        else
+            -- Fallback to old system for QB-Core
+            local result = MySQL.query.await("SELECT plate FROM `"..Config.DB.VehiclesTable.."` WHERE plate = ?", {vehicleInfo.plate})
+            if result[1] == nil then
+                MySQL.insert("INSERT INTO `"..Config.DB.VehiclesTable.."` (license, citizenid, vehicle, hash, mods, plate, state) VALUES (?, ?, ?, ?, ?, ?, ?)", {
+                    targetPlayer.PlayerData.license or targetPlayer.getIdentifier(),
+                    targetPlayer.PlayerData.citizenid or targetPlayer.getIdentifier(),
+                    vehicleInfo.model,
+                    vehicleInfo.hash,
+                    json.encode(vehicleInfo.props),
+                    vehicleInfo.plate,
+                    0
+                })
+                TriggerClientEvent("919-admin:client:ShowPanelAlert", src, "success", "<strong>Success</strong> Vehicle added to " .. GetPlayerName(targetId) .. "'s garage!")
+                if Compat and Compat.Notify then
+                    Compat.Notify(targetId, "You have received a vehicle in your garage!", "success")
+                end
+            else
+                TriggerClientEvent("919-admin:client:ShowPanelAlert", src, "danger", "<strong>Error</strong> Player already owns this vehicle.")
+            end
+        end
     end
 end)
 
