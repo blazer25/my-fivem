@@ -56,7 +56,7 @@ Config.CheckVehicleModel = true -- Extra security
 Config.SpawnVehiclesWithServerSetter = false
 
 -- Vehicle Transfers
-Config.GarageVehicleTransferCost = 2500 -- Cost to transfer between garages
+Config.GarageVehicleTransferCost = 500-- Cost to transfer between garages
 Config.TransferHidePlayerNames = false
 Config.EnableTransfers = {
   betweenGarages = true,
@@ -69,7 +69,7 @@ Config.DisableTransfersToUnregisteredGarages = false -- Potential hacking protec
 Config.AllowInfiniteVehicleSpawns = false -- Public & private garages
 Config.JobGaragesAllowInfiniteVehicleSpawns = false -- Job garages
 Config.GangGaragesAllowInfiniteVehicleSpawns = false -- Gang garages
-Config.GarageVehicleReturnCost = 2500 -- "towing" tax if not placed back in garage after server restart; or if destroyed or underwater while left out
+Config.GarageVehicleReturnCost = 1000 -- "towing" tax if not placed back in garage after server restart; or if destroyed or underwater while left out
 Config.GarageVehicleReturnCostSocietyFund = false -- Job name of society fund to pay return fees into (optional)
 
 -- Public Garages

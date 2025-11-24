@@ -125,7 +125,7 @@ Config.DealershipLocations = {
       color = 2,
       scale = 0.6
     },
-    enableSellVehicle = true, -- Allow players to sell vehicles back to dealer
+    enableSellVehicle = false, -- Allow players to sell vehicles back to dealer
     sellVehiclePercent = 0.6,  -- 60% of current sale price
     enableFinance = true,
     hideMarkers = false,
@@ -139,7 +139,7 @@ Config.DealershipLocations = {
     directSaleDistance = 50,
   },
   ["luxury"] = {
-    type = "self-service", -- or "owned", "self-service"
+    type = "owned", -- or "owned", "self-service"
     openShowroom = {
       coords = vector3(-1257.4, -369.12, 36.98),
       size = 5
@@ -254,7 +254,7 @@ Config.DealershipLocations = {
     societyPurchaseGangWhitelist = {},
   },
   ["truck"] = {
-    type = "self-service", -- or "owned", "self-service"
+    type = "owned", -- or "owned", "self-service"
     openShowroom = {
       coords = vector3(1214.37, -3204.53, 6.03),
       size = 5
