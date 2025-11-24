@@ -8121,4 +8121,23 @@ return {
         type = 'automobile',
         hash = `roadking`,
     }
+    wheeler3 = {
+        name = '3wheeler',
+        brand = 'Honda ATC',
+        model = '3wheeler',
+        price = 27299,
+        category = 'offroad',
+        type = 'automobile',
+        hash = `3wheeler`,
+    }
+     }
+    cvocs18 = {
+        name = '18cvocs',
+        brand = 'HARLEY',
+        model = '18cvocs',
+        price = 27299,
+        category = 'motorcycles',
+        type = 'automobile',
+        hash = `cvocs18`,
+    }
 }
