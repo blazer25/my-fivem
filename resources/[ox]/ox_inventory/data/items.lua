@@ -3625,6 +3625,7 @@ return {
         description = 'A dirty piece of cardboard with something written on it.',
         consume = 0,
         client = {
+            image = 'cardboard.png',
             event = 'cardboard:read'
         },
     },
@@ -3636,6 +3637,7 @@ return {
         close = true,
         description = 'A dirty piece of cardboard with something written on it.',
         consume = 0,
+        image = 'cardboard-location.png',
         client = {
             event = 'cardboard:read'
         },
