@@ -21,7 +21,7 @@
     "@types/jquery": "^3.5.29",
     "@types/node": "^20.11.30",
     "cross-env": "^7.0.3",
-    "esbuild": "^0.20.2",
+    "esbuild": "^0.27.0",
     "git-cliff": "1",
     "husky": "8",
     "jest": "27",
