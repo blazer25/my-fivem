@@ -94,7 +94,7 @@ Config.ManualHighRPMNotifications = true
 -- Misc
 Config.UniqueBlips = true
 Config.ModsPricesAsPercentageOfVehicleValue = true -- Enable pricing tuning items as % of vehicle value - it tries jg-dealerships, then QBShared, then the vehicles meta file automagically for pricing data
-Config.AdminsHaveEmployeePermissions = false -- admins can use tablet & interact with mechanics like an owner
+Config.AdminsHaveEmployeePermissions = true -- admins can use tablet & interact with mechanics like an owner
 Config.MechanicEmployeesCanSelfServiceMods = false -- set to true to allow mechanic employees to bypass the "place order" system at their own mechanic
 Config.FullRepairAdminCommand = "vfix"
 Config.MechanicAdminCommand = "mechanicadmin"
