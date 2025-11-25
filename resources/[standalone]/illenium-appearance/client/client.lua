@@ -417,6 +417,9 @@ end
 
 RegisterNetEvent("illenium-appearance:client:OutfitManagementMenu", function(args)
     local outfits = lib.callback.await("illenium-appearance:server:getManagementOutfits", false, args.type, Framework.GetGender())
+    if not outfits or type(outfits) ~= "table" then
+        outfits = {}
+    end
     local managementMenuID = "illenium_appearance_outfit_management_menu"
     local changeManagementOutfitMenuID = "illenium_appearance_change_management_outfit_menu"
     local deleteManagementOutfitMenuID = "illenium_appearance_delete_management_outfit_menu"
@@ -542,6 +545,9 @@ function OpenMenu(isPedMenu, menuType, menuData)
     local menuItems = {}
 
     local outfits = lib.callback.await("illenium-appearance:server:getOutfits", false)
+    if not outfits or type(outfits) ~= "table" then
+        outfits = {}
+    end
     local changeOutfitMenuID = "illenium_appearance_change_outfit_menu"
     local updateOutfitMenuID = "illenium_appearance_update_outfit_menu"
     local deleteOutfitMenuID = "illenium_appearance_delete_outfit_menu"

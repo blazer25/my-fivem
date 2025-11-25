@@ -14,9 +14,25 @@ local waitInterval = 100 -- Check every 100ms
 while waitTime < maxWaitTime do
     local qbxState = GetResourceState('qbx_core')
     if qbxState == 'started' then
-        -- Use QBX Core
-        QBCore = exports.qbx_core
+        -- Use QBX Core - use bridge compatibility for Functions access
         usingQBX = true
+        -- Get bridge compatibility object for Functions access
+        -- Wait a bit for bridge to initialize
+        local bridgeReady = false
+        local bridgeWaitTime = 0
+        while bridgeWaitTime < 2000 and not bridgeReady do
+            local success, result = pcall(function() return exports["qb-core"]:GetCoreObject() end)
+            if success and result and result.Functions then
+                QBCore = result
+                bridgeReady = true
+            else
+                Wait(100)
+                bridgeWaitTime = bridgeWaitTime + 100
+            end
+        end
+        if not QBCore then
+            print("^3[illenium-appearance] Warning: QBX bridge not available, some features may not work^7")
+        end
         print("^2[illenium-appearance] Using QBX Core on client^7")
         break
     elseif qbxState == 'starting' or qbxState == 'stopped' then
@@ -67,8 +83,13 @@ end
 
 local PlayerData = {}
 if usingQBX then
-    -- QBX Core method - use export directly
-    PlayerData = exports.qbx_core:GetPlayerData() or {}
+    -- QBX Core method - use bridge compatibility Functions
+    if QBCore and QBCore.Functions then
+        PlayerData = QBCore.Functions.GetPlayerData() or {}
+    else
+        -- Fallback: try direct QBX.PlayerData access
+        PlayerData = QBX and QBX.PlayerData or {}
+    end
 elseif QBCore and QBCore.Functions then
     -- QB Core method
     PlayerData = QBCore.Functions.GetPlayerData() or {}
@@ -100,8 +121,13 @@ end
 
 function Framework.UpdatePlayerData()
     if usingQBX then
-        -- QBX Core method - use export directly
-        PlayerData = exports.qbx_core:GetPlayerData() or {}
+        -- QBX Core method - use bridge compatibility Functions
+        if QBCore and QBCore.Functions then
+            PlayerData = QBCore.Functions.GetPlayerData() or {}
+        else
+            -- Fallback: try direct QBX.PlayerData access
+            PlayerData = QBX and QBX.PlayerData or {}
+        end
     elseif QBCore and QBCore.Functions then
         -- QB Core method
         PlayerData = QBCore.Functions.GetPlayerData() or {}
@@ -111,8 +137,14 @@ end
 
 function Framework.HasTracker()
     if usingQBX then
-        -- QBX Core method - use export directly
-        local playerData = exports.qbx_core:GetPlayerData()
+        -- QBX Core method - use bridge compatibility Functions
+        local playerData
+        if QBCore and QBCore.Functions then
+            playerData = QBCore.Functions.GetPlayerData()
+        else
+            -- Fallback: try direct QBX.PlayerData access
+            playerData = QBX and QBX.PlayerData or nil
+        end
         if playerData and playerData.metadata then
             return playerData.metadata["tracker"] or false
         end
@@ -193,8 +225,13 @@ end)
 
 RegisterNetEvent("qb-clothes:client:CreateFirstCharacter", function()
     if usingQBX then
-        -- QBX Core method - GetPlayerData is synchronous
-        PlayerData = exports.qbx_core:GetPlayerData() or {}
+        -- QBX Core method - use bridge compatibility Functions
+        if QBCore and QBCore.Functions then
+            PlayerData = QBCore.Functions.GetPlayerData() or {}
+        else
+            -- Fallback: try direct QBX.PlayerData access
+            PlayerData = QBX and QBX.PlayerData or {}
+        end
         setClientParams()
         InitializeCharacter(Framework.GetGender(true), function()
             -- Appearance completed callback
