@@ -17,13 +17,17 @@ while waitTime < maxWaitTime do
         usingQBX = true
         print("^2[illenium-appearance] Using QBX Core on server^7")
         break
-    elseif qbxState == 'starting' then
-        -- Still starting, wait a bit
+    elseif qbxState == 'starting' or qbxState == 'stopped' then
+        -- Still starting or stopped (will start soon), wait a bit
         Wait(waitInterval)
         waitTime = waitTime + waitInterval
-    else
-        -- Not found or stopped, check for qb-core instead
+    elseif qbxState == 'missing' then
+        -- Resource doesn't exist, check for qb-core instead
         break
+    else
+        -- Unknown state, wait and retry
+        Wait(waitInterval)
+        waitTime = waitTime + waitInterval
     end
 end
 
@@ -37,13 +41,17 @@ if not QBCore then
             QBCore = exports["qb-core"]:GetCoreObject()
             print("^2[illenium-appearance] Using QB Core on server^7")
             break
-        elseif qbState == 'starting' then
-            -- Still starting, wait a bit
+        elseif qbState == 'starting' or qbState == 'stopped' then
+            -- Still starting or stopped (will start soon), wait a bit
             Wait(waitInterval)
             waitTime = waitTime + waitInterval
-        else
-            -- Not found
+        elseif qbState == 'missing' then
+            -- Resource doesn't exist
             break
+        else
+            -- Unknown state, wait and retry
+            Wait(waitInterval)
+            waitTime = waitTime + waitInterval
         end
     end
 end
