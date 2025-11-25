@@ -174,6 +174,7 @@ if Config.ShowNearestGasStationOnly then
 		end
 		Wait(1000)
 		local currentGasBlip = 0
+		local maxDistance = Config.MaxBlipDistance or 800.0
 		while true do
 			local coords = GetEntityCoords(PlayerPedId())
 			local closest = 1000
@@ -196,10 +197,16 @@ if Config.ShowNearestGasStationOnly then
 					break
 				end
 			end
+			-- Only show blip if within max distance
 			if DoesBlipExist(currentGasBlip) then
 				RemoveBlip(currentGasBlip)
+				currentGasBlip = 0
 			end
-			currentGasBlip = CreateBlip(closestCoords, label)
+			if closestCoords and closest <= maxDistance then
+				currentGasBlip = CreateBlip(closestCoords, label)
+				-- Set blip to short range so it only shows on minimap when nearby
+				SetBlipAsShortRange(currentGasBlip, true)
+			end
 			Wait(10000)
 		end
 	end)

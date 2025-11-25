@@ -2,9 +2,11 @@ if not Framework.QBCore() then return end
 
 -- Try QBX Core first, then fall back to QB Core
 local QBCore
+local usingQBX = false
 if GetResourceState('qbx_core') == 'started' then
     -- Use QBX Core
     QBCore = exports.qbx_core
+    usingQBX = true
     print("^2[illenium-appearance] Using QBX Core on server^7")
 elseif GetResourceState('qb-core') == 'started' then
     -- Use QB Core
@@ -17,7 +19,12 @@ else
 end
 
 -- Verify QBCore is properly loaded
-if not QBCore or not QBCore.Functions then
+-- qbx_core doesn't have QBCore.Functions, so only check for it when using qb-core
+if not QBCore then
+    print("^1[illenium-appearance] QBCore not available on server!^7")
+    return
+end
+if not usingQBX and not QBCore.Functions then
     print("^1[illenium-appearance] QBCore functions not available on server!^7")
     return
 end

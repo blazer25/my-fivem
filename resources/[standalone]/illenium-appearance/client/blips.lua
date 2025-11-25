@@ -20,7 +20,7 @@ local function CreateBlip(blipConfig, coords)
     SetBlipSprite(blip, blipConfig.Sprite)
     SetBlipColour(blip, blipConfig.Color)
     SetBlipScale(blip, blipConfig.Scale)
-    SetBlipAsShortRange(blip, true)
+    SetBlipAsShortRange(blip, true) -- Set to true to only show on minimap when nearby
     BeginTextCommandSetBlipName("STRING")
     AddTextComponentString(blipConfig.Name)
     EndTextCommandSetBlipName(blip)
@@ -82,4 +82,10 @@ end
 
 if Config.ShowNearestShopOnly then
     CreateThread(ShowNearestShopBlip)
+else
+    -- Initialize blips on resource start when not using nearest shop only mode
+    CreateThread(function()
+        Wait(1000) -- Wait for framework to initialize
+        SetupBlips()
+    end)
 end

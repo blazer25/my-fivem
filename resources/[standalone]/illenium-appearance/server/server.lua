@@ -126,11 +126,18 @@ lib.callback.register("illenium-appearance:server:payForTattoo", function(source
 end)
 
 lib.callback.register("illenium-appearance:server:getOutfits", function(source)
+    if not Framework or not Framework.GetPlayerID then
+        print("^1[illenium-appearance] Framework not initialized properly!^7")
+        return {}
+    end
     local citizenID = Framework.GetPlayerID(source)
+    if not citizenID then
+        return {}
+    end
     if outfitCache[citizenID] == nil then
         getOutfitsForPlayer(citizenID)
     end
-    return outfitCache[citizenID]
+    return outfitCache[citizenID] or {}
 end)
 
 lib.callback.register("illenium-appearance:server:getManagementOutfits", function(source, mType, gender)

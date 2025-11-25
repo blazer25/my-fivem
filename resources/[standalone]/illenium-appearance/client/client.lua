@@ -323,6 +323,9 @@ local function RegisterChangeOutfitMenu(id, parent, outfits, mType)
         menu = parent,
         options = {}
     }
+    if not outfits or type(outfits) ~= "table" then
+        outfits = {}
+    end
     for i = 1, #outfits, 1 do
         changeOutfitMenu.options[#changeOutfitMenu.options + 1] = {
             title = outfits[i].name,
