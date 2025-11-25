@@ -14,6 +14,7 @@ local storage = require 'server.storage.main'
 ---@param identifier Identifier
 ---@return integer source of the player with the matching identifier or 0 if no player found
 function GetSource(identifier)
+    if not QBX.Players then return 0 end
     for src in pairs(QBX.Players) do
         local idens = GetPlayerIdentifiers(src)
         for _, id in pairs(idens) do
@@ -30,6 +31,7 @@ exports('GetSource', GetSource)
 ---@param identifier Identifier
 ---@return integer source of the player with the matching identifier or 0 if no player found
 function GetUserId(identifier)
+    if not QBX.Players then return 0 end
     for src in pairs(QBX.Players) do
         local idens = GetPlayerIdentifiers(src)
         for _, id in pairs(idens) do
@@ -46,6 +48,7 @@ exports('GetUserId', GetUserId)
 ---@param source Source|string source or identifier of the player
 ---@return Player
 function GetPlayer(source)
+    if not QBX.Players then return nil end
     if tonumber(source) ~= nil then
         return QBX.Players[tonumber(source)]
     else
@@ -58,6 +61,7 @@ exports('GetPlayer', GetPlayer)
 ---@param citizenid string
 ---@return Player?
 function GetPlayerByCitizenId(citizenid)
+    if not QBX.Players then return nil end
     for src in pairs(QBX.Players) do
         if QBX.Players[src].PlayerData.citizenid == citizenid then
             return QBX.Players[src]
@@ -70,6 +74,7 @@ exports('GetPlayerByCitizenId', GetPlayerByCitizenId)
 ---@param userId string
 ---@return Player?
 function GetPlayerByUserId(userId)
+    if not QBX.Players then return nil end
     for src in pairs(QBX.Players) do
         if QBX.Players[src].PlayerData.userId == userId then
             return QBX.Players[src]
@@ -82,6 +87,7 @@ exports('GetPlayerByUserId', GetPlayerByUserId)
 ---@param number string
 ---@return Player?
 function GetPlayerByPhone(number)
+    if not QBX.Players then return nil end
     for src in pairs(QBX.Players) do
         if QBX.Players[src].PlayerData.charinfo.phone == number then
             return QBX.Players[src]
@@ -107,6 +113,7 @@ exports('GetQBPlayers', GetQBPlayers)
 function GetDutyCountJob(job)
     local players = {}
     local count = 0
+    if not QBX.Players then return count, players end
     for src, player in pairs(QBX.Players) do
         if player.PlayerData.job.name == job then
             if player.PlayerData.job.onduty then
@@ -127,6 +134,7 @@ exports('GetDutyCountJob', GetDutyCountJob)
 function GetDutyCountType(type)
     local players = {}
     local count = 0
+    if not QBX.Players then return count, players end
     for src, player in pairs(QBX.Players) do
         if player.PlayerData.job.type == type then
             if player.PlayerData.job.onduty then
@@ -224,6 +232,7 @@ exports('GetEntitiesInBucket', GetEntitiesInBucket)
 ---@param item string name
 ---@param data fun(source: Source, item: unknown)
 function CreateUseableItem(item, data)
+    if not QBX.UsableItems then return end
     QBX.UsableItems[item] = data
 end
 
@@ -232,6 +241,7 @@ exports('CreateUseableItem', CreateUseableItem)
 ---@param item string name
 ---@return unknown
 function CanUseItem(item)
+    if not QBX.UsableItems then return nil end
     return QBX.UsableItems[item]
 end
 
@@ -498,6 +508,7 @@ exports('GetGroups', GetGroups)
 ---@return PlayerData[]
 local function getPlayersData()
     local playersData = {}
+    if not QBX.Players then return playersData end
     for _, player in pairs(QBX.Players) do
         playersData[#playersData + 1] = player.PlayerData
     end

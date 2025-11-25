@@ -24,7 +24,7 @@ function Login(source, citizenid, newData)
         return false
     end
 
-    if QBX.Players[source] then
+    if QBX.Players and QBX.Players[source] then
         DropPlayer(tostring(source), locale('info.exploit_dropped'))
         logger.log({
             source = GetInvokingResource() or cache.resource,

@@ -16,8 +16,10 @@ CreateThread(function()
     local interval = 60000 * config.updateInterval
     while true do
         Wait(interval)
-        for src, player in pairs(QBX.Players) do
-            removeHungerAndThirst(src, player)
+        if QBX.Players then
+            for src, player in pairs(QBX.Players) do
+                removeHungerAndThirst(src, player)
+            end
         end
     end
 end)
@@ -48,8 +50,10 @@ CreateThread(function()
     local interval = 60000 * config.money.paycheckTimeout
     while true do
         Wait(interval)
-        for _, player in pairs(QBX.Players) do
-            pay(player)
+        if QBX.Players then
+            for _, player in pairs(QBX.Players) do
+                pay(player)
+            end
         end
     end
 end)

@@ -8120,7 +8120,7 @@ return {
         category = 'motorcycles',
         type = 'automobile',
         hash = `roadking`,
-    }
+    },
     wheeler3 = {
         name = '3wheeler',
         brand = 'Honda ATC',
@@ -8129,8 +8129,7 @@ return {
         category = 'offroad',
         type = 'automobile',
         hash = `3wheeler`,
-    }
-     }
+    },
     cvocs18 = {
         name = '18cvocs',
         brand = 'HARLEY',
