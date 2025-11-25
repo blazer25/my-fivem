@@ -1,0 +1,23 @@
+FiveM Clothing/EUP Auto-Builder Report
+=====================================
+
+Build Date: 2025-11-25T21:58:07.445Z
+Build Time: 10688ms
+
+Files Processed:
+- Total Files: 2944
+- Clothing Files: 2938
+- Meta Files: 6
+- Duplicates Removed: 1636
+
+Total Size: 643.29 MB
+
+Clothing Types:
+- unknown: 2490
+- lower: 365
+- upper: 53
+- hat: 30
+
+No errors encountered.
+
+Build completed successfully!
