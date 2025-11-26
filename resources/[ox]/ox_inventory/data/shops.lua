@@ -3,14 +3,10 @@ return {
 		name = 'Shop',
 		blip = {
 			id = 59, colour = 69, scale = 0.8
-		}, inventory = {
+		}, 		inventory = {
 			{ name = 'burger', price = 10 },
 			{ name = 'water', price = 10 },
 			{ name = 'cola', price = 10 },
-			{ name = 'fishingrod1', price = 500 },
-			{ name = 'commonbait', price = 25 },
-			{ name = 'fishingrod2', price = 1500 },
-			{ name = 'premiumbait', price = 150 },
 		}, locations = {
 			vec3(25.7, -1347.3, 29.49),
 			vec3(-3038.71, 585.9, 7.9),
@@ -189,6 +185,127 @@ return {
 		targets = {
 			{ loc = vec3(-1847.98, -1193.15, 14.30), length = 1.5, width = 1.5, heading = 320.0, minZ = 14.0, maxZ = 15.0, distance = 2.0 },
 			{ loc = vec3(-1598.84, 5200.18, 4.31), length = 1.5, width = 1.5, heading = 45.0, minZ = 4.0, maxZ = 5.0, distance = 2.0 },
+		}
+	},
+
+	FishingShop = {
+		name = 'Fishing Equipment Shop',
+		blip = {
+			id = 68, colour = 3, scale = 0.8
+		},
+		inventory = {
+			-- Basic Rods
+			{ name = 'fishingrod1', price = 500 },
+			{ name = 'fishingrod2', price = 1500 },
+			{ name = 'fishingrod3', price = 5000 },
+			-- Premium Bait
+			{ name = 'premiumbait', price = 150 },
+			{ name = 'legendarybait', price = 500 },
+			-- Basic Bait
+			{ name = 'bread', price = 10 },
+			{ name = 'earthworm', price = 15 },
+			{ name = 'dough', price = 20 },
+			{ name = 'grub', price = 25 },
+			{ name = 'caddis_fly', price = 30 },
+			{ name = 'cheese', price = 12 },
+			{ name = 'fly', price = 35 },
+			{ name = 'dragonfly', price = 40 },
+			{ name = 'grasshoper', price = 45 },
+			{ name = 'shrimp', price = 50 },
+			{ name = 'leech', price = 55 },
+			{ name = 'snail', price = 20 },
+			{ name = 'liver', price = 60 },
+			-- Fishing Lines
+			{ name = 'express_fishing_super_line', price = 100 },
+			{ name = 'syberia_indiana_green', price = 120 },
+			{ name = 'syberia_indiana_white', price = 120 },
+			{ name = 'simmons_mono_original', price = 150 },
+			{ name = 'simmons_mono_ss', price = 180 },
+			{ name = 'syberia_indiana_green_2', price = 200 },
+			{ name = 'syberia_indiana_white_2', price = 200 },
+			{ name = 'snake_power_line_clr', price = 250 },
+			{ name = 'simmons_mono_original_2', price = 300 },
+			{ name = 'simmons_mono_ss_2', price = 320 },
+			{ name = 'snake_power_line_clr_2', price = 380 },
+			{ name = 'solid_hipower_nylon', price = 450 },
+			{ name = 'solid_hipower_nylon_lime', price = 480 },
+			{ name = 'solid_hipower_nylon_orange', price = 500 },
+			{ name = 'solid_hipower_nylon_2', price = 550 },
+			{ name = 'solid_hipower_nylon_lime_2', price = 600 },
+			{ name = 'solid_hipower_nylon_orange_2', price = 650 },
+			-- Fishing Rods (Professional)
+			{ name = 'ufe_telerod_370', price = 800 },
+			{ name = 'carptack_feeder_master_250', price = 750 },
+			{ name = 'sakura_tsubarea_tsa_552_xul', price = 900 },
+			{ name = 'carpex_hybid_carp_270', price = 850 },
+			{ name = 'ufe_float_x5_300', price = 820 },
+			{ name = 'predatek_fast_perch_210', price = 780 },
+			{ name = 'sakura_ionizer_bass_insb_701_ml', price = 950 },
+			{ name = 'sakura_redbird_rds_602_l', price = 880 },
+			{ name = 'carpex_cobalt_carp_360', price = 920 },
+			{ name = 'sakura_salt_sniper_salss_611_mj1', price = 1000 },
+			{ name = 'sakura_speciz_spes_light_602_zander', price = 980 },
+			{ name = 'sakura_redbird_rds_662', price = 1100 },
+			{ name = 'sakura_salt_sniper_salss_902_h', price = 1200 },
+			{ name = 'predatek_seahunter_230', price = 1050 },
+			{ name = 'sakura_shukan_shuc_661_lj', price = 1150 },
+			{ name = 'ufe_powercatch_270', price = 1020 },
+			{ name = 'predatek_pilk_200', price = 950 },
+			{ name = 'robinson_carbonic_nordic_pilk_300', price = 1300 },
+			{ name = 'carptack_bottom_cast_360', price = 1250 },
+			{ name = 'seax_salfighter_170', price = 1400 },
+			-- Fishing Reels
+			{ name = 'ufe_canta_1000', price = 200 },
+			{ name = 'ufe_barracuda_2000bt', price = 250 },
+			{ name = 'sakura_alpax_4508', price = 300 },
+			{ name = 'sakura_alpax_8508', price = 350 },
+			{ name = 'ufe_belona_4000', price = 400 },
+			{ name = 'ufe_bigspin_8000b', price = 500 },
+			{ name = 'ufe_batara_8000g', price = 550 },
+			{ name = 'ufe_batara_1000r', price = 220 },
+			{ name = 'robinson_big_runner_807qd', price = 600 },
+			{ name = 'spooler_catchpro_4000fd', price = 450 },
+			{ name = 'ufe_opensea_8000_x', price = 650 },
+			{ name = 'spooler_catchpro_8000fd', price = 700 },
+			{ name = 'spooler_catchpro_14000fd', price = 800 },
+			-- Fishing Hooks
+			{ name = 'ufa_bait_hook', price = 50 },
+			{ name = 'ufa_sproat_hook', price = 60 },
+			{ name = 'captack_claw_xl_hook', price = 70 },
+			{ name = 'ufa_sproat_g_hook', price = 65 },
+			{ name = 'carptack_carp_ss_hook', price = 75 },
+			{ name = 'ufa_wide_gap_bl_hook', price = 80 },
+			{ name = 'ufa_aberdeen_hook', price = 55 },
+			{ name = 'ufa_octopus_bl_hook', price = 85 },
+			{ name = 'ufa_livebait_hook', price = 90 },
+			{ name = 'carptack_micro_barb_hook', price = 100 },
+			{ name = 'carptack_carp_hook', price = 95 },
+			{ name = 'ufa_fusion_bl_hook', price = 110 },
+			{ name = 'predatek_octopus_hook', price = 120 },
+			{ name = 'predatek_fusion_hook', price = 130 },
+			-- Scuba Gear
+			{ name = 'scuba', price = 2000 },
+			{ name = 'diving_mask', price = 150 },
+			{ name = 'diving_fins', price = 200 },
+			{ name = 'diving_tank', price = 500 },
+			{ name = 'underwater_camera', price = 800 },
+		},
+		locations = {
+			vec3(1336.28, 4307.07, 38.12), -- Alamo Sea
+		},
+		targets = {
+			{ loc = vec3(1336.28, 4307.07, 38.12), length = 1.5, width = 1.5, heading = 324.0, minZ = 37.5, maxZ = 39.0, distance = 2.0 },
+		}
+	},
+
+	IllegalFishShop = {
+		name = 'Illegal Fish Buyer',
+		inventory = {},
+		locations = {
+			vec3(1550.83, 6318.95, 24.06), -- Paleto Bay (hidden location)
+		},
+		targets = {
+			{ loc = vec3(1550.83, 6318.95, 24.06), length = 1.5, width = 1.5, heading = 354.0, minZ = 23.5, maxZ = 25.0, distance = 2.0 },
 		}
 	}
 }

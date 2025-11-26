@@ -102,6 +102,10 @@ local FishMarketZones = {
     { coords = vec3(-1598.84, 5200.18, 4.31), radius = 3.0 },
 }
 
+local IllegalFishZones = {
+    { coords = vec3(1550.83, 6318.95, 24.06), radius = 3.0 },
+}
+
 local function isPlayerAtFishMarket(source)
     local ped = GetPlayerPed(source)
     if not ped or ped == 0 then return false end
@@ -118,13 +122,69 @@ local function isPlayerAtFishMarket(source)
     return false
 end
 
+local function isPlayerAtIllegalFishSeller(source)
+    local ped = GetPlayerPed(source)
+    if not ped or ped == 0 then return false end
+    
+    local playerCoords = GetEntityCoords(ped)
+    
+    for _, zone in ipairs(IllegalFishZones) do
+        local distance = #(playerCoords - zone.coords)
+        if distance <= zone.radius then
+            return true
+        end
+    end
+    
+    return false
+end
+
+-- List of illegal fish items
+local IllegalFish = {
+    'paddlefish', 'sawfish', 'eel', 'hammerheadshark', 'seaturtle', 
+    'leopardshark', 'blueshark', 'greatwhiteshark'
+}
+
+local function isIllegalFish(itemName)
+    for _, illegal in ipairs(IllegalFish) do
+        if illegal == itemName then
+            return true
+        end
+    end
+    return false
+end
+
 RegisterNetEvent('brz-fishing:sellFish', function(itemName, count)
     local src = source
     
-    if not isPlayerAtFishMarket(src) then
+    local atFishMarket = isPlayerAtFishMarket(src)
+    local atIllegalSeller = isPlayerAtIllegalFishSeller(src)
+    local isIllegal = isIllegalFish(itemName)
+    
+    -- Check location validity
+    if not atFishMarket and not atIllegalSeller then
         lib.notify(src, {
             title = 'Fish Market',
             description = 'You must be at a fish market to sell fish',
+            type = 'error'
+        })
+        return
+    end
+    
+    -- If at illegal seller, only allow illegal fish
+    if atIllegalSeller and not isIllegal then
+        lib.notify(src, {
+            title = 'Illegal Fish Buyer',
+            description = 'This buyer only accepts illegal fish',
+            type = 'error'
+        })
+        return
+    end
+    
+    -- If at regular fish market, don't allow illegal fish
+    if atFishMarket and isIllegal then
+        lib.notify(src, {
+            title = 'Fish Market',
+            description = 'Illegal fish cannot be sold here. Find a special buyer.',
             type = 'error'
         })
         return
@@ -159,8 +219,9 @@ RegisterNetEvent('brz-fishing:sellFish', function(itemName, count)
         local Player = exports.qbx_core:GetPlayer(src)
         if Player then
             Player.Functions.AddMoney('cash', totalPrice)
+            local title = atIllegalSeller and 'Illegal Fish Buyer' or 'Fish Market'
             lib.notify(src, {
-                title = 'Fish Market',
+                title = title,
                 description = string.format('Sold %dx %s for $%s', count, exports.ox_inventory:Items()[itemName].label, totalPrice),
                 type = 'success'
             })
@@ -181,5 +242,15 @@ end)
 
 exports('GetFishMarketZones', function()
     return FishMarketZones
+end)
+
+exports('GetIllegalFishZones', function()
+    return IllegalFishZones
+end)
+
+-- Send fish prices to client
+RegisterNetEvent('brz-fishing:requestFishPrices', function()
+    local src = source
+    TriggerClientEvent('brz-fishing:receiveFishPrices', src, FishPrices)
 end)
 
