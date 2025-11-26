@@ -2,13 +2,99 @@
 -- Players can sell fish at the fish market for money
 
 local FishPrices = {
-    ['fish'] = 75,          -- Common: $50-100 (using $75)
-    ['dolphin'] = 300,      -- Uncommon: $200-400 (using $300)
-    ['hammershark'] = 300,  -- Uncommon: $200-400 (using $300)
-    ['tigershark'] = 650,   -- Rare: $500-800 (using $650)
-    ['stingray'] = 650,     -- Rare: $500-800 (using $650)
-    ['killerwhale'] = 1750, -- Epic: $1500-2000 (using $1750)
-    ['humpback'] = 4000,    -- Legendary: $3000-5000 (using $4000)
+    -- Original fish
+    ['fish'] = 75,
+    ['dolphin'] = 300,
+    ['hammershark'] = 300,
+    ['tigershark'] = 650,
+    ['stingray'] = 650,
+    ['killerwhale'] = 1750,
+    ['humpback'] = 4000,
+    
+    -- River Fish (Common: $30-80, Uncommon: $100-200, Rare: $300-600, Epic: $800-1500, Legendary: $2000-4000)
+    ['alligator_gar'] = 500,
+    ['amur_pike'] = 400,
+    ['barbel'] = 150,
+    ['brook_trout'] = 120,
+    ['brown_trout'] = 80,
+    ['bull_trout'] = 100,
+    ['chub'] = 50,
+    ['chum_salmon'] = 200,
+    ['coho_salmon'] = 180,
+    ['common_bleak'] = 30,
+    ['common_bream'] = 100,
+    ['common_carp'] = 150,
+    ['crucian_carp'] = 60,
+    ['european_eel'] = 250,
+    ['grayling'] = 70,
+    ['huchen'] = 1200,
+    ['ide'] = 55,
+    ['lake_sturgeon'] = 1500,
+    ['largemouth_bass'] = 100,
+    ['mirror_carp'] = 150,
+    ['northern_pike'] = 300,
+    ['pink_salmon'] = 90,
+    ['prussian_carp'] = 45,
+    ['rainbow_trout'] = 110,
+    ['roach'] = 40,
+    ['silver_carp'] = 600,
+    ['smallmouth_bass'] = 95,
+    ['tench'] = 130,
+    ['white_sturgeon'] = 800,
+    ['yellow_perch'] = 50,
+    ['zander'] = 200,
+    ['black_grayling'] = 75,
+    ['grass_carp'] = 140,
+    ['grass_pickerel'] = 65,
+    ['redfin_pickerel'] = 55,
+    ['wels_catfish'] = 350,
+    ['beluga_sturgeon'] = 2000,
+    ['giant_freshwater_stingray'] = 1800,
+    ['pink_river_dolphin'] = 3000,
+    ['pufferfish'] = 400,
+    ['pumpkinseed'] = 45,
+    ['bluegill'] = 60,
+    ['golden_trout'] = 500,
+    ['sockeye_salmon'] = 220,
+    ['skeleton'] = 1000, -- Rare find
+    
+    -- Sea Fish (Higher prices due to difficulty)
+    ['atlantic_cod'] = 120,
+    ['atlantic_salmon'] = 250,
+    ['blacktip_reef_shark'] = 800,
+    ['blue_marlin'] = 3500,
+    ['bluefin_tuna'] = 2500,
+    ['european_bass'] = 150,
+    ['european_flounder'] = 100,
+    ['european_perch'] = 60,
+    ['european_sea_sturgeon'] = 2800,
+    ['garfish'] = 80,
+    ['giant_grouper'] = 2000,
+    ['giant_trevally'] = 700,
+    ['great_barracuda'] = 600,
+    ['grey_snapper'] = 180,
+    ['indian_threadfish'] = 500,
+    ['mahi_mahi'] = 300,
+    ['malabar_grouper'] = 1800,
+    ['red_lionfish'] = 400,
+    ['sea_trout'] = 200,
+    ['yellowfin_tuna'] = 2200,
+    ['yellowtail_barracuda'] = 550,
+    
+    -- Illegal Fish (Very high prices, high risk)
+    ['paddlefish'] = 5000,
+    ['sawfish'] = 6000,
+    ['eel'] = 3000,
+    ['hammerheadshark'] = 8000,
+    ['seaturtle'] = 10000,
+    ['leopardshark'] = 7000,
+    ['blueshark'] = 9000,
+    ['greatwhiteshark'] = 15000,
+    
+    -- Diving Items
+    ['pearl'] = 500,
+    ['coral'] = 200,
+    ['treasure_chest'] = 5000,
 }
 
 local FishMarketZones = {

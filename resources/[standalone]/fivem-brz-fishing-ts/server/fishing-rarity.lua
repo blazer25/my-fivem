@@ -88,12 +88,94 @@ local playerFishAssignments = {}
 -- Hook into the fishing request to override with rarity system
 AddEventHandler('brz-fishing:requestStartFishing', function(playerId)
     local src = playerId or source
-    local selectedFish = selectFishByRarity(src)
+    
+    -- Detect fishing area
+    local area = exports['fivem-brz-fishing-ts']:GetPlayerFishingArea(src)
+    if not area then
+        area = 'sea' -- Default to sea if not detected
+    end
+    
+    -- Select area-specific fish
+    local selectedFish = selectFishByAreaAndRarity(src, area)
     playerFishAssignments[src] = selectedFish
     
     -- Trigger the client event with our selected fish
     TriggerClientEvent('brz-fishing:startFishing', src, selectedFish)
 end)
+
+-- Select fish based on area and rarity
+local function selectFishByAreaAndRarity(source, area)
+    -- Get area-specific fish list from settings
+    local areaFish = exports['fivem-brz-fishing-ts']:GetAreaFish(area)
+    if not areaFish or #areaFish == 0 then
+        -- Fallback to old system
+        return selectFishByRarity(source)
+    end
+    
+    local rodBonus, baitBonus = getEquipmentBonus(source)
+    
+    -- Adjust catch rates based on equipment
+    local adjustedRates = {
+        common = CATCH_RATES.common - (rodBonus * 20) - (baitBonus * 10),
+        uncommon = CATCH_RATES.uncommon + (rodBonus * 10),
+        rare = CATCH_RATES.rare + (rodBonus * 5) + (baitBonus * 5),
+        epic = CATCH_RATES.epic + (rodBonus * 3) + (baitBonus * 3),
+        legendary = CATCH_RATES.legendary + (rodBonus * 2) + (baitBonus * 2),
+    }
+    
+    -- Normalize to ensure they add up to 100
+    local total = adjustedRates.common + adjustedRates.uncommon + adjustedRates.rare + adjustedRates.epic + adjustedRates.legendary
+    for k, v in pairs(adjustedRates) do
+        adjustedRates[k] = (v / total) * 100
+    end
+    
+    -- Roll for rarity
+    local roll = math.random() * 100
+    local selectedRarity = 'common'
+    local cumulative = 0
+    
+    for rarity, rate in pairs(adjustedRates) do
+        cumulative = cumulative + rate
+        if roll <= cumulative then
+            selectedRarity = rarity
+            break
+        end
+    end
+    
+    -- Filter area fish by rarity (check item metadata for rarity)
+    local fishByRarity = {}
+    for _, fishName in ipairs(areaFish) do
+        local item = exports.ox_inventory:Items()[fishName]
+        if item then
+            -- Check if item has rarity metadata or use default
+            local rarity = 'common'
+            if item.metadata and item.metadata.rarity then
+                rarity = item.metadata.rarity
+            else
+                -- Try to get from fish config
+                local fishConfig = exports['fivem-brz-fishing-ts']:GetFishConfig(fishName)
+                if fishConfig and fishConfig.type then
+                    rarity = fishConfig.type
+                end
+            end
+            
+            if rarity == selectedRarity then
+                table.insert(fishByRarity, fishName)
+            end
+        end
+    end
+    
+    -- If no fish of that rarity in area, try all fish in area
+    if #fishByRarity == 0 then
+        fishByRarity = areaFish
+    end
+    
+    if #fishByRarity == 0 then
+        return 'fish' -- Ultimate fallback
+    end
+    
+    return fishByRarity[math.random(1, #fishByRarity)]
+end
 
 -- Override catch event to use our assigned fish
 RegisterNetEvent('brz-fishing:catchFish', function()
@@ -101,6 +183,22 @@ RegisterNetEvent('brz-fishing:catchFish', function()
     local fishId = playerFishAssignments[src]
     
     if fishId then
+        -- Detect fishing area
+        local area = exports['fivem-brz-fishing-ts']:GetPlayerFishingArea(src)
+        if not area then
+            area = 'sea' -- Default to sea if not detected
+        end
+        
+        -- Determine fish rarity for XP calculation
+        local fishRarity = 'common'
+        local fishConfig = exports['fivem-brz-fishing-ts']:GetFishConfig(fishId)
+        if fishConfig and fishConfig.type then
+            fishRarity = fishConfig.type
+        end
+        
+        -- Award XP
+        exports['fivem-brz-fishing-ts']:AwardFishingXP(src, area, fishRarity)
+        
         -- Process the catch with our assigned fish
         TriggerEvent('brz-fishing:server:processCatch', src, fishId)
         playerFishAssignments[src] = nil -- Clear after catch

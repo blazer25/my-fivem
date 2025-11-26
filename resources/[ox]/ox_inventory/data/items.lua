@@ -3997,5 +3997,1788 @@ return {
             image = 'commonbait.png'
         }
     },
-}
 
+    -- Bait Types with Level Requirements
+    ['bread'] = {
+        label = 'Bread',
+        weight = 10,
+        stack = true,
+        description = 'Basic bait. Requires River Level 1',
+        client = {
+            image = 'bread.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+            required_level = 1,
+        }
+    },
+    ['earthworm'] = {
+        label = 'Earthworm',
+        weight = 10,
+        stack = true,
+        description = 'Basic bait. Requires River Level 1',
+        client = {
+            image = 'earthworm.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+            required_level = 1,
+        }
+    },
+    ['dough'] = {
+        label = 'Dough',
+        weight = 10,
+        stack = true,
+        description = 'Intermediate bait. Requires River Level 3',
+        client = {
+            image = 'dough.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+            required_level = 3,
+        }
+    },
+    ['grub'] = {
+        label = 'Grub',
+        weight = 10,
+        stack = true,
+        description = 'Intermediate bait. Requires River Level 4',
+        client = {
+            image = 'grub.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+            required_level = 4,
+        }
+    },
+    ['caddis_fly'] = {
+        label = 'Caddis Fly',
+        weight = 10,
+        stack = true,
+        description = 'Advanced bait. Requires River Level 5',
+        client = {
+            image = 'caddis_fly.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+            required_level = 5,
+        }
+    },
+    ['cheese'] = {
+        label = 'Cheese',
+        weight = 10,
+        stack = true,
+        description = 'Basic bait. Requires Lake Level 1',
+        client = {
+            image = 'cheese.png',
+        },
+        metadata = {
+            fishing_area = 'lake',
+            required_level = 1,
+        }
+    },
+    ['fly'] = {
+        label = 'Fly',
+        weight = 10,
+        stack = true,
+        description = 'Intermediate bait. Requires Lake Level 3',
+        client = {
+            image = 'fly.png',
+        },
+        metadata = {
+            fishing_area = 'lake',
+            required_level = 3,
+        }
+    },
+    ['dragonfly'] = {
+        label = 'Dragonfly',
+        weight = 10,
+        stack = true,
+        description = 'Advanced bait. Requires Lake Level 6',
+        client = {
+            image = 'dragonfly.png',
+        },
+        metadata = {
+            fishing_area = 'lake',
+            required_level = 6,
+        }
+    },
+    ['grasshoper'] = {
+        label = 'Grasshoper',
+        weight = 10,
+        stack = true,
+        description = 'Advanced bait. Requires Lake Level 7',
+        client = {
+            image = 'grasshoper.png',
+        },
+        metadata = {
+            fishing_area = 'lake',
+            required_level = 7,
+        }
+    },
+    ['shrimp'] = {
+        label = 'Shrimp',
+        weight = 10,
+        stack = true,
+        description = 'Sea bait. Requires Sea Level 5',
+        client = {
+            image = 'shrimp.png',
+        },
+        metadata = {
+            fishing_area = 'sea',
+            required_level = 5,
+        }
+    },
+    ['leech'] = {
+        label = 'Leech',
+        weight = 10,
+        stack = true,
+        description = 'Advanced bait. Requires River Level 7',
+        client = {
+            image = 'leech.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+            required_level = 7,
+        }
+    },
+    ['snail'] = {
+        label = 'Snail',
+        weight = 10,
+        stack = true,
+        description = 'Intermediate bait. Requires Lake Level 4',
+        client = {
+            image = 'snail.png',
+        },
+        metadata = {
+            fishing_area = 'lake',
+            required_level = 4,
+        }
+    },
+    ['liver'] = {
+        label = 'Liver',
+        weight = 10,
+        stack = true,
+        description = 'Advanced bait. Requires Sea Level 8',
+        client = {
+            image = 'liver.png',
+        },
+        metadata = {
+            fishing_area = 'sea',
+            required_level = 8,
+        }
+    },
+
+    -- Fishing Lines with Level Requirements
+    ['express_fishing_super_line'] = {
+        label = 'Express Super Line 0.1mm',
+        weight = 70,
+        stack = true,
+        description = 'Ultra-thin line. Requires Level 1 in any area',
+        client = {
+            image = 'express_fishing_super_line.png',
+        },
+        metadata = {
+            required_level = 1,
+        }
+    },
+    ['syberia_indiana_green'] = {
+        label = 'Indiana Green 0.14mm',
+        weight = 70,
+        stack = true,
+        description = 'Thin line. Requires Level 2',
+        client = {
+            image = 'syberia_indiana_green.png',
+        },
+        metadata = {
+            required_level = 2,
+        }
+    },
+    ['syberia_indiana_white'] = {
+        label = 'Indiana White 0.18mm',
+        weight = 70,
+        stack = true,
+        description = 'Thin line. Requires Level 2',
+        client = {
+            image = 'syberia_indiana_white.png',
+        },
+        metadata = {
+            required_level = 2,
+        }
+    },
+    ['simmons_mono_original'] = {
+        label = 'Simmons Original 0.25mm',
+        weight = 70,
+        stack = true,
+        description = 'Standard line. Requires Level 3',
+        client = {
+            image = 'simmons_mono_original.png',
+        },
+        metadata = {
+            required_level = 3,
+        }
+    },
+    ['simmons_mono_ss'] = {
+        label = 'Simmons SS 0.28mm',
+        weight = 70,
+        stack = true,
+        description = 'Standard line. Requires Level 4',
+        client = {
+            image = 'simmons_mono_ss.png',
+        },
+        metadata = {
+            required_level = 4,
+        }
+    },
+    ['syberia_indiana_green_2'] = {
+        label = 'Indiana Green 0.32mm',
+        weight = 70,
+        stack = true,
+        description = 'Medium line. Requires Level 5',
+        client = {
+            image = 'syberia_indiana_green_2.png',
+        },
+        metadata = {
+            required_level = 5,
+        }
+    },
+    ['syberia_indiana_white_2'] = {
+        label = 'Indiana White 0.36mm',
+        weight = 70,
+        stack = true,
+        description = 'Medium line. Requires Level 5',
+        client = {
+            image = 'syberia_indiana_white_2.png',
+        },
+        metadata = {
+            required_level = 5,
+        }
+    },
+    ['snake_power_line_clr'] = {
+        label = 'Snake Power Line 0.41mm',
+        weight = 70,
+        stack = true,
+        description = 'Medium line. Requires Level 6',
+        client = {
+            image = 'snake_power_line_clr.png',
+        },
+        metadata = {
+            required_level = 6,
+        }
+    },
+    ['simmons_mono_original_2'] = {
+        label = 'Simmons Original 0.48mm',
+        weight = 70,
+        stack = true,
+        description = 'Heavy line. Requires Level 7',
+        client = {
+            image = 'simmons_mono_original_2.png',
+        },
+        metadata = {
+            required_level = 7,
+        }
+    },
+    ['simmons_mono_ss_2'] = {
+        label = 'Simmons SS 0.52mm',
+        weight = 70,
+        stack = true,
+        description = 'Heavy line. Requires Level 7',
+        client = {
+            image = 'simmons_mono_ss_2.png',
+        },
+        metadata = {
+            required_level = 7,
+        }
+    },
+    ['snake_power_line_clr_2'] = {
+        label = 'Snake Power Line 0.65mm',
+        weight = 70,
+        stack = true,
+        description = 'Extra heavy line. Requires Level 8',
+        client = {
+            image = 'snake_power_line_clr_2.png',
+        },
+        metadata = {
+            required_level = 8,
+        }
+    },
+    ['solid_hipower_nylon'] = {
+        label = 'HiPower Nylon 0.8mm',
+        weight = 70,
+        stack = true,
+        description = 'Ultra heavy line. Requires Level 9',
+        client = {
+            image = 'solid_hipower_nylon.png',
+        },
+        metadata = {
+            required_level = 9,
+        }
+    },
+    ['solid_hipower_nylon_lime'] = {
+        label = 'HiPower Nylon L 0.85mm',
+        weight = 70,
+        stack = true,
+        description = 'Ultra heavy line. Requires Level 9',
+        client = {
+            image = 'solid_hipower_nylon_lime.png',
+        },
+        metadata = {
+            required_level = 9,
+        }
+    },
+    ['solid_hipower_nylon_orange'] = {
+        label = 'HiPower Nylon O 0.9mm',
+        weight = 70,
+        stack = true,
+        description = 'Ultra heavy line. Requires Level 10',
+        client = {
+            image = 'solid_hipower_nylon_orange.png',
+        },
+        metadata = {
+            required_level = 10,
+        }
+    },
+    ['solid_hipower_nylon_2'] = {
+        label = 'HiPower Nylon 1.05mm',
+        weight = 70,
+        stack = true,
+        description = 'Maximum strength line. Requires Level 11',
+        client = {
+            image = 'solid_hipower_nylon_2.png',
+        },
+        metadata = {
+            required_level = 11,
+        }
+    },
+    ['solid_hipower_nylon_lime_2'] = {
+        label = 'HiPower Nylon L 1.15mm',
+        weight = 70,
+        stack = true,
+        description = 'Maximum strength line. Requires Level 12',
+        client = {
+            image = 'solid_hipower_nylon_lime_2.png',
+        },
+        metadata = {
+            required_level = 12,
+        }
+    },
+    ['solid_hipower_nylon_orange_2'] = {
+        label = 'HiPower Nylon O 1.25mm',
+        weight = 70,
+        stack = true,
+        description = 'Maximum strength line. Requires Level 13',
+        client = {
+            image = 'solid_hipower_nylon_orange_2.png',
+        },
+        metadata = {
+            required_level = 13,
+        }
+    },
+
+    -- Fishing Rods
+    ['ufe_telerod_370'] = {
+        label = 'UFE Telerod 370',
+        weight = 150,
+        stack = false,
+        description = 'Professional fishing rod',
+        client = {
+            image = 'ufe_telerod_370.png',
+        }
+    },
+    ['carptack_feeder_master_250'] = {
+        label = 'Carptack Feeder Master 250',
+        weight = 150,
+        stack = false,
+        description = 'Professional fishing rod',
+        client = {
+            image = 'carptack_feeder_master_250.png',
+        }
+    },
+    ['sakura_tsubarea_tsa_552_xul'] = {
+        label = 'Sakura Tsubarea TSA 552 XUL',
+        weight = 150,
+        stack = false,
+        description = 'Professional fishing rod',
+        client = {
+            image = 'sakura_tsubarea_tsa_552_xul.png',
+        }
+    },
+    ['carpex_hybid_carp_270'] = {
+        label = 'Carpex Hybid Carp 270',
+        weight = 150,
+        stack = false,
+        description = 'Professional fishing rod',
+        client = {
+            image = 'carpex_hybid_carp_270.png',
+        }
+    },
+    ['ufe_float_x5_300'] = {
+        label = 'UFE Float X5 300',
+        weight = 150,
+        stack = false,
+        description = 'Professional fishing rod',
+        client = {
+            image = 'ufe_float_x5_300.png',
+        }
+    },
+    ['predatek_fast_perch_210'] = {
+        label = 'Predatek Fast Perch 210',
+        weight = 150,
+        stack = false,
+        description = 'Professional fishing rod',
+        client = {
+            image = 'predatek_fast_perch_210.png',
+        }
+    },
+    ['sakura_ionizer_bass_insb_701_ml'] = {
+        label = 'Sakura Ionizer Bass INSB 701',
+        weight = 150,
+        stack = false,
+        description = 'Professional fishing rod',
+        client = {
+            image = 'sakura_ionizer_bass_insb_701_ml.png',
+        }
+    },
+    ['sakura_redbird_rds_602_l'] = {
+        label = 'Sakura Redbird RDS 602 L',
+        weight = 150,
+        stack = false,
+        description = 'Professional fishing rod',
+        client = {
+            image = 'sakura_redbird_rds_602_l.png',
+        }
+    },
+    ['carpex_cobalt_carp_360'] = {
+        label = 'Carpex Cobalt Carp 360',
+        weight = 150,
+        stack = false,
+        description = 'Professional fishing rod',
+        client = {
+            image = 'carpex_cobalt_carp_360.png',
+        }
+    },
+    ['sakura_salt_sniper_salss_611_mj1'] = {
+        label = 'Sakura Salt Sniper SALSS 611',
+        weight = 150,
+        stack = false,
+        description = 'Professional fishing rod',
+        client = {
+            image = 'sakura_salt_sniper_salss_611_mj1.png',
+        }
+    },
+    ['sakura_speciz_spes_light_602_zander'] = {
+        label = 'Sakura Speciz Spes Light 602',
+        weight = 150,
+        stack = false,
+        description = 'Professional fishing rod',
+        client = {
+            image = 'sakura_speciz_spes_light_602_zander.png',
+        }
+    },
+    ['sakura_redbird_rds_662'] = {
+        label = 'Sakura Redbird RDS 662',
+        weight = 150,
+        stack = false,
+        description = 'Professional fishing rod',
+        client = {
+            image = 'sakura_redbird_rds_662.png',
+        }
+    },
+    ['sakura_salt_sniper_salss_902_h'] = {
+        label = 'Sakura Salt Sniper SALSS 902',
+        weight = 150,
+        stack = false,
+        description = 'Professional fishing rod',
+        client = {
+            image = 'sakura_salt_sniper_salss_902_h.png',
+        }
+    },
+    ['predatek_seahunter_230'] = {
+        label = 'Predatek Seahunter 230',
+        weight = 150,
+        stack = false,
+        description = 'Professional fishing rod',
+        client = {
+            image = 'predatek_seahunter_230.png',
+        }
+    },
+    ['sakura_shukan_shuc_661_lj'] = {
+        label = 'Sakura Shukan Shuc 661 LJ',
+        weight = 150,
+        stack = false,
+        description = 'Professional fishing rod',
+        client = {
+            image = 'sakura_shukan_shuc_661_lj.png',
+        }
+    },
+    ['ufe_powercatch_270'] = {
+        label = 'UFE Powercatch 270',
+        weight = 150,
+        stack = false,
+        description = 'Professional fishing rod',
+        client = {
+            image = 'ufe_powercatch_270.png',
+        }
+    },
+    ['predatek_pilk_200'] = {
+        label = 'Predatek Pilk 200',
+        weight = 150,
+        stack = false,
+        description = 'Professional fishing rod',
+        client = {
+            image = 'predatek_pilk_200.png',
+        }
+    },
+    ['robinson_carbonic_nordic_pilk_300'] = {
+        label = 'Robinson Carbonic Nordic Pilk',
+        weight = 150,
+        stack = false,
+        description = 'Professional fishing rod',
+        client = {
+            image = 'robinson_carbonic_nordic_pilk_300.png',
+        }
+    },
+    ['carptack_bottom_cast_360'] = {
+        label = 'Carptack Bottom Cast 360',
+        weight = 150,
+        stack = false,
+        description = 'Professional fishing rod',
+        client = {
+            image = 'carptack_bottom_cast_360.png',
+        }
+    },
+    ['seax_salfighter_170'] = {
+        label = 'Seax Salfighter 170',
+        weight = 150,
+        stack = false,
+        description = 'Professional fishing rod',
+        client = {
+            image = 'seax_salfighter_170.png',
+        }
+    },
+
+    -- Fishing Reels
+    ['ufe_canta_1000'] = {
+        label = 'UFE Canta 1000',
+        weight = 100,
+        stack = false,
+        description = 'Fishing reel',
+        client = {
+            image = 'ufe_canta_1000.png',
+        }
+    },
+    ['ufe_barracuda_2000bt'] = {
+        label = 'UFE Barracuda 2000BT',
+        weight = 100,
+        stack = false,
+        description = 'Fishing reel',
+        client = {
+            image = 'ufe_barracuda_2000bt.png',
+        }
+    },
+    ['sakura_alpax_4508'] = {
+        label = 'Sakura Alpax 4508',
+        weight = 100,
+        stack = false,
+        description = 'Fishing reel',
+        client = {
+            image = 'sakura_alpax_4508.png',
+        }
+    },
+    ['sakura_alpax_8508'] = {
+        label = 'Sakura Alpax 8508',
+        weight = 100,
+        stack = false,
+        description = 'Fishing reel',
+        client = {
+            image = 'sakura_alpax_8508.png',
+        }
+    },
+    ['ufe_belona_4000'] = {
+        label = 'UFE Belona 4000',
+        weight = 100,
+        stack = false,
+        description = 'Fishing reel',
+        client = {
+            image = 'ufe_belona_4000.png',
+        }
+    },
+    ['ufe_bigspin_8000b'] = {
+        label = 'UFE Bigspin 8000B',
+        weight = 100,
+        stack = false,
+        description = 'Fishing reel',
+        client = {
+            image = 'ufe_bigspin_8000b.png',
+        }
+    },
+    ['ufe_batara_8000g'] = {
+        label = 'UFE Batara 8000G',
+        weight = 100,
+        stack = false,
+        description = 'Fishing reel',
+        client = {
+            image = 'ufe_batara_8000g.png',
+        }
+    },
+    ['ufe_batara_1000r'] = {
+        label = 'UFE Batara 1000R',
+        weight = 100,
+        stack = false,
+        description = 'Fishing reel',
+        client = {
+            image = 'ufe_batara_1000r.png',
+        }
+    },
+    ['robinson_big_runner_807qd'] = {
+        label = 'Robinson Big Runner 807QD',
+        weight = 100,
+        stack = false,
+        description = 'Fishing reel',
+        client = {
+            image = 'robinson_big_runner_807qd.png',
+        }
+    },
+    ['spooler_catchpro_4000fd'] = {
+        label = 'Spooler Catchpro 4000FD',
+        weight = 100,
+        stack = false,
+        description = 'Fishing reel',
+        client = {
+            image = 'spooler_catchpro_4000fd.png',
+        }
+    },
+    ['ufe_opensea_8000_x'] = {
+        label = 'UFE Opensea 8000-X',
+        weight = 100,
+        stack = false,
+        description = 'Fishing reel',
+        client = {
+            image = 'ufe_opensea_8000-x.png',
+        }
+    },
+    ['spooler_catchpro_8000fd'] = {
+        label = 'Spooler Catchpro 8000FD',
+        weight = 100,
+        stack = false,
+        description = 'Fishing reel',
+        client = {
+            image = 'spooler_catchpro_8000fd.png',
+        }
+    },
+    ['spooler_catchpro_14000fd'] = {
+        label = 'Spooler Catchpro 14000FD',
+        weight = 100,
+        stack = false,
+        description = 'Fishing reel',
+        client = {
+            image = 'spooler_catchpro_14000fd.png',
+        }
+    },
+
+    -- Fishing Hooks
+    ['ufa_bait_hook'] = {
+        label = 'UFA Bait',
+        weight = 40,
+        stack = true,
+        description = 'Fishing hook',
+        client = {
+            image = 'ufa_bait_hook.png',
+        }
+    },
+    ['ufa_sproat_hook'] = {
+        label = 'UFA Sproat',
+        weight = 40,
+        stack = true,
+        description = 'Fishing hook',
+        client = {
+            image = 'ufa_sproat_hook.png',
+        }
+    },
+    ['captack_claw_xl_hook'] = {
+        label = 'Captack Claw XL',
+        weight = 40,
+        stack = true,
+        description = 'Fishing hook',
+        client = {
+            image = 'captack_claw_xl_hook.png',
+        }
+    },
+    ['ufa_sproat_g_hook'] = {
+        label = 'UFA Sproat-G',
+        weight = 40,
+        stack = true,
+        description = 'Fishing hook',
+        client = {
+            image = 'ufa_sproat_g_hook.png',
+        }
+    },
+    ['carptack_carp_ss_hook'] = {
+        label = 'Carptack Carp S&S',
+        weight = 40,
+        stack = true,
+        description = 'Fishing hook',
+        client = {
+            image = 'carptack_carp_ss_hook.png',
+        }
+    },
+    ['ufa_wide_gap_bl_hook'] = {
+        label = 'UFA Wide Gap BL',
+        weight = 40,
+        stack = true,
+        description = 'Fishing hook',
+        client = {
+            image = 'ufa_wide_gap_bl_hook.png',
+        }
+    },
+    ['ufa_aberdeen_hook'] = {
+        label = 'UFA Aberdeen',
+        weight = 40,
+        stack = true,
+        description = 'Fishing hook',
+        client = {
+            image = 'ufa_aberdeen_hook.png',
+        }
+    },
+    ['ufa_octopus_bl_hook'] = {
+        label = 'UFA Octopus BL',
+        weight = 40,
+        stack = true,
+        description = 'Fishing hook',
+        client = {
+            image = 'ufa_octopus_bl_hook.png',
+        }
+    },
+    ['ufa_livebait_hook'] = {
+        label = 'UFA Livebait',
+        weight = 40,
+        stack = true,
+        description = 'Fishing hook',
+        client = {
+            image = 'ufa_livebait_hook.png',
+        }
+    },
+    ['carptack_micro_barb_hook'] = {
+        label = 'Carptack Micro Barb',
+        weight = 40,
+        stack = true,
+        description = 'Fishing hook',
+        client = {
+            image = 'carptack_micro_barb_hook.png',
+        }
+    },
+    ['carptack_carp_hook'] = {
+        label = 'Carptack Carp',
+        weight = 40,
+        stack = true,
+        description = 'Fishing hook',
+        client = {
+            image = 'carptack_carp_hook.png',
+        }
+    },
+    ['ufa_fusion_bl_hook'] = {
+        label = 'UFA Fusion BL',
+        weight = 40,
+        stack = true,
+        description = 'Fishing hook',
+        client = {
+            image = 'ufa_fusion_bl_hook.png',
+        }
+    },
+    ['predatek_octopus_hook'] = {
+        label = 'Predatek Octopus',
+        weight = 40,
+        stack = true,
+        description = 'Fishing hook',
+        client = {
+            image = 'predatek_octopus_hook.png',
+        }
+    },
+    ['predatek_fusion_hook'] = {
+        label = 'Predatek Fusion',
+        weight = 40,
+        stack = true,
+        description = 'Fishing hook',
+        client = {
+            image = 'predatek_fusion_hook.png',
+        }
+    },
+
+    -- Scuba Gear
+    ['scuba'] = {
+        label = 'Scuba gear',
+        weight = 300,
+        stack = false,
+        description = 'Scuba gear for underwater diving',
+        client = {
+            image = 'scuba.png',
+        }
+    },
+
+    -- River Fish
+    ['alligator_gar'] = {
+        label = 'Alligator Gar',
+        weight = 550,
+        stack = true,
+        description = 'An alligator gar fish. Found in rivers.',
+        client = {
+            image = 'alligator_gar.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['amur_pike'] = {
+        label = 'Amur Pike',
+        weight = 750,
+        stack = true,
+        description = 'An Amur Pike fish. Found in rivers.',
+        client = {
+            image = 'amur_pike.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['barbel'] = {
+        label = 'Barbel',
+        weight = 600,
+        stack = true,
+        description = 'A Barbel fish. Found in rivers.',
+        client = {
+            image = 'barbel.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['brook_trout'] = {
+        label = 'Brook Trout',
+        weight = 700,
+        stack = true,
+        description = 'A Brook Trout fish. Found in rivers.',
+        client = {
+            image = 'brook_trout.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['brown_trout'] = {
+        label = 'Brown Trout',
+        weight = 230,
+        stack = true,
+        description = 'A Brown Trout fish. Found in rivers.',
+        client = {
+            image = 'brown_trout.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['bull_trout'] = {
+        label = 'Bull Trout',
+        weight = 200,
+        stack = true,
+        description = 'A Bull Trout fish. Found in rivers.',
+        client = {
+            image = 'bull_trout.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['chub'] = {
+        label = 'Chub',
+        weight = 150,
+        stack = true,
+        description = 'A Chub fish. Found in rivers.',
+        client = {
+            image = 'chub.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['chum_salmon'] = {
+        label = 'Chum Salmon',
+        weight = 600,
+        stack = true,
+        description = 'A Chum Salmon fish. Found in rivers.',
+        client = {
+            image = 'chum_salmon.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['coho_salmon'] = {
+        label = 'Coho Salmon',
+        weight = 500,
+        stack = true,
+        description = 'A Coho Salmon fish. Found in rivers.',
+        client = {
+            image = 'coho_salmon.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['common_bleak'] = {
+        label = 'Common Bleak',
+        weight = 10,
+        stack = true,
+        description = 'A Common Bleak fish. Found in rivers.',
+        client = {
+            image = 'common_bleak.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['common_bream'] = {
+        label = 'Common Bream',
+        weight = 400,
+        stack = true,
+        description = 'A Common Bream fish. Found in rivers.',
+        client = {
+            image = 'common_bream.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['common_carp'] = {
+        label = 'Common Carp',
+        weight = 700,
+        stack = true,
+        description = 'A Common Carp fish. Found in rivers.',
+        client = {
+            image = 'common_carp.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['crucian_carp'] = {
+        label = 'Crucian Carp',
+        weight = 140,
+        stack = true,
+        description = 'A Crucian Carp fish. Found in rivers.',
+        client = {
+            image = 'crucian_carp.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['european_eel'] = {
+        label = 'European Eel',
+        weight = 300,
+        stack = true,
+        description = 'A European Eel fish. Found in rivers.',
+        client = {
+            image = 'european_eel.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['grayling'] = {
+        label = 'Grayling',
+        weight = 80,
+        stack = true,
+        description = 'A Grayling fish. Found in rivers.',
+        client = {
+            image = 'grayling.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['huchen'] = {
+        label = 'Huchen',
+        weight = 1500,
+        stack = true,
+        description = 'A Huchen fish. Found in rivers.',
+        client = {
+            image = 'huchen.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['ide'] = {
+        label = 'Ide',
+        weight = 100,
+        stack = true,
+        description = 'An Ide fish. Found in rivers.',
+        client = {
+            image = 'ide.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['lake_sturgeon'] = {
+        label = 'Lake Sturgeon',
+        weight = 1600,
+        stack = true,
+        description = 'A Lake Sturgeon fish. Found in rivers and lakes.',
+        client = {
+            image = 'lake_sturgeon.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['largemouth_bass'] = {
+        label = 'Largemouth Bass',
+        weight = 100,
+        stack = true,
+        description = 'A Largemouth Bass fish. Found in rivers and lakes.',
+        client = {
+            image = 'largemouth_bass.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['mirror_carp'] = {
+        label = 'Mirror Carp',
+        weight = 700,
+        stack = true,
+        description = 'A Mirror Carp fish. Found in rivers.',
+        client = {
+            image = 'mirror_carp.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['northern_pike'] = {
+        label = 'Northern Pike',
+        weight = 500,
+        stack = true,
+        description = 'A Northern Pike fish. Found in rivers and lakes.',
+        client = {
+            image = 'northern_pike.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['pink_salmon'] = {
+        label = 'Pink Salmon',
+        weight = 200,
+        stack = true,
+        description = 'A Pink Salmon fish. Found in rivers.',
+        client = {
+            image = 'pink_salmon.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['prussian_carp'] = {
+        label = 'Prussian Carp',
+        weight = 90,
+        stack = true,
+        description = 'A Prussian Carp fish. Found in rivers.',
+        client = {
+            image = 'prussian_carp.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['rainbow_trout'] = {
+        label = 'Rainbow Trout',
+        weight = 100,
+        stack = true,
+        description = 'A Rainbow Trout fish. Found in rivers and lakes.',
+        client = {
+            image = 'rainbow_trout.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['roach'] = {
+        label = 'Roach',
+        weight = 50,
+        stack = true,
+        description = 'A Roach fish. Found in rivers.',
+        client = {
+            image = 'roach.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['silver_carp'] = {
+        label = 'Silver Carp',
+        weight = 1000,
+        stack = true,
+        description = 'A Silver Carp fish. Found in rivers.',
+        client = {
+            image = 'silver_carp.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['smallmouth_bass'] = {
+        label = 'Smallmouth Bass',
+        weight = 150,
+        stack = true,
+        description = 'A Smallmouth Bass fish. Found in rivers and lakes.',
+        client = {
+            image = 'smallmouth_bass.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['tench'] = {
+        label = 'Tench',
+        weight = 250,
+        stack = true,
+        description = 'A Tench fish. Found in rivers.',
+        client = {
+            image = 'tench.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['white_sturgeon'] = {
+        label = 'White Sturgeon',
+        weight = 800,
+        stack = true,
+        description = 'A White Sturgeon fish. Found in rivers.',
+        client = {
+            image = 'white_sturgeon.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['yellow_perch'] = {
+        label = 'Yellow Perch',
+        weight = 40,
+        stack = true,
+        description = 'A Yellow Perch fish. Found in rivers and lakes.',
+        client = {
+            image = 'yellow_perch.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['zander'] = {
+        label = 'Zander',
+        weight = 200,
+        stack = true,
+        description = 'A Zander fish. Found in rivers.',
+        client = {
+            image = 'zander.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['black_grayling'] = {
+        label = 'Black Grayling',
+        weight = 120,
+        stack = true,
+        description = 'A Black Grayling fish. Found in rivers.',
+        client = {
+            image = 'black_grayling.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['grass_carp'] = {
+        label = 'Grass Carp',
+        weight = 120,
+        stack = true,
+        description = 'A Grass Carp fish. Found in rivers.',
+        client = {
+            image = 'grass_carp.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['grass_pickerel'] = {
+        label = 'Grass Pickerel',
+        weight = 90,
+        stack = true,
+        description = 'A Grass Pickerel fish. Found in rivers.',
+        client = {
+            image = 'grass_pickerel.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['redfin_pickerel'] = {
+        label = 'Redfin Pickerel',
+        weight = 40,
+        stack = true,
+        description = 'A Redfin Pickerel fish. Found in rivers.',
+        client = {
+            image = 'redfin_pickerel.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['wels_catfish'] = {
+        label = 'Wels Catfish',
+        weight = 400,
+        stack = true,
+        description = 'A Wels Catfish fish. Found in rivers.',
+        client = {
+            image = 'wels_catfish.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['beluga_sturgeon'] = {
+        label = 'Beluga Sturgeon',
+        weight = 264,
+        stack = true,
+        description = 'A Beluga Sturgeon fish. Found in rivers.',
+        client = {
+            image = 'beluga_sturgeon.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['giant_freshwater_stingray'] = {
+        label = 'Giant Freshwater Stingray',
+        weight = 350,
+        stack = true,
+        description = 'A Giant Freshwater Stingray. Found in rivers.',
+        client = {
+            image = 'giant_freshwater_stingray.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['pink_river_dolphin'] = {
+        label = 'Pink River Dolphin',
+        weight = 1550,
+        stack = true,
+        description = 'A Pink River Dolphin. Found in rivers.',
+        client = {
+            image = 'pink_river_dolphin.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['pufferfish'] = {
+        label = 'Pufferfish',
+        weight = 150,
+        stack = true,
+        description = 'A Pufferfish. Found in rivers and lakes.',
+        client = {
+            image = 'pufferfish.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['pumpkinseed'] = {
+        label = 'Pumpkinseed',
+        weight = 40,
+        stack = true,
+        description = 'A Pumpkinseed fish. Found in rivers and lakes.',
+        client = {
+            image = 'pumpkinseed.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['bluegill'] = {
+        label = 'Bluegill',
+        weight = 120,
+        stack = true,
+        description = 'A Bluegill fish. Found in rivers and lakes.',
+        client = {
+            image = 'bluegill.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['golden_trout'] = {
+        label = 'Golden Trout',
+        weight = 40,
+        stack = true,
+        description = 'A Golden Trout fish. Found in rivers.',
+        client = {
+            image = 'golden_trout.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['sockeye_salmon'] = {
+        label = 'Sockeye Salmon',
+        weight = 300,
+        stack = true,
+        description = 'A Sockeye Salmon fish. Found in rivers.',
+        client = {
+            image = 'sockeye_salmon.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+    ['skeleton'] = {
+        label = 'Skeleton',
+        weight = 10,
+        stack = true,
+        description = 'A Skeleton. Rare find in rivers.',
+        client = {
+            image = 'skeleton.png',
+        },
+        metadata = {
+            fishing_area = 'river',
+        }
+    },
+
+    -- Sea Fish
+    ['atlantic_cod'] = {
+        label = 'Atlantic Cod',
+        weight = 200,
+        stack = true,
+        description = 'An Atlantic Cod fish. Found in sea.',
+        client = {
+            image = 'atlantic_cod.png',
+        },
+        metadata = {
+            fishing_area = 'sea',
+        }
+    },
+    ['atlantic_salmon'] = {
+        label = 'Atlantic Salmon',
+        weight = 300,
+        stack = true,
+        description = 'An Atlantic Salmon fish. Found in sea.',
+        client = {
+            image = 'atlantic_salmon.png',
+        },
+        metadata = {
+            fishing_area = 'sea',
+        }
+    },
+    ['blacktip_reef_shark'] = {
+        label = 'Blacktip Reef Shark',
+        weight = 800,
+        stack = true,
+        description = 'A Blacktip Reef Shark. Found in sea.',
+        client = {
+            image = 'blacktip_reef_shark.png',
+        },
+        metadata = {
+            fishing_area = 'sea',
+        }
+    },
+    ['blue_marlin'] = {
+        label = 'Blue Marlin',
+        weight = 2000,
+        stack = true,
+        description = 'A Blue Marlin fish. Found in sea.',
+        client = {
+            image = 'blue_marlin.png',
+        },
+        metadata = {
+            fishing_area = 'sea',
+        }
+    },
+    ['bluefin_tuna'] = {
+        label = 'Bluefin Tuna',
+        weight = 1500,
+        stack = true,
+        description = 'A Bluefin Tuna fish. Found in sea.',
+        client = {
+            image = 'bluefin_tuna.png',
+        },
+        metadata = {
+            fishing_area = 'sea',
+        }
+    },
+    ['european_bass'] = {
+        label = 'European Bass',
+        weight = 200,
+        stack = true,
+        description = 'A European Bass fish. Found in sea.',
+        client = {
+            image = 'european_bass.png',
+        },
+        metadata = {
+            fishing_area = 'sea',
+        }
+    },
+    ['european_flounder'] = {
+        label = 'European Flounder',
+        weight = 100,
+        stack = true,
+        description = 'A European Flounder fish. Found in sea.',
+        client = {
+            image = 'european_flounder.png',
+        },
+        metadata = {
+            fishing_area = 'sea',
+        }
+    },
+    ['european_perch'] = {
+        label = 'European Perch',
+        weight = 50,
+        stack = true,
+        description = 'A European Perch fish. Found in sea.',
+        client = {
+            image = 'european_perch.png',
+        },
+        metadata = {
+            fishing_area = 'sea',
+        }
+    },
+    ['european_sea_sturgeon'] = {
+        label = 'European Sea Sturgeon',
+        weight = 1800,
+        stack = true,
+        description = 'A European Sea Sturgeon fish. Found in sea.',
+        client = {
+            image = 'european_sea_sturgeon.png',
+        },
+        metadata = {
+            fishing_area = 'sea',
+        }
+    },
+    ['garfish'] = {
+        label = 'Garfish',
+        weight = 80,
+        stack = true,
+        description = 'A Garfish. Found in sea.',
+        client = {
+            image = 'garfish.png',
+        },
+        metadata = {
+            fishing_area = 'sea',
+        }
+    },
+    ['giant_grouper'] = {
+        label = 'Giant Grouper',
+        weight = 1200,
+        stack = true,
+        description = 'A Giant Grouper fish. Found in sea.',
+        client = {
+            image = 'giant_grouper.png',
+        },
+        metadata = {
+            fishing_area = 'sea',
+        }
+    },
+    ['giant_trevally'] = {
+        label = 'Giant Trevally',
+        weight = 600,
+        stack = true,
+        description = 'A Giant Trevally fish. Found in sea.',
+        client = {
+            image = 'giant_trevally.png',
+        },
+        metadata = {
+            fishing_area = 'sea',
+        }
+    },
+    ['great_barracuda'] = {
+        label = 'Great Barracuda',
+        weight = 500,
+        stack = true,
+        description = 'A Great Barracuda fish. Found in sea.',
+        client = {
+            image = 'great_barracuda.png',
+        },
+        metadata = {
+            fishing_area = 'sea',
+        }
+    },
+    ['grey_snapper'] = {
+        label = 'Grey Snapper',
+        weight = 150,
+        stack = true,
+        description = 'A Grey Snapper fish. Found in sea.',
+        client = {
+            image = 'grey_snapper.png',
+        },
+        metadata = {
+            fishing_area = 'sea',
+        }
+    },
+    ['indian_threadfish'] = {
+        label = 'Indian Threadfish',
+        weight = 400,
+        stack = true,
+        description = 'An Indian Threadfish. Found in sea.',
+        client = {
+            image = 'indian_threadfish.png',
+        },
+        metadata = {
+            fishing_area = 'sea',
+        }
+    },
+    ['mahi_mahi'] = {
+        label = 'Mahi Mahi',
+        weight = 300,
+        stack = true,
+        description = 'A Mahi Mahi fish. Found in sea.',
+        client = {
+            image = 'mahi_mahi.png',
+        },
+        metadata = {
+            fishing_area = 'sea',
+        }
+    },
+    ['malabar_grouper'] = {
+        label = 'Malabar Grouper',
+        weight = 1000,
+        stack = true,
+        description = 'A Malabar Grouper fish. Found in sea.',
+        client = {
+            image = 'malabar_grouper.png',
+        },
+        metadata = {
+            fishing_area = 'sea',
+        }
+    },
+    ['red_lionfish'] = {
+        label = 'Red Lionfish',
+        weight = 200,
+        stack = true,
+        description = 'A Red Lionfish. Found in sea.',
+        client = {
+            image = 'red_lionfish.png',
+        },
+        metadata = {
+            fishing_area = 'sea',
+        }
+    },
+    ['sea_trout'] = {
+        label = 'Sea Trout',
+        weight = 250,
+        stack = true,
+        description = 'A Sea Trout fish. Found in sea.',
+        client = {
+            image = 'sea_trout.png',
+        },
+        metadata = {
+            fishing_area = 'sea',
+        }
+    },
+    ['yellowfin_tuna'] = {
+        label = 'Yellowfin Tuna',
+        weight = 1300,
+        stack = true,
+        description = 'A Yellowfin Tuna fish. Found in sea.',
+        client = {
+            image = 'yellowfin_tuna.png',
+        },
+        metadata = {
+            fishing_area = 'sea',
+        }
+    },
+    ['yellowtail_barracuda'] = {
+        label = 'Yellowtail Barracuda',
+        weight = 400,
+        stack = true,
+        description = 'A Yellowtail Barracuda fish. Found in sea.',
+        client = {
+            image = 'yellowtail_barracuda.png',
+        },
+        metadata = {
+            fishing_area = 'sea',
+        }
+    },
+
+    -- Illegal Fish (all areas, higher risk)
+    ['paddlefish'] = {
+        label = 'Paddlefish',
+        weight = 500,
+        stack = true,
+        description = 'An illegal Paddlefish. High risk catch.',
+        client = {
+            image = 'paddlefish.png',
+        },
+        metadata = {
+            fishing_area = 'all',
+            illegal = true,
+        }
+    },
+    ['sawfish'] = {
+        label = 'Sawfish',
+        weight = 600,
+        stack = true,
+        description = 'An illegal Sawfish. High risk catch.',
+        client = {
+            image = 'sawfish.png',
+        },
+        metadata = {
+            fishing_area = 'all',
+            illegal = true,
+        }
+    },
+    ['eel'] = {
+        label = 'Eel',
+        weight = 200,
+        stack = true,
+        description = 'An illegal Eel. High risk catch.',
+        client = {
+            image = 'eel.png',
+        },
+        metadata = {
+            fishing_area = 'all',
+            illegal = true,
+        }
+    },
+    ['hammerheadshark'] = {
+        label = 'Hammerhead Shark',
+        weight = 1000,
+        stack = true,
+        description = 'An illegal Hammerhead Shark. High risk catch.',
+        client = {
+            image = 'hammerheadshark.png',
+        },
+        metadata = {
+            fishing_area = 'all',
+            illegal = true,
+        }
+    },
+    ['seaturtle'] = {
+        label = 'Sea Turtle',
+        weight = 800,
+        stack = true,
+        description = 'An illegal Sea Turtle. High risk catch.',
+        client = {
+            image = 'seaturtle.png',
+        },
+        metadata = {
+            fishing_area = 'all',
+            illegal = true,
+        }
+    },
+    ['leopardshark'] = {
+        label = 'Leopard Shark',
+        weight = 700,
+        stack = true,
+        description = 'An illegal Leopard Shark. High risk catch.',
+        client = {
+            image = 'leopardshark.png',
+        },
+        metadata = {
+            fishing_area = 'all',
+            illegal = true,
+        }
+    },
+    ['blueshark'] = {
+        label = 'Blue Shark',
+        weight = 900,
+        stack = true,
+        description = 'An illegal Blue Shark. High risk catch.',
+        client = {
+            image = 'blueshark.png',
+        },
+        metadata = {
+            fishing_area = 'all',
+            illegal = true,
+        }
+    },
+    ['greatwhiteshark'] = {
+        label = 'Great White Shark',
+        weight = 2000,
+        stack = true,
+        description = 'An illegal Great White Shark. High risk catch.',
+        client = {
+            image = 'greatwhiteshark.png',
+        },
+        metadata = {
+            fishing_area = 'all',
+            illegal = true,
+        }
+    },
+
+    -- Diving Items
+    ['diving_mask'] = {
+        label = 'Diving Mask',
+        weight = 50,
+        stack = false,
+        description = 'A diving mask for underwater exploration',
+        client = {
+            image = 'diving_mask.png',
+        }
+    },
+    ['diving_fins'] = {
+        label = 'Diving Fins',
+        weight = 100,
+        stack = false,
+        description = 'Diving fins for underwater swimming',
+        client = {
+            image = 'diving_fins.png',
+        }
+    },
+    ['diving_tank'] = {
+        label = 'Diving Tank',
+        weight = 200,
+        stack = false,
+        description = 'Oxygen tank for extended diving',
+        client = {
+            image = 'diving_tank.png',
+        }
+    },
+    ['underwater_camera'] = {
+        label = 'Underwater Camera',
+        weight = 150,
+        stack = false,
+        description = 'Camera for underwater photography',
+        client = {
+            image = 'underwater_camera.png',
+        }
+    },
+    ['treasure_chest'] = {
+        label = 'Treasure Chest',
+        weight = 500,
+        stack = false,
+        description = 'A treasure chest found underwater',
+        client = {
+            image = 'treasure_chest.png',
+        }
+    },
+    ['pearl'] = {
+        label = 'Pearl',
+        weight = 10,
+        stack = true,
+        description = 'A valuable pearl found underwater',
+        client = {
+            image = 'pearl.png',
+        }
+    },
+    ['coral'] = {
+        label = 'Coral',
+        weight = 50,
+        stack = true,
+        description = 'Coral found underwater',
+        client = {
+            image = 'coral.png',
+        }
+    },
+}
