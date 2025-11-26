@@ -25,6 +25,7 @@ client_script 'dist/client/**/*.js'
 client_script 'client/fishmarket.lua'
 client_script 'client/fishingspots.lua'
 client_script 'client/levels-ui.lua'
+client_script 'client/shop-peds.lua'
 
 ui_page 'nui/fishing.html'
 
