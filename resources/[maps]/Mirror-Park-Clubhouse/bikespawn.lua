@@ -11,7 +11,7 @@ Citizen.CreateThread(function()
     -- Coordinates, heading, model, and color configurations for the bikes
     local bikes = {
         {
-            x = 1000.56561, y = -126.296188, z = 73.61, heading = 60.0, model = "nightblade",
+            x = 1000.56561, y = -126.296188, z = 73.61, heading = 60.0, model = "lostglide",
             primaryColor = 150, secondaryColor = 131, -- Example colors: Black and Red
             wheelColor = 131 -- Example wheel color: Silver
         },
