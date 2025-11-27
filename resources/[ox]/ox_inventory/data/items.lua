@@ -3641,6 +3641,7 @@ return {
         description = 'A dirty piece of cardboard with something written on it.',
         consume = 0,
         client = {
+            image = 'blackmarket-password.png',
             event = 'cardboard:read'
         },
     },
@@ -3653,6 +3654,7 @@ return {
         description = 'A dirty piece of cardboard with something written on it.',
         consume = 0,
         client = {
+            image = 'blackmarket-location.png',
             event = 'cardboard:read'
         },
     },
