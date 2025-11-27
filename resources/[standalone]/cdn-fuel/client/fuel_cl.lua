@@ -214,11 +214,19 @@ else
 	RegisterNetEvent('cdn-fuel:client:updatestationlabels', function(location, newLabel)
 		if not location then if Config.FuelDebug then print('location is nil') end return end
 		if not newLabel then if Config.FuelDebug then print('newLabel is nil') end return end
+		if not Config.GasStations[location] then
+			if Config.FuelDebug then print('Location #'..location..' does not exist in Config.GasStations') end
+			return
+		end
 		if Config.FuelDebug then print("Changing Label for Location #"..location..' to '..newLabel) end
 		Config.GasStations[location].label = newLabel
-		local coords = vector3(Config.GasStations[location].pedcoords.x, Config.GasStations[location].pedcoords.y, Config.GasStations[location].pedcoords.z)
-		RemoveBlip(GasStationBlips[location])
-		GasStationBlips[location] = CreateBlip(coords, Config.GasStations[location].label)
+		if Config.GasStations[location].pedcoords then
+			local coords = vector3(Config.GasStations[location].pedcoords.x, Config.GasStations[location].pedcoords.y, Config.GasStations[location].pedcoords.z)
+			if GasStationBlips[location] then
+				RemoveBlip(GasStationBlips[location])
+			end
+			GasStationBlips[location] = CreateBlip(coords, Config.GasStations[location].label)
+		end
 	end)
 
 	CreateThread(function()
