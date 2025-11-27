@@ -5797,4 +5797,14 @@ return {
             image = 'coral.png',
         }
     },
+    -- LB Tablet Item
+['tablet'] = {
+    label = 'Tablet',
+    weight = 500,
+    stack = false,
+    close = false,
+    client = {
+        image = 'tablet.png',
+    }
+},
 }
