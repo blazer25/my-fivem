@@ -45,6 +45,8 @@ Config.NamesOverSelfHead                    = true                  -- Whether o
 
 Config.FuelScript                           = 'cdn-fuel'
 
+Config.LeaderboardCacheTimer                = 300000  -- How often to cache leaderboard data in milliseconds (300000 = 5 minutes)
+
 Config.Permissions = {
     ["god"] = {
         AllowedActions = {

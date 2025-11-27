@@ -39,8 +39,10 @@ if (IsDuplicityVersion()) then
 
         -- LEADERBOARD CACHE
         CreateThread(function()
+            -- Wait initially before starting
+            Wait(Config.LeaderboardCacheTimer or 300000)
+            
             while true do
-                Wait(2000)
                 print('[919ADMIN] Caching Leaderboard Data...')
                 local money = {}
                 MySQL.query('SELECT * FROM `players`', {}, function(results)
@@ -55,7 +57,8 @@ if (IsDuplicityVersion()) then
                     Cache.MoneyLeaderboard = money
                     print('[919ADMIN] Leaderboard data caching complete.')
                 end)
-                Wait(Config.LeaderboardCacheTimer)
+                -- Wait for the configured interval before running again
+                Wait(Config.LeaderboardCacheTimer or 300000)
             end
         end)
     end)
