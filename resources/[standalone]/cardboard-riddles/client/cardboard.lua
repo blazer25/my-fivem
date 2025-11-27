@@ -16,10 +16,10 @@ AddEventHandler('cardboard:read', function(data, itemData)
     
     -- Determine which image based on item name
     if itemName == 'cardboard-location' then
-        showCardboardImage('backmarket-location.png')
+        showCardboardImage('blackmarket-location.png')
     else
         -- Default to password for 'cardboard' item
-        showCardboardImage('backmarket-password.png')
+        showCardboardImage('blackmarket-password.png')
     end
 end)
 

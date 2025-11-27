@@ -16,7 +16,7 @@ ui_page 'html/index.html'
 
 files {
     'html/index.html',
-    'html/images/backmarket-password.png',
-    'html/images/backmarket-location.png'
+    'html/blackmarket-password.png',
+    'html/blackmarket-location.png'
 }
 
