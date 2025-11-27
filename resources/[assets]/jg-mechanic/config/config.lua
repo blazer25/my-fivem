@@ -28,7 +28,7 @@ Config.UseSocietyFund = true -- set to false to use player balance
 Config.PlayerBalance = "bank" -- or "bank" or "cash"
 
 -- Skill Bars
-Config.UseSkillbars = true -- set to false to use progress bars instead of skill bars for installations
+Config.UseSkillbars = false -- set to false to use progress bars instead of skill bars for installations
 Config.ProgressBarDuration = 10000 -- if not using skill bars, this is the progress bar duration in ms (10000 = 10 seconds)
 Config.MaximumSkillCheckAttempts = 3 -- How many times the player can attempt a skill check before the skill check fails
 Config.SkillCheckDifficulty = { "easy", "easy", "easy", "easy", "easy" } -- for ox only
