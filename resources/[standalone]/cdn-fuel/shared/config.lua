@@ -1,7 +1,7 @@
 Config = {}
 Config.FuelDebug = false -- Used for debugging, although there are not many areas in yet (Default: false) + Enables Setfuel Commands (0, 50, 100). 
 Config.PolyDebug = false -- Enables Polyzone Debugging to see PolyZones!
-Config.ShowNearestGasStationOnly = true -- When enabled, only the nearest gas stations will be shown on the map.
+Config.ShowNearestGasStationOnly = false -- When enabled, only the nearest gas stations will be shown on the map. Changed to false to show all stations on big map.
 Config.MaxBlipDistance = 800.0 -- Maximum distance (in units) to show gas station blip on minimap. Only applies when ShowNearestGasStationOnly is true.
 Config.LeaveEngineRunning = false -- When true, the vehicle's engine will be left running upon exit if the player *HOLDS* F.
 Config.VehicleBlowUp = true -- When true, there will be a configurable chance of the vehicle blowing up, if you fuel while the engine is on.
@@ -785,28 +785,6 @@ Config.AirAndWaterVehicleFueling = {
 }
 
 Config.GasStations = { -- Configuration options for various gas station related things, including peds, coords and labels.
-    [1] = {
-        zones = {
-            vector2(176.89, -1538.26),
-            vector2(151.52, -1560.98),
-            vector2(168.56, -1577.65),
-            vector2(196.97, -1563.64)
-        },
-        minz = 28.2,
-        maxz = 30.3,
-        pedmodel = "a_m_m_indian_01",
-        cost = 100000,
-        shutoff = false,
-        pedcoords = {
-            x = 167.06, 
-            y = -1553.56,
-            z = 28.26,
-            h = 220.44,
-        },
-        electriccharger = nil,
-        electricchargercoords = vector4(175.9, -1546.65, 28.26, 224.29),
-        label = "Davis Avenue Ron",
-    },
     [2] = {
         zones = {
             vector2(-53.03, -1737.50),
@@ -899,52 +877,6 @@ Config.GasStations = { -- Configuration options for various gas station related 
         label = "Strawberry Ave Xero",
 
     },
-    [6] = {
-        zones = {
-            vector2(798.48, -1017.05),
-            vector2(801.89, -1061.74),
-            vector2(847.73, -1063.26),
-            vector2(845.08, -1015.91)
-        },
-        minz = 25.1,
-        maxz = 28.1,
-        pedmodel = "a_m_m_indian_01",
-        cost = 100000,
-        shutoff = false,
-        pedcoords = {
-            x = 816.42, 
-            y = -1040.51,
-            z = 25.75,
-            h = 2.07,
-        },
-        electriccharger = nil,
-        electricchargercoords = vector4(834.27, -1028.7, 26.16, 88.39),
-        label = "Popular Street Ron",
-    },
-    [7] = {
-        zones = {
-            vector2(1212.12, -1381.44),
-            vector2(1221.21, -1395.08),
-            vector2(1219.70, -1403.41),
-            vector2(1207.58, -1417.05),
-            vector2(1194.70, -1418.94),
-            vector2(1192.80, -1389.02)
-        },
-        minz = 34.1,
-        maxz = 36.3,
-        pedmodel = "a_m_m_indian_01",
-        cost = 100000,
-        shutoff = false,
-        pedcoords = {
-            x = 1211.13, 
-            y = -1389.18,
-            z = 34.38,
-            h = 177.39,
-        },
-        electriccharger = nil,
-        electricchargercoords = vector4(1194.41, -1394.44, 34.37, 270.3),
-        label = "Capital Blvd Ron",
-    },
     [8] = {
         zones = {
             vector2(1188.28, -306.38),
@@ -992,28 +924,6 @@ Config.GasStations = { -- Configuration options for various gas station related 
         electricchargercoords = vector4(633.64, 247.22, 102.3, 60.29),
         label = "Clinton Ave Globe Oil",
     },
-    [10] = {
-        zones = {
-            vector2(-1460.98, -276.89),
-            vector2(-1419.32, -237.12),
-            vector2(-1390.91, -270.45),
-            vector2(-1435.23, -305.68)
-        },
-        minz = 45.0,
-        maxz = 47.3,
-        pedmodel = "a_m_m_indian_01",
-        cost = 100000,
-        shutoff = false,
-        pedcoords = {
-            x = -1428.4, 
-            y = -268.69,
-            z = 45.21,
-            h = 132.94,
-        },
-        electriccharger = nil,
-        electricchargercoords = vector4(-1420.51, -278.76, 45.26, 137.35),
-        label = "North Rockford Ron",
-    },
     [11] = {
         zones = {
             vector2(-2135.61, -327.27),
@@ -1060,30 +970,6 @@ Config.GasStations = { -- Configuration options for various gas station related 
         electriccharger = nil,
         electricchargercoords =vector4(-98.12, 6403.39, 30.64, 141.49),
         label = "Paleto Blvd Xero",
-    },
-    [13] = {
-        zones = {
-            vector2(167.08, 6631.73),
-            vector2(176.47, 6640.66),
-            vector2(199.71, 6632.08),
-            vector2(202.3, 6597.25),
-            vector2(162.95, 6590.22),
-            vector2(158.64, 6610.64),
-        },
-        minz = 30.7,
-        maxz = 33.4,
-        pedmodel = "a_m_m_indian_01",
-        cost = 100000,
-        shutoff = false,
-        pedcoords = {
-            x = 170.44, 
-            y = 6633.74,
-            z = 30.59,
-            h = 221.95,
-        },
-        electriccharger = nil,
-        electricchargercoords = vector4(181.14, 6636.17, 30.61, 179.96),
-        label = "Paleto Ron",
     },
     [14] = {
         zones = {
@@ -1295,29 +1181,6 @@ Config.GasStations = { -- Configuration options for various gas station related 
         electricchargercoords = vector4(50.21, 2787.38, 56.88, 147.2),
         label = "Route 68 Xero",
     },
-    [23] = {
-        zones = {
-            vector2(-2562.12, 2340.53),
-            vector2(-2560.98, 2299.62),
-            vector2(-2514.39, 2300.76),
-            vector2(-2516.29, 2314.02),
-            vector2(-2523.86, 2344.70)
-        },
-        minz = 32.05,
-        maxz = 34.08,
-        pedmodel = "a_m_m_indian_01",
-        cost = 100000,
-        shutoff = false,
-        pedcoords = {
-            x = -2544.04,
-            y = 2316.15,
-            z = 32.22,
-            h = 2.5,
-        },
-        electriccharger = nil,
-        electricchargercoords = vector4(-2570.04, 2317.1, 32.22, 21.29),
-        label = "Route 68 Ron",
-    },
     [24] = {
         zones = {
             vector2(2545.08, 2601.14),
@@ -1341,29 +1204,6 @@ Config.GasStations = { -- Configuration options for various gas station related 
         electriccharger = nil,
         electricchargercoords = vector4(2545.81, 2586.18, 36.94, 83.74),
         label = "Rex's Diner Globe Oil",
-    },
-    [25] = {
-        zones = {
-            vector2(2540.15, 373.86),
-            vector2(2538.26, 345.83),
-            vector2(2592.80, 343.56),
-            vector2(2594.70, 369.70),
-            vector2(2557.58, 384.85)
-        },
-        minz = 107.4,
-        maxz = 109.4,
-        pedmodel = "a_m_m_indian_01",
-        cost = 100000,
-        shutoff = false,
-        pedcoords = {
-            x = 2559.36,
-            y = 373.68,
-            z = 107.62,
-            h = 272.2,
-        },
-        electriccharger = nil,
-        electricchargercoords = vector4(2561.24, 357.3, 107.62, 266.65),
-        label = "Palmino Freeway Ron",
     },
     [26] = {
         zones = {

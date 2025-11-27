@@ -75,7 +75,7 @@ function CreateBlip(coords, label)
 	end
 	SetBlipScale(blip, 0.6)
 	SetBlipDisplay(blip, 4)
-	SetBlipAsShortRange(blip, false)
+	SetBlipAsShortRange(blip, true) -- Shows on big map always, but only on minimap when nearby
 	BeginTextCommandSetBlipName("STRING")
 	AddTextComponentString(label)
 	EndTextCommandSetBlipName(blip)
