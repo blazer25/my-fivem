@@ -697,6 +697,22 @@ return {
         client = { image = "sapphire.png", }
     },
 
+    -- Brutal Gangs Items
+    spraycan = {
+        label = "Spray Can",
+        weight = 1,
+        stack = true,
+        close = false,
+        client = { image = "spraycan.png", }
+    },
+    sprayremover = {
+        label = "Spray Remover",
+        weight = 1,
+        stack = true,
+        close = false,
+        client = { image = "sprayremover.png", }
+    },
+
     gold_ring = { label = "Gold Ring", weight = 200, stack = true, close = false, description = "A diamond ring seems like the jackpot to me!",
         client = { image = "gold_ring.png", }
     },

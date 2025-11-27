@@ -360,7 +360,11 @@ lib.addCommand('setgang', {
         return
     end
 
+    local newGang = {name = args[locale('command.setgang.params.gang.name')]}
+    local lastGang = json.encode(player.PlayerData.gang)
+
     local success, errorResult = player.Functions.SetGang(args[locale('command.setgang.params.gang.name')], args[locale('command.setgang.params.grade.name')] or 0)
+    TriggerEvent('brutal_gangs:server:qbcore-gang-update', player.PlayerData.source, newGang, json.decode(lastGang))
     assert(success, json.encode(errorResult))
 end)
 
