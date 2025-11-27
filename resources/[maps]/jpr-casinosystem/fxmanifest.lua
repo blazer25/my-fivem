@@ -1,6 +1,8 @@
 fx_version 'cerulean'
 game 'gta5'
 
+shared_script '@ox_lib/init.lua'
+
 shared_scripts {
     'configs/general/main_config.lua',
     'configs/general/*.lua',
@@ -46,4 +48,11 @@ escrow_ignore {
 
 lua54 'yes'
 --use_experimental_fxv2_oal 'yes'
+
+dependencies {
+    'ox_lib',
+    'oxmysql',
+    'qbx_core',
+}
+
 dependency '/assetpacks'

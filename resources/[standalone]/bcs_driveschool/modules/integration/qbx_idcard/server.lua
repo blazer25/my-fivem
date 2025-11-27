@@ -31,18 +31,56 @@ for i = 1, #Shared.config.theoryLicenses, 1 do
     end
 end
 
+-- Helper function to check if license type is a theory license
+local function IsTheory(type)
+    if not type then return false end
+    for i = 1, #Shared.config.theoryLicenses do
+        if Shared.config.theoryLicenses[i] == type then
+            return true
+        end
+    end
+    return false
+end
+
 RegisterNetEvent('qbx_idcard:integration:server:GiveLicense', function(type)
     local source = source
     local player = qbx:GetPlayer(source)
-    if player then
-        if not Shared.config.examProveAsLicense and IsTheory(type) then
-            return Server.GiveTheory(source, type)
-        end
+    if not player then
+        DebugWarn("Failed to give license " .. type .. " - player not found")
+        return
+    end
 
-        local licenses = qbx:GetMetadata(source, 'licences') or {}
-        licenses[type] = true
-        qbx:SetMetadata(source, 'licences', licenses)
+    if not Shared.config.examProveAsLicense and IsTheory(type) then
+        return Server.GiveTheory(source, type)
+    end
+
+    -- Check if player already has the license
+    local licenses = qbx:GetMetadata(source, 'licences') or {}
+    if licenses[type] then
+        DebugPrint("Player already has license: " .. type)
+        -- Still give the item if they don't have it in inventory
+        local hasItem = ox_inventory:Search(source, 1, type)
+        if not hasItem or #hasItem == 0 then
+            DebugPrint("Player has license metadata but no item, adding item: " .. type)
+            ox_inventory:AddItem(source, type, 1, exports.qbx_idcard:GetMetaLicense(source, { type }))
+        end
+        return
+    end
+
+    -- Give the license
+    DebugPrint("Giving license: " .. type .. " to player " .. source)
+    licenses[type] = true
+    qbx:SetMetadata(source, 'licences', licenses)
+    
+    local success, err = pcall(function()
         ox_inventory:AddItem(source, type, 1, exports.qbx_idcard:GetMetaLicense(source, { type }))
+    end)
+    
+    if not success then
+        DebugWarn("Failed to add license item " .. type .. " to inventory: " .. tostring(err))
+        -- Still keep the metadata even if item add failed
+    else
+        DebugPrint("Successfully gave license " .. type .. " to player " .. source)
     end
 end)
 

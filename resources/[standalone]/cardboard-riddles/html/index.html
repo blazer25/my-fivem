@@ -59,7 +59,7 @@
     <script>
         window.addEventListener('message', (event) => {
             if (event.data.action === 'showCardboard') {
-                document.getElementById('cardboardImg').src = `images/${event.data.image}`;
+                document.getElementById('cardboardImg').src = `nui://cardboard-riddles/html/${event.data.image}`;
                 document.body.classList.add('show');
             }
         });

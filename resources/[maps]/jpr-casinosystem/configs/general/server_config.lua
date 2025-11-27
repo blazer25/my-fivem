@@ -10,7 +10,18 @@ local function fetchCore(name)
     return nil
 end
 
-local QBCore = fetchCore(Config.CoreName) or fetchCore('qb-core')
+-- Retry mechanism to wait for core to be ready
+local QBCore = nil
+local attempts = 0
+local maxAttempts = 50 -- Wait up to 5 seconds (50 * 100ms)
+
+while not QBCore and attempts < maxAttempts do
+    QBCore = fetchCore(Config.CoreName) or fetchCore('qb-core')
+    if not QBCore then
+        Wait(100)
+        attempts = attempts + 1
+    end
+end
 
 if not QBCore or not QBCore.Functions then
     error('[JPR Casino] Unable to fetch core object in server_config. Ensure qbx_core or qb-core is running.')
