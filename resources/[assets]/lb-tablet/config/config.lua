@@ -67,7 +67,7 @@ Config.Genders = "auto"
 -- }
 
 Config.Item = {}
-Config.Item.Require = false -- require a tablet item to use the tablet
+Config.Item.Require = true-- require a tablet item to use the tablet
 Config.Item.Name = "tablet" -- name of the tablet item
 Config.Item.Inventory = "auto"
 Config.RequireItemDutyBlips = true -- require a tablet item to be shown on duty blips?
