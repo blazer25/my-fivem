@@ -413,7 +413,7 @@ Config.MechanicLocations = {
       },
     }
   },
-  dankstoedit = {
+  underground = {
     type = "owned",
     job = "mechanic",
     jobManagementRanks = {4},
@@ -421,12 +421,12 @@ Config.MechanicLocations = {
     commission = 0, -- %, 10 = 10%
     locations = {
       {
-        coords = vector3(-337.25, -137.2, 38.35),
+        coords = vector3(-924.68, -792.68, 15.07),
         size = 6.5,
         showBlip = true,
       },
       {
-        coords = vector3(-324.2, -132.0, 38.54),
+        coords = vector3(-924.68, -792.68, 15.07),
         size = 3.0,
         showBlip = false,
         employeeOnly = true,
@@ -465,7 +465,7 @@ Config.MechanicLocations = {
     shops = {
       {
         name = "Servicing Supplies",
-        coords = vector3(-345.54, -131.32, 39.01),
+        coords = vector3(-931.67, -759.04, 15.07),
         size = 2.0,
         usePed = false,
         pedModel = "s_m_m_lathandy_01",
@@ -482,7 +482,7 @@ Config.MechanicLocations = {
       },
       {
         name = "Advanced Upgrades",
-        coords = vector3(-343.79, -139.92, 39.01),
+        coords = vector3(-926.06, -759.06, 15.07),
         size = 2.0,
         usePed = false,
         pedModel = "s_m_m_lathandy_01",
