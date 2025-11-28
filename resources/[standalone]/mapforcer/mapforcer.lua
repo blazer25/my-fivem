@@ -18,11 +18,9 @@ local maps = {
     'floresta',
     'Mirror-Park-Clubhouse',
     'anarchy_rexdiner',
-    'anarchy_TrapHouse',
     'henhouse_milo',
     'anarchy_LittleHouse',
     'anarchy_Townhall',
-    'int_yellowjack',
     'thunder_medicalcenter',
     'mc_grapeseed'
 
