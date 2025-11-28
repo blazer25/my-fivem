@@ -1,7 +1,7 @@
 -- Generated with DurtyClothTool
 
 fx_version 'cerulean'
-game { 'gta5' }
+game "gta5"
 
 files {
   'mp_m_freemode_01_mp_m_ensart_sonsof.meta',
