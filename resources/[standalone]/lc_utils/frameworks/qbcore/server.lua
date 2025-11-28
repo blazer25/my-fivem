@@ -3,7 +3,26 @@ if Config.framework ~= "QBCore" then return end
 Utils.Framework = {}
 
 -- Framework init
-QBCore = exports['qb-core']:GetCoreObject()
+CreateThread(function()
+	-- Wait until qb-core has set up its exports
+	while GetResourceState('qb-core') ~= 'started' do
+		Wait(200)
+	end
+	
+	-- Additional wait to ensure exports are ready
+	Wait(500)
+	
+	local success, err = pcall(function()
+		QBCore = exports['qb-core']:GetCoreObject()
+	end)
+	
+	if not success or not QBCore then
+		print('^1[lc_utils]^7 ERROR: Failed to fetch QBCore from qb-core -> ' .. tostring(err))
+		return
+	end
+	
+	print('^2[lc_utils]^7 QBCore initialized successfully.')
+end)
 
 -- Framework functions
 function Utils.Framework.getPlayerIdLog(source)
