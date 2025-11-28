@@ -536,6 +536,90 @@ Config.market_locations = {
 			},
 			['store'] = 'bank',
 		}
+	},
+	["ammunation_2"] = {
+		['buy_price'] = 2000000,
+		['sell_price'] = 500000,
+		['coord'] = {844.0, -1031.5, 28.2},
+		['garage_coord'] = {850.0, -1025.0, 28.0, 90.0},
+		['truck_parking_location'] = {855.0, -1020.0, 28.0, 90.0},
+		['map_blip_coord'] = {844.0, -1031.5, 28.2},
+		['sell_blip_coords'] = {
+			{844.0, -1031.5, 28.2},
+			{842.0, -1033.0, 28.2},
+			{846.0, -1030.0, 28.2}
+		},
+		['deliveryman_coord'] = {840.0, -1035.0, 28.2},
+		['type'] = 'ammunation',
+		['account'] = {
+			['item'] = {
+				[1] = {
+					['icon'] = 'img/credit_card.png',
+					['account'] = 'bank'
+				},
+				[2] = {
+					['icon'] = 'img/cash.png',
+					['account'] = 'cash'
+				}
+			},
+			['store'] = 'bank',
+		}
+	},
+	["ammunation_3"] = {
+		['buy_price'] = 2000000,
+		['sell_price'] = 500000,
+		['coord'] = {-664.0, -939.2, 21.8},
+		['garage_coord'] = {-670.0, -945.0, 21.5, 180.0},
+		['truck_parking_location'] = {-675.0, -950.0, 21.5, 180.0},
+		['map_blip_coord'] = {-664.0, -939.2, 21.8},
+		['sell_blip_coords'] = {
+			{-664.0, -939.2, 21.8},
+			{-662.0, -937.0, 21.8},
+			{-666.0, -941.0, 21.8}
+		},
+		['deliveryman_coord'] = {-660.0, -935.0, 21.8},
+		['type'] = 'ammunation',
+		['account'] = {
+			['item'] = {
+				[1] = {
+					['icon'] = 'img/credit_card.png',
+					['account'] = 'bank'
+				},
+				[2] = {
+					['icon'] = 'img/cash.png',
+					['account'] = 'cash'
+				}
+			},
+			['store'] = 'bank',
+		}
+	},
+	["ammunation_4"] = {
+		['buy_price'] = 2000000,
+		['sell_price'] = 500000,
+		['coord'] = {-1308.7, -391.5, 36.7},
+		['garage_coord'] = {-1315.0, -398.0, 36.5, 45.0},
+		['truck_parking_location'] = {-1320.0, -403.0, 36.5, 45.0},
+		['map_blip_coord'] = {-1308.7, -391.5, 36.7},
+		['sell_blip_coords'] = {
+			{-1308.7, -391.5, 36.7},
+			{-1306.5, -389.0, 36.7},
+			{-1310.5, -393.5, 36.7}
+		},
+		['deliveryman_coord'] = {-1305.0, -387.0, 36.7},
+		['type'] = 'ammunation',
+		['account'] = {
+			['item'] = {
+				[1] = {
+					['icon'] = 'img/credit_card.png',
+					['account'] = 'bank'
+				},
+				[2] = {
+					['icon'] = 'img/cash.png',
+					['account'] = 'cash'
+				}
+			},
+			['store'] = 'bank',
+		}
 	}
 }
 
