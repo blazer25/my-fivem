@@ -620,6 +620,34 @@ Config.market_locations = {
 			},
 			['store'] = 'bank',
 		}
+	},
+	["digital_den"] = {
+		['buy_price'] = 999999999,
+		['sell_price'] = 0,
+		['coord'] = {86.33, -230.93, 54.63},
+		['garage_coord'] = {90.0, -235.0, 54.0, 337.0},
+		['truck_parking_location'] = {95.0, -240.0, 54.0, 337.0},
+		['map_blip_coord'] = {86.33, -230.93, 54.63},
+		['sell_blip_coords'] = {
+			{86.33, -230.93, 54.63},
+			{84.5, -229.5, 54.63},
+			{88.0, -232.0, 54.63}
+		},
+		['deliveryman_coord'] = {82.0, -228.0, 54.63},
+		['type'] = 'electronics_store',
+		['account'] = {
+			['item'] = {
+				[1] = {
+					['icon'] = 'img/credit_card.png',
+					['account'] = 'bank'
+				},
+				[2] = {
+					['icon'] = 'img/cash.png',
+					['account'] = 'cash'
+				}
+			},
+			['store'] = 'bank',
+		}
 	}
 }
 
@@ -745,6 +773,68 @@ Config.market_types = {
 			['id'] = 110,
 			['name'] = "Ammunation",
 			['color'] = 4,
+			['scale'] = 0.6,
+		}
+	},
+
+	['electronics_store'] = {
+		['stock_capacity'] = 100,
+		['max_employees'] = 3,
+		['required_job'] = {},
+		['upgrades'] = {
+			['stock'] = {
+				['price'] = 10000,
+				['level_reward'] = {
+					[0] = 0,
+					[1] = 20,
+					[2] = 40,
+					[3] = 60,
+					[4] = 80,
+					[5] = 100,
+				}
+			},
+			['truck'] = {
+				['price'] = 15000,
+				['level_reward'] = {
+					[0] = 0,
+					[1] = 15,
+					[2] = 30,
+					[3] = 50,
+					[4] = 75,
+					[5] = 100,
+				}
+			},
+			['relationship'] = {
+				['price'] = 12000,
+				['level_reward'] = {
+					[0] = 0,
+					[1] = 3,
+					[2] = 6,
+					[3] = 10,
+					[4] = 15,
+					[5] = 25,
+				}
+			},
+		},
+		['trucks'] = {
+			[0] = 'speedo',
+			[1] = 'gburrito',
+			[2] = 'mule',
+			[3] = 'mule3',
+			[4] = 'pounder',
+			[5] = 'pounder2'
+		},
+		['max_purchasable_categories'] = 1,
+		['categories'] = {
+			"electronics_market"
+		},
+		['default_categories'] = {
+			"electronics_market"
+		},
+		['blips'] = {
+			['id'] = 521,
+			['name'] = "Digital Den",
+			['color'] = 3,
 			['scale'] = 0.6,
 		}
 	}
