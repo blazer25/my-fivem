@@ -403,6 +403,15 @@ local function decodeJSON(value, default)
     return default
 end
 
+local function splitList(value)
+    if not value or value == '' then return {} end
+    local list = {}
+    for entry in string.gmatch(value, '([^,]+)') do
+        list[#list + 1] = entry:lower():gsub('^%s*(.-)%s*$', '%1')
+    end
+    return list
+end
+
 local function loadLocksFromDatabase()
     local result = MySQL.query.await('SELECT * FROM chris_locks')
     if not result then return end
@@ -910,12 +919,3 @@ RegisterNetEvent('chris_locks:admin:teleport', function(lockId)
         z = lock.coords.z
     })
 end)
-
-local function splitList(value)
-    if not value or value == '' then return {} end
-    local list = {}
-    for entry in string.gmatch(value, '([^,]+)') do
-        list[#list + 1] = entry:lower():gsub('^%s*(.-)%s*$', '%1')
-    end
-    return list
-end

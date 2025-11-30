@@ -58,14 +58,14 @@ const SETTINGS = {
   // Fishing area zones (coordinates for River, Lake, Sea)
   FISHING_AREAS: {
     river: [
-      { coords: vec3(0, 0, 0), radius: 50 }, // Will be populated with actual river coordinates
+      { coords: [0, 0, 0], radius: 50 }, // Will be populated with actual river coordinates
     ],
     lake: [
-      { coords: vec3(0, 0, 0), radius: 50 }, // Will be populated with actual lake coordinates
+      { coords: [0, 0, 0], radius: 50 }, // Will be populated with actual lake coordinates
     ],
     sea: [
-      { coords: vec3(-3500.0, -1000.0, 1.0), radius: 200 }, // Deep sea areas
-      { coords: vec3(-2000.0, 6000.0, 1.0), radius: 200 },
+      { coords: [-3500.0, -1000.0, 1.0], radius: 200 }, // Deep sea areas
+      { coords: [-2000.0, 6000.0, 1.0], radius: 200 },
     ],
   },
   FISHES: {

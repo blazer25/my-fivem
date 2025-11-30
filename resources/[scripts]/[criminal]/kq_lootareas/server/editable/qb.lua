@@ -3,7 +3,7 @@ if Config.qbSettings.enabled then
     
     -- Try QBox first (qbx_core), then fallback to qb-core
     if GetResourceState('qbx_core') == 'started' then
-        QBCore = exports['qbx_core']:GetCoreObject()
+        QBCore = exports['qb-core']:GetCoreObject()
     elseif GetResourceState('qb-core') == 'started' then
         if Config.qbSettings.useNewQBExport then
             QBCore = exports['qb-core']:GetCoreObject()
