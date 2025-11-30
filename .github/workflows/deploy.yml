@@ -1,4 +1,4 @@
-name: Deploy to ZAP Hosting (Stable FTPS)
+name: Deploy to ZAP Hosting (Stable FTP Only)
 
 on:
   push:
@@ -17,23 +17,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Upload to ZAP (FTPS Stable)
+      - name: Upload to ZAP (Stable FTP)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.2
         with:
           server: ${{ secrets.ZAP_HOST }}
           username: ${{ secrets.ZAP_USER }}
           password: ${{ secrets.ZAP_PASS }}
 
-          protocol: ftps
+          protocol: ftp
           port: 21
 
-          timeout: 300000
+          timeout: 300000   # Prevents disconnects
 
           local-dir: ./resources/
           server-dir: /g686818/fivem/Qbox_052EBB.base/resources/
 
-          dangerous-clean-slate: false
           state-name: ftp-sync-state.json
+          dangerous-clean-slate: false
 
           exclude: |
             **/node_modules/**
