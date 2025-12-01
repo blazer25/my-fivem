@@ -146,4 +146,63 @@ window.addEventListener('DOMContentLoaded', () => {
     document.getElementById('welcomeDisplay').innerHTML = welcomes[randomWelcome];
   })();
 //RANDOMPHRASES - Phrases generated after your steamname
+
+//VIDEO LOADING - Ensure YouTube video loads properly
+(function loadVideo() {
+    var videoIframe = document.getElementById('background-video');
+    if (videoIframe) {
+        // Wait for DOM to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                initVideo();
+            });
+        } else {
+            initVideo();
+        }
+    }
+    
+    function initVideo() {
+        var videoIframe = document.getElementById('background-video');
+        if (!videoIframe) return;
+        
+        // Try to load the video with a slight delay to ensure NUI is ready
+        setTimeout(function() {
+            var currentSrc = videoIframe.src;
+            // Force reload by clearing and resetting src
+            videoIframe.src = '';
+            setTimeout(function() {
+                videoIframe.src = currentSrc;
+            }, 50);
+        }, 500);
+        
+        // Handle iframe load
+        videoIframe.addEventListener('load', function() {
+            console.log('Background video loaded successfully');
+        });
+        
+        // Retry loading if it fails
+        var retryCount = 0;
+        var maxRetries = 3;
+        
+        function retryLoad() {
+            if (retryCount < maxRetries) {
+                retryCount++;
+                setTimeout(function() {
+                    var src = videoIframe.src;
+                    videoIframe.src = '';
+                    setTimeout(function() {
+                        videoIframe.src = src;
+                    }, 100);
+                }, 2000 * retryCount);
+            }
+        }
+        
+        // Check if video is actually playing after load
+        setTimeout(function() {
+            // If we can't verify playback, try reloading
+            retryLoad();
+        }, 3000);
+    }
+})();
+//VIDEO LOADING - Ensure YouTube video loads properly
   
