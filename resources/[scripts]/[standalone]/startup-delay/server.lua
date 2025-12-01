@@ -2,24 +2,20 @@
 -- This helps reduce server load spikes during startup and ensures all resources load
 
 local heavyResources = {
-    -- Heavy map resources (load in batches with delays)
+    -- Map manager first
     {resources = {'mapmanager'}, delay = 1000},
-    {resources = {'[maps]', 'mc_grapeseed', 'vortex_phonestore', 'Mirror-Park-Clubhouse'}, delay = 2000},
+    
+    -- Heavy map resources (load in batches with delays)
+    {resources = {'[maps]'}, delay = 2000},
+    {resources = {'mc_grapeseed', 'vortex_phonestore', 'Mirror-Park-Clubhouse'}, delay = 2000},
     {resources = {'forest_mansion', 'floresta', 'brnx_tunnelhideout', 'cityhall'}, delay = 2000},
     {resources = {'abs99_7sky', 'grizmowe_hideout', 'new_map', 'Ricky-VinewoodSign'}, delay = 2000},
     {resources = {'patoche_free_cardealer', 'bob74_ipl', 'anarchy_Cardealer', 'anarchy_MRPD'}, delay = 2000},
     {resources = {'anarchy_underground', 'anarchy_LsCustoms', 'vinewood_house', 'dip_hookies'}, delay = 2000},
     {resources = {'dip_mechanic', 'moreo_gym'}, delay = 2000},
     
-    -- Heavy vehicle resources
-    {resources = {'onx-evp-a-shared', 'onx-evp-c-pack', 'onx-evp-b-wheels'}, delay = 3000},
-    {resources = {'[onx_vehicles]'}, delay = 3000},
-    {resources = {'[cars]'}, delay = 3000},
-    {resources = {'[carsounds]'}, delay = 2000},
-    
-    -- Heavy asset resources
-    {resources = {'[assets]'}, delay = 3000},
-    {resources = {'[eup]'}, delay = 2000},
+    -- Heavy vehicle base resources
+    {resources = {'onx-evp-a-shared', 'onx-evp-c-pack', 'onx-evp-b-wheels'}, delay = 2000},
 }
 
 -- Resources that need to be explicitly ensured (from script folders)
