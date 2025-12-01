@@ -1,13 +1,7 @@
 -- Shop PEDs
--- Spawns PEDs at fishing equipment shop and illegal fish seller locations
+-- Spawns PEDs at illegal fish seller location only (equipment shop removed)
 
 local shopPeds = {}
-
--- Fishing Equipment Shop PED
-local fishingShopPed = {
-    model = `s_m_m_dockwork_01`, -- Dock worker model
-    coords = vector4(1336.28, 4307.07, 38.12, 324.0),
-}
 
 -- Illegal Fish Seller PED
 local illegalFishPed = {
@@ -37,13 +31,10 @@ local function spawnPed(pedData)
     return ped
 end
 
--- Spawn all shop PEDs
+-- Spawn shop PEDs
 CreateThread(function()
     -- Wait for game to load
     Wait(1000)
-    
-    -- Spawn fishing equipment shop PED
-    spawnPed(fishingShopPed)
     
     -- Spawn illegal fish seller PED
     spawnPed(illegalFishPed)

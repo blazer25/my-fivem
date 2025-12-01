@@ -13,15 +13,17 @@ ox_libs {
     'interface',
 }
 
-server_script 'dist/server/**/*.js'
+-- TypeScript compiled files (optional - uncomment if built)
+-- server_script 'dist/server/**/*.js'
 server_script 'server/fish-config.lua'
 server_script 'server/fishmarket.lua'
 server_script 'server/fishing-rarity.lua'
 server_script 'server/area-detection.lua'
 server_script 'server/area-leveling.lua'
-server_script 'server/equipment-validation.lua'
 
-client_script 'dist/client/**/*.js'
+-- TypeScript compiled files (optional - uncomment if built)
+-- client_script 'dist/client/**/*.js'
+client_script 'client/fishing-rod.lua'
 client_script 'client/fishmarket.lua'
 client_script 'client/fishingspots.lua'
 client_script 'client/levels-ui.lua'
@@ -32,6 +34,7 @@ ui_page 'nui/fishing.html'
 files {
     'settings.js',
     'nui/*.html',
-    'nui/dist/fishing.js',
-    'nui/dist/dom/renderer.js'
+    -- TypeScript compiled files (optional - uncomment if built)
+    -- 'nui/dist/fishing.js',
+    -- 'nui/dist/dom/renderer.js'
 }

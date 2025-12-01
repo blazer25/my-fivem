@@ -23,17 +23,15 @@ RegisterCommand('fishinglevels', function()
     -- Format display text
     local text = string.format(
         [[~b~FISHING LEVELS~w~
-
+        
 ~g~RIVER FISHING~w~
 Level: ~y~%d~w~ | XP: ~y~%d~w~ / ~y~%d~w~ (~y~%.1f%%~w~)
-
+        
 ~b~LAKE FISHING~w~
 Level: ~y~%d~w~ | XP: ~y~%d~w~ / ~y~%d~w~ (~y~%.1f%%~w~)
-
+        
 ~o~SEA FISHING~w~
-Level: ~y~%d~w~ | XP: ~y~%d~w~ / ~y~%d~w~ (~y~%.1f%%~w~)
-
-~s~Use better equipment to catch rarer fish and earn more XP!]],
+Level: ~y~%d~w~ | XP: ~y~%d~w~ / ~y~%d~w~ (~y~%.1f%%~w~)]],
         levels.river_level, levels.river_xp, requiredXP.river, riverProgress,
         levels.lake_level, levels.lake_xp, requiredXP.lake, lakeProgress,
         levels.sea_level, levels.sea_xp, requiredXP.sea, seaProgress

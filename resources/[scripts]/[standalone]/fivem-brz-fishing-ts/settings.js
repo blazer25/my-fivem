@@ -106,35 +106,19 @@ const SETTINGS = {
     },
   },
   
-  // Fish by Area (for area-specific fishing)
+  // Fish by Area (for area-specific fishing) - simplified to original fish set
   FISHES_BY_AREA: {
     river: [
-      'alligator_gar', 'amur_pike', 'barbel', 'brook_trout', 'brown_trout', 'bull_trout',
-      'chub', 'chum_salmon', 'coho_salmon', 'common_bleak', 'common_bream', 'common_carp',
-      'crucian_carp', 'european_eel', 'grayling', 'huchen', 'ide', 'lake_sturgeon',
-      'largemouth_bass', 'mirror_carp', 'northern_pike', 'pink_salmon', 'prussian_carp',
-      'rainbow_trout', 'roach', 'silver_carp', 'smallmouth_bass', 'tench', 'white_sturgeon',
-      'yellow_perch', 'zander', 'black_grayling', 'grass_carp', 'grass_pickerel',
-      'redfin_pickerel', 'wels_catfish', 'beluga_sturgeon', 'giant_freshwater_stingray',
-      'pink_river_dolphin', 'pufferfish', 'pumpkinseed', 'bluegill', 'golden_trout',
-      'sockeye_salmon', 'skeleton'
+      'fish'
     ],
     lake: [
-      'lake_sturgeon', 'largemouth_bass', 'northern_pike', 'rainbow_trout', 'smallmouth_bass',
-      'yellow_perch', 'pufferfish', 'pumpkinseed', 'bluegill', 'common_carp', 'mirror_carp',
-      'brown_trout', 'brook_trout', 'pike', 'perch', 'bass'
+      'fish'
     ],
     sea: [
-      'atlantic_cod', 'atlantic_salmon', 'blacktip_reef_shark', 'blue_marlin', 'bluefin_tuna',
-      'european_bass', 'european_flounder', 'european_perch', 'european_sea_sturgeon',
-      'garfish', 'giant_grouper', 'giant_trevally', 'great_barracuda', 'grey_snapper',
-      'indian_threadfish', 'mahi_mahi', 'malabar_grouper', 'red_lionfish', 'sea_trout',
-      'yellowfin_tuna', 'yellowtail_barracuda', 'dolphin', 'hammershark', 'tigershark',
-      'stingray', 'killerwhale', 'humpback', 'fish'
+      'fish', 'dolphin', 'hammershark', 'tigershark', 'stingray', 'killerwhale', 'humpback'
     ],
     all: [
-      'paddlefish', 'sawfish', 'eel', 'hammerheadshark', 'seaturtle', 'leopardshark',
-      'blueshark', 'greatwhiteshark'
+      'fish', 'dolphin', 'hammershark', 'tigershark', 'stingray', 'killerwhale', 'humpback'
     ]
   },
 };
