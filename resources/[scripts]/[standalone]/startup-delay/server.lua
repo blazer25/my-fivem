@@ -21,11 +21,8 @@ local heavyResources = {
     {resources = {'[assets]'}, delay = 3000},
     {resources = {'[eup]'}, delay = 2000},
     
-    -- Heavy script folders (load with delays)
-    {resources = {'[scripts]/[standalone]'}, delay = 2000},
-    {resources = {'[scripts]/[life]'}, delay = 2000},
-    {resources = {'[scripts]/[jobs]'}, delay = 2000},
-    {resources = {'[scripts]/[criminal]'}, delay = 2000},
+    -- Note: Script folders are ensured in server.cfg, not here
+    -- StartResource() doesn't work on folder ensures
 }
 
 CreateThread(function()
