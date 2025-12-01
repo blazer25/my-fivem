@@ -85,24 +85,6 @@ local FishingSpots = {
     },
 }
 
-local currentSpot = nil
-local fishingBlips = {}
-
--- Create blips for fishing spots
-CreateThread(function()
-    for _, spot in ipairs(FishingSpots) do
-        local blip = AddBlipForCoord(spot.coords.x, spot.coords.y, spot.coords.z)
-        SetBlipSprite(blip, spot.blip.sprite)
-        SetBlipColour(blip, spot.blip.color)
-        SetBlipScale(blip, spot.blip.scale)
-        SetBlipAsShortRange(blip, true)
-        BeginTextCommandSetBlipName('STRING')
-        AddTextComponentSubstringPlayerName(spot.blip.label)
-        EndTextCommandSetBlipName(blip)
-        fishingBlips[spot.name] = blip
-    end
-end)
-
 -- Check if player is at a fishing spot
 function GetCurrentFishingSpot()
     local playerCoords = GetEntityCoords(cache.ped)
@@ -122,23 +104,3 @@ exports('GetCurrentFishingSpot', GetCurrentFishingSpot)
 exports('GetFishingSpots', function()
     return FishingSpots
 end)
-
--- Show hint when near fishing spot
-CreateThread(function()
-    while true do
-        Wait(1000)
-        local spot = GetCurrentFishingSpot()
-        if spot and spot ~= currentSpot then
-            currentSpot = spot
-            lib.notify({
-                title = 'Fishing Spot',
-                description = string.format('You are at %s (%s difficulty)', spot.name, spot.difficulty:upper()),
-                type = 'inform',
-                duration = 5000
-            })
-        elseif not spot and currentSpot then
-            currentSpot = nil
-        end
-    end
-end)
-
