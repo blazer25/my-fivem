@@ -147,62 +147,103 @@ window.addEventListener('DOMContentLoaded', () => {
   })();
 //RANDOMPHRASES - Phrases generated after your steamname
 
-//VIDEO LOADING - Ensure YouTube video loads properly
-(function loadVideo() {
-    var videoIframe = document.getElementById('background-video');
-    if (videoIframe) {
-        // Wait for DOM to be ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', function() {
-                initVideo();
-            });
-        } else {
-            initVideo();
-        }
+//VIDEO LOADING - Use YouTube IFrame API for better compatibility
+var ytPlayer = null;
+
+function onYouTubeIframeAPIReady() {
+    var videoContainer = document.getElementById('background-video');
+    if (!videoContainer) {
+        console.error('Video container not found');
+        return;
     }
     
-    function initVideo() {
-        var videoIframe = document.getElementById('background-video');
-        if (!videoIframe) return;
-        
-        // Try to load the video with a slight delay to ensure NUI is ready
-        setTimeout(function() {
-            var currentSrc = videoIframe.src;
-            // Force reload by clearing and resetting src
-            videoIframe.src = '';
-            setTimeout(function() {
-                videoIframe.src = currentSrc;
-            }, 50);
-        }, 500);
-        
-        // Handle iframe load
-        videoIframe.addEventListener('load', function() {
-            console.log('Background video loaded successfully');
-        });
-        
-        // Retry loading if it fails
-        var retryCount = 0;
-        var maxRetries = 3;
-        
-        function retryLoad() {
-            if (retryCount < maxRetries) {
-                retryCount++;
-                setTimeout(function() {
-                    var src = videoIframe.src;
-                    videoIframe.src = '';
-                    setTimeout(function() {
-                        videoIframe.src = src;
-                    }, 100);
-                }, 2000 * retryCount);
+    try {
+        ytPlayer = new YT.Player('background-video', {
+            height: '100%',
+            width: '100%',
+            videoId: 'RUB5KmZrVDs',
+            playerVars: {
+                'autoplay': 1,
+                'mute': 1,
+                'loop': 1,
+                'playlist': 'RUB5KmZrVDs',
+                'controls': 0,
+                'modestbranding': 1,
+                'rel': 0,
+                'iv_load_policy': 3,
+                'playsinline': 1,
+                'enablejsapi': 1
+            },
+            events: {
+                'onReady': onPlayerReady,
+                'onStateChange': onPlayerStateChange,
+                'onError': onPlayerError
             }
+        });
+    } catch (e) {
+        console.error('Error creating YouTube player:', e);
+        // Fallback to iframe if API fails
+        fallbackToIframe();
+    }
+}
+
+function onPlayerReady(event) {
+    console.log('YouTube player ready');
+    try {
+        event.target.playVideo();
+    } catch (e) {
+        console.error('Error playing video:', e);
+    }
+}
+
+function onPlayerStateChange(event) {
+    if (event.data == YT.PlayerState.PLAYING) {
+        console.log('Video is playing');
+    } else if (event.data == YT.PlayerState.ENDED) {
+        // Loop the video
+        event.target.playVideo();
+    }
+}
+
+function onPlayerError(event) {
+    console.error('YouTube player error:', event.data);
+    // Fallback to iframe if API fails
+    fallbackToIframe();
+}
+
+function fallbackToIframe() {
+    var videoContainer = document.getElementById('background-video');
+    if (videoContainer) {
+        videoContainer.innerHTML = '<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/RUB5KmZrVDs?autoplay=1&mute=1&loop=1&playlist=RUB5KmZrVDs&controls=0&modestbranding=1&rel=0&iv_load_policy=3&playsinline=1&start=0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" referrerpolicy="no-referrer-when-downgrade" style="width: 100vw; height: 100vh; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: -100;"></iframe>';
+    }
+}
+
+// Initialize video when page loads
+(function initVideo() {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wait a bit for YouTube API to load
+            setTimeout(checkYouTubeAPI, 500);
+        });
+    } else {
+        setTimeout(checkYouTubeAPI, 500);
+    }
+    
+    function checkYouTubeAPI() {
+        if (typeof YT !== 'undefined' && YT.Player) {
+            onYouTubeIframeAPIReady();
+        } else {
+            // If API didn't load, try again or use fallback
+            setTimeout(function() {
+                if (typeof YT !== 'undefined' && YT.Player) {
+                    onYouTubeIframeAPIReady();
+                } else {
+                    console.warn('YouTube IFrame API not loaded, using fallback');
+                    fallbackToIframe();
+                }
+            }, 2000);
         }
-        
-        // Check if video is actually playing after load
-        setTimeout(function() {
-            // If we can't verify playback, try reloading
-            retryLoad();
-        }, 3000);
     }
 })();
-//VIDEO LOADING - Ensure YouTube video loads properly
+//VIDEO LOADING - Use YouTube IFrame API for better compatibility
   
