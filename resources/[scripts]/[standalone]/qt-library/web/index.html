@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QT LIBRARY INTERFACE FRONT END</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="textUI.js" defer></script>
+    <script src="notify.js" defer></script>
+    <script src="progressBar.js" defer></script>
+    <script src="context.js" defer></script>
+    <script src="input.js" defer></script>
+    <script src="question.js" defer></script>
+    <script src="nui://game/ui/jquery.js" type="text/javascript"></script>
+</head>
+<style>
+    input, select {
+        color-scheme: dark;
+    }
+    ::-webkit-scrollbar{
+        display: none;
+    }
+</style>
+<body class="p-4 flex items-center justify-end h-screen">
+
+    <div id="textUI" class="bg-gray-700 bg-opacity-75 rounded-lg shadow-lg p-3 max-w-xs hidden">
+        <div class="flex items-center justify-end">
+            <div class="text-3xl font-bold text-white text-letter"></div>
+            <div class="border-l-2 border-white h-6 ml-3 mr-3"></div>
+            <div>
+                <p class="text-base font-semibold text-white text-description"></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="notifications-container" class="fixed top-24 right-4 max-w-sm space-y-4"></div>
+
+    <div id="progressContainer" class="fixed bottom-4 inset-x-0 flex items-center justify-center hidden">
+        <div class="flex flex-col items-center justify-end">
+            <div id="progressDescription" class="mb-4 text-lg text-white font-semibold absolute bottom-4"></div>
+            <div class="w-80 bg-gray-700 rounded-full dark:bg-gray-700">
+                <div id="progressBar" class="bg-blue-600 h-4 text-xs font-medium text-blue-100 text-center leading-none rounded-full" style="width: 0%"> 0%</div>
+            </div>
+        </div>
+    </div>
+
+        <div id="context-body" class="relative w-80 bg-gray-800 text-gray-200 shadow-lg rounded-lg border border-gray-700 select-none hidden">
+            <div class="flex items-center justify-between bg-gray-800 text-white p-4 rounded-t-lg">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-info-circle text-xl bg-gray-600 p-2 rounded"></i>
+                    <h2 id="context-title" class="text-xl font-semibold">Title</h2>
+                </div>
+                <div class="flex space-x-2">
+                    <button id="back-button" class="bg-gray-600 text-white rounded w-8 h-8 flex items-center justify-center hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                        <i class="fas fa-arrow-left text-lg"></i>
+                    </button>
+                    <button id="close-button" class="bg-gray-600 text-white rounded w-8 h-8 flex items-center justify-center hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                        <i class="fas fa-times text-lg"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-4" id="tables-container"></div>
+        </div>
+    
+        </div>
+    </div>
+
+    <div id="inputContainer" class="outline-none bg-gray-800 p-6 rounded-lg shadow-lg w-96 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 select-none hidden">
+        <h2 id="title-input" class="text-2xl font-bold text-white mb-6 text-center">Dynamic Input Box</h2>
+        <form id="dynamicForm">
+        </form>
+        <div class="flex justify-end mt-6 space-x-2">
+            <button type="button" class="bg-gray-700 text-white p-2 rounded hover:bg-gray-600" onclick="cancelForm()">Cancel</button>
+            <button id="confirmButton" type="button" class="bg-gray-700 text-white p-2 rounded hover:bg-gray-600" onclick="submitForm()">Confirm</button>
+        </div>
+    </div>    
+
+    <div id="question-modal" tabindex="-1" aria-hidden="true" class="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-full flex select-none hidden">
+        <div class="relative p-4 w-full max-w-2xl max-h-full">
+            <div class="relative bg-gray-800 rounded-lg shadow dark:bg-gray-700">
+                <div class="flex items-center justify-between p-4 md:p-5 border-b border-gray-700 rounded-t dark:border-gray-600">
+                    <h3 class="text-xl font-semibold text-white">
+                        Terms of Service
+                    </h3>
+                </div>
+                <div class="p-4 md:p-5 space-y-4">
+                    <p class="text-base leading-relaxed text-gray-300 dark:text-gray-400">
+                        question message
+                    </p>
+                    <p class="text-base leading-relaxed text-gray-300 dark:text-gray-400">
+                        disclaimer text
+                    </p>
+                </div>
+                <div class="flex items-center p-4 md:p-5 border-t border-gray-700 rounded-b dark:border-gray-600 space-x-3">
+                    <button data-modal-hide="question-modal" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-300 focus:outline-none bg-gray-700 rounded-lg border border-gray-600 hover:bg-gray-600 hover:text-white focus:z-10 focus:ring-4 focus:ring-gray-700 dark:focus:ring-gray-600 dark:bg-gray-600 dark:text-gray-300 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">I accept</button>
+                    <button data-modal-hide="question-modal" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-300 focus:outline-none bg-gray-700 rounded-lg border border-gray-600 hover:bg-gray-600 hover:text-white focus:z-10 focus:ring-4 focus:ring-gray-700 dark:focus:ring-gray-600 dark:bg-gray-600 dark:text-gray-300 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Decline</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="notificationSound" src="sound.mp3"></audio>
+</body>
+</html>

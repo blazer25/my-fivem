@@ -19,5 +19,6 @@ files {
     'script/main.js',
     'logo/logo.png',
     'song/*',
-    'img/*'
+    'img/*',
+    'video/*'
 }

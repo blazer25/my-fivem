@@ -9,6 +9,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
     <!--Custom fonts-->
+    <!-- YouTube IFrame API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
 </head>
 <body class="sky noselect">
     <div class="menu-container">
@@ -53,7 +55,7 @@
 
     <div class="scroll-box">
         <div class="header">
-            <span>STAFF TEAM</span>
+            <span>Directors</span>
         </div>
             <div class="person">
                 <img src="img/person1.png">
@@ -93,15 +95,15 @@
     </div>
 
     <p class="namePlaceholder" id="namePlaceholder">
-        Welcome, <span style="color: #0084ff;"></span>! <span id="welcomeDisplay"></span>
+        Welcome, <span style="color: #ff0000;"></span>! <span id="welcomeDisplay"></span>
     </p>
 
     <div class="textbox">
-        <div class="textboxh"><div class="heading-textbox">UPDATES / NEWS</div><div class="date">LAST UPDATED: 16:35 24/11/2025</div></div>
+        <div class="textboxh"><div class="heading-textbox">UPDATES / NEWS</div><div class="date">LAST UPDATED: 15:03 01/12/2024</div></div>
         <p>Welcome to <span class="blue-text">Life$tyle Roleplay</span>! We're excited to have you join our community. 
-            Our server features <span class="blue-text">custom EUP clothing</span>, advanced drug systems, and much more.<br><br>
-         <span class="blue-text">Latest Updates</span>: New EUP packs added, improved loading screen, and enhanced 
-        drug selling mechanics. <span class="blue-text">Join our Discord</span> for the latest news and community events!</p>
+            Our server features <span class="blue-text">custom EUP clothing</span>, advanced drug systems, fishing mechanics, and much more.<br><br>
+         <span class="blue-text">Latest Updates</span>: New loading screen theme updated, improved video playback, enhanced 
+        fishing system with rarity mechanics, and updated server infrastructure. <span class="blue-text">Join our Discord</span> for the latest news and community events!</p>
     </div>
 
     <div class="textbox2">
@@ -126,7 +128,15 @@
 </div>
     
     <div class="video-background video-container noselect">
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/RUB5KmZrVDs?autoplay=1&mute=1&loop=1&playlist=RUB5KmZrVDs&enablejsapi=1&controls=0&modestbranding=1&rel=0&iv_load_policy=3&playsinline=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        <!-- Primary: Direct video file (most reliable) -->
+        <video id="background-video-file" autoplay muted loop playsinline style="display: none;">
+            <source src="video/background.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <!-- Fallback: YouTube player container -->
+        <div id="background-video-youtube"></div>
+        <!-- Fallback: Static background (if all video methods fail) -->
+        <div id="background-static" style="display: none; position: absolute; width: 100%; height: 100%; background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); z-index: -100;"></div>
         </div>
         
         <!--Video is changable. When you are inserting the video make sure that it is in embed format 
