@@ -7,6 +7,33 @@ function CleanupStores()
     end
 end
 
+-- Helper function to safely get item label
+local function GetItemLabel(itemName)
+    if not itemName then return itemName or "Unknown Item" end
+    
+    -- Try Inventory.Items first
+    if Inventory.Items and Inventory.Items[itemName] then
+        return Inventory.Items[itemName].label
+    end
+    
+    -- Try lowercase version
+    local lowerName = itemName:lower()
+    if Inventory.Items and Inventory.Items[lowerName] then
+        return Inventory.Items[lowerName].label
+    end
+    
+    -- Try ox_inventory directly
+    if GetResourceState('ox_inventory') == 'started' then
+        local oxItem = exports.ox_inventory:Items(lowerName)
+        if oxItem and oxItem.label then
+            return oxItem.label
+        end
+    end
+    
+    -- Fallback to formatted item name
+    return itemName:gsub("_", " "):gsub("^%l", string.upper)
+end
+
 function StoreSelectItem(index, itemIndex)
     local prisonIndex = Prison.index
     local prison = Config.Prisons[prisonIndex]
@@ -18,7 +45,7 @@ function StoreSelectItem(index, itemIndex)
         local title
         local description
         if required.type ~= "cash" then
-            title = Inventory.Items[required.name].label
+            title = GetItemLabel(required.name)
             description = "x" .. required.amount
         else
             title = "$" .. required.amount
@@ -59,7 +86,7 @@ function DisplayStore(index)
             description = "$" .. item.required[1].amount .. " - " .. item.description
         end
         local option = {
-            title = Inventory.Items[item.name].label,
+            title = GetItemLabel(item.name),
             description = description,
             onSelect = function()
                 StoreSelectItem(index, i)
