@@ -6061,4 +6061,37 @@ return {
             export = 'skr-vape.toggleDisposableFromItem'
         },
     },
+
+    -- Pickle Prisons Items
+    ['wood'] = {
+        label = 'Wood',
+        weight = 100,
+        stack = true,
+        close = true,
+        description = 'A piece of wood that can be used for crafting.'
+    },
+
+    ['metal'] = {
+        label = 'Metal',
+        weight = 100,
+        stack = true,
+        close = true,
+        description = 'A piece of metal that can be used for crafting.'
+    },
+
+    ['rope'] = {
+        label = 'Rope',
+        weight = 50,
+        stack = true,
+        close = true,
+        description = 'A sturdy rope that can be used for various purposes.'
+    },
+
+    ['shovel'] = {
+        label = 'Shovel',
+        weight = 500,
+        stack = false,
+        close = true,
+        description = 'A tool used for digging. Maybe useful for escaping...'
+    },
 }
