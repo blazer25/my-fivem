@@ -6271,4 +6271,36 @@ return {
         close = true,
         client = { image = 'sliced_tomato.png' }
     },
+    ['raw_chicken'] = {
+        label = 'Raw Chicken',
+        description = '',
+        weight = 100,
+        stack = true,
+        close = true,
+        client = { image = 'raw_chicken.png' }
+    },
+    ['tomato'] = {
+        label = 'Tomato',
+        description = '',
+        weight = 100,
+        stack = true,
+        close = true,
+        client = { image = 'tomato.png' }
+    },
+    ['onion'] = {
+        label = 'Onion',
+        description = '',
+        weight = 100,
+        stack = true,
+        close = true,
+        client = { image = 'onion.png' }
+    },
+    ['ecola'] = {
+        label = 'E-Cola',
+        description = '',
+        weight = 100,
+        stack = true,
+        close = true,
+        client = { image = 'ecola.png' }
+    },
 }
