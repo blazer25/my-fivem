@@ -159,8 +159,8 @@ if not IsUsingXTPrison then
     }, function(source, args)
         local player = exports.qbx_core:GetPlayer(source)
         if not checkLeoAndOnDuty(player) then return end
-        if GetResourceState('qbx_prison') == 'started' then
-            exports.qbx_prison:ReleasePlayer(args.id)
+        if GetResourceState('pickle_prisons') == 'started' then
+            TriggerServerEvent('pickle_prisons:unjailPlayer', args.id)
         else
             TriggerClientEvent('prison:client:UnjailPerson', args.id)
         end

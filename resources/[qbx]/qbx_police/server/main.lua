@@ -322,8 +322,11 @@ if not IsUsingXTPrison then
             hasRecord = true,
             date = currentDate
         })
-        if GetResourceState('qbx_prison') == 'started' then
-            exports.qbx_prison:JailPlayer(targetPlayer.PlayerData.source, time)
+        if GetResourceState('pickle_prisons') == 'started' then
+            -- Convert months to minutes (1 month = 30 days = 43200 minutes)
+            local timeInMinutes = time * 43200
+            -- Trigger the pickle_prisons jail event (source is the officer, target is the player being jailed)
+            TriggerEvent('pickle_prisons:jailPlayer', targetPlayer.PlayerData.source, timeInMinutes, "default")
         else
             TriggerClientEvent('police:client:SendToJail', targetPlayer.PlayerData.source, time)
         end
