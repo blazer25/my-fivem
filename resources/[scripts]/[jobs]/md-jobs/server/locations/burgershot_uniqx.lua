@@ -170,8 +170,8 @@ Jobs['burgershot'] = {
             {
                 StoreData = { type = 'fridge', targetLabel = 'Fridge', menuLabel = 'Fridge' },
                 loc = vector3(-1196.17, -901.54, 13.89),
-                l = 0.7,
-                w = 0.5,
+                l = 1.5,
+                w = 1.0,
                 lwr = 0.75,
                 upr = 1.25,
                 r = 349,
@@ -180,8 +180,8 @@ Jobs['burgershot'] = {
             {
                 StoreData = { type = 'ingridients', targetLabel = 'Ingredients ', menuLabel = 'Ingredients' },
                 loc = vector3(-1202.43, -895.48, 13.89),
-                l = 0.7,
-                w = 0.5,
+                l = 1.5,
+                w = 1.0,
                 lwr = 0.75,
                 upr = 1.25,
                 r = 300,

@@ -424,12 +424,19 @@ lib.callback.register('md-jobs:server:getShops', function(source, job, storeType
             return true
         elseif Config.Inv == 'ox' then
             local shopKey = job .. ' ' .. storeType
+            -- Get locations for this specific store type
+            local storeLocations = {}
+            for _, storeEntry in pairs(Jobs[job].locations.Stores) do
+                if storeEntry.StoreData.type == storeType and storeEntry.job == job then
+                    table.insert(storeLocations, storeEntry.loc)
+                end
+            end
             exports.ox_inventory:RegisterShop(shopKey, {
                 name      = shopKey,
                 inventory = Jobs[job].shops[storeType],
-                locations = getLocsOx(job),
+                locations = storeLocations,
             })
-            return shopKey, storeType
+            return shopKey
         end
     end
     return Jobs[job].shops[storeType] or false

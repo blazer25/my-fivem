@@ -818,7 +818,12 @@ function MakeStore(store, job, text, num)
 		return
 	end
 	if type(shopItems) == 'string' then
-		exports.ox_inventory:openInventory('shop', { type = shopItems, id = num })
+		-- shopItems is the shopKey
+		-- num is the storeIndex from the client (1-based)
+		-- We need to find which location index in the filtered array this corresponds to
+		-- For now, try using num - 1 (0-based) or just use the shopKey without id
+		-- ox_inventory will use the nearest location if id is not specified
+		exports.ox_inventory:openInventory('shop', { type = shopItems })
 		return
 	end
 	if not job or GetJobName() ~= job then
@@ -826,6 +831,8 @@ function MakeStore(store, job, text, num)
 		return
 	end
 	if Config.UseShops then
+		-- Shop should have been opened via ox_inventory if UseShops is enabled
+		-- If we reach here, something went wrong
 		return
 	end
 
