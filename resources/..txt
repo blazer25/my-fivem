@@ -1,4 +1,4 @@
-ssssss
+sssssss
 
 endpoint_add_tcp "5.249.165.251:30100" 
 endpoint_add_udp "5.249.165.251:30100" 
