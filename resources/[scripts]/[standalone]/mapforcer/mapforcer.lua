@@ -16,13 +16,13 @@ local maps = {
     'dip_mechanic',
     'forest_mansion',
     'floresta',
-    'Mirror-Park-Clubhouse',
     'anarchy_rexdiner',
     'henhouse_milo',
     'anarchy_LittleHouse',
     'anarchy_Townhall',
     'thunder_medicalcenter',
-    'mc_grapeseed'
+    'mc_grapeseed',
+    'Mirror-Park-Clubhouse'
 
 }
 
