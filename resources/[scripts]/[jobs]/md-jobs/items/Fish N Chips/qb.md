@@ -1,0 +1,21 @@
+```lua
+cs_battered_cod = { name = 'cs_battered_cod', label = 'Cs Battered Cod', weight = 100, type = 'item', image = 'cs_battered_cod.png', unique = false, useable = true, shouldClose = true, description = "" },
+cs_battered_sausage = { name = 'cs_battered_sausage', label = 'Cs Battered Sausage', weight = 100, type = 'item', image = 'cs_battered_sausage.png', unique = false, useable = true, shouldClose = true, description = "" },
+cs_battermix = { name = 'cs_battermix', label = 'Cs Battermix', weight = 100, type = 'item', image = 'cs_battermix.png', unique = false, useable = true, shouldClose = true, description = "" },
+cs_chips = { name = 'cs_chips', label = 'Cs Chips', weight = 100, type = 'item', image = 'cs_chips.png', unique = false, useable = true, shouldClose = true, description = "" },
+cs_fish_meal = { name = 'cs_fish_meal', label = 'Cs Fish Meal', weight = 100, type = 'item', image = 'cs_fish_meal.png', unique = false, useable = true, shouldClose = true, description = "" },
+cs_paper = { name = 'cs_paper', label = 'Cs Paper', weight = 100, type = 'item', image = 'cs_paper.png', unique = false, useable = true, shouldClose = true, description = "" },
+cs_pie = { name = 'cs_pie', label = 'Cs Pie', weight = 100, type = 'item', image = 'cs_pie.png', unique = false, useable = true, shouldClose = true, description = "" },
+cs_pie_meal = { name = 'cs_pie_meal', label = 'Cs Pie Meal', weight = 100, type = 'item', image = 'cs_pie_meal.png', unique = false, useable = true, shouldClose = true, description = "" },
+cs_sausage_meal = { name = 'cs_sausage_meal', label = 'Cs Sausage Meal', weight = 100, type = 'item', image = 'cs_sausage_meal.png', unique = false, useable = true, shouldClose = true, description = "" },
+cs_savaloy = { name = 'cs_savaloy', label = 'Cs Savaloy', weight = 100, type = 'item', image = 'cs_savaloy.png', unique = false, useable = true, shouldClose = true, description = "" },
+cs_savaloy_meal = { name = 'cs_savaloy_meal', label = 'Cs Savaloy Meal', weight = 100, type = 'item', image = 'cs_savaloy_meal.png', unique = false, useable = true, shouldClose = true, description = "" },
+cs_usedpaper = { name = 'cs_usedpaper', label = 'Cs Usedpaper', weight = 100, type = 'item', image = 'cs_usedpaper.png', unique = false, useable = true, shouldClose = true, description = "" },
+potato = { name = 'potato', label = 'Potato', weight = 100, type = 'item', image = 'potato.png', unique = false, useable = true, shouldClose = true, description = "" },
+raw_chips = { name = 'raw_chips', label = 'Raw Chips', weight = 100, type = 'item', image = 'raw_chips.png', unique = false, useable = true, shouldClose = true, description = "" },
+raw_cod = { name = 'raw_cod', label = 'Raw Cod', weight = 100, type = 'item', image = 'raw_cod.png', unique = false, useable = true, shouldClose = true, description = "" },
+raw_pie = { name = 'raw_pie', label = 'Raw Pie', weight = 100, type = 'item', image = 'raw_pie.png', unique = false, useable = true, shouldClose = true, description = "" },
+raw_sausage = { name = 'raw_sausage', label = 'Raw Sausage', weight = 100, type = 'item', image = 'raw_sausage.png', unique = false, useable = true, shouldClose = true, description = "" },
+raw_saveloy = { name = 'raw_saveloy', label = 'Raw Saveloy', weight = 100, type = 'item', image = 'raw_saveloy.png', unique = false, useable = true, shouldClose = true, description = "" },
+
+```

@@ -1,0 +1,20 @@
+```lua
+banana = { name = 'banana', label = 'Banana', weight = 100, type = 'item', image = 'banana.png', unique = false, useable = true, shouldClose = true, description = "" },
+banana_smoothie = { name = 'banana_smoothie', label = 'Banana Smoothie', weight = 100, type = 'item', image = 'banana_smoothie.png', unique = false, useable = true, shouldClose = true, description = "" },
+blueberry = { name = 'blueberry', label = 'Blueberry', weight = 100, type = 'item', image = 'blueberry.png', unique = false, useable = true, shouldClose = true, description = "" },
+blueberry_smoothie = { name = 'blueberry_smoothie', label = 'Blueberry Smoothie', weight = 100, type = 'item', image = 'blueberry_smoothie.png', unique = false, useable = true, shouldClose = true, description = "" },
+ice = { name = 'ice', label = 'Ice', weight = 100, type = 'item', image = 'ice.png', unique = false, useable = true, shouldClose = true, description = "" },
+lemon = { name = 'lemon', label = 'Lemon', weight = 100, type = 'item', image = 'lemon.png', unique = false, useable = true, shouldClose = true, description = "" },
+lemonade = { name = 'lemonade', label = 'Lemonade', weight = 100, type = 'item', image = 'lemonade.png', unique = false, useable = true, shouldClose = true, description = "" },
+lime = { name = 'lime', label = 'Lime', weight = 100, type = 'item', image = 'lime.png', unique = false, useable = true, shouldClose = true, description = "" },
+limeade = { name = 'limeade', label = 'Limeade', weight = 100, type = 'item', image = 'limeade.png', unique = false, useable = true, shouldClose = true, description = "" },
+mango = { name = 'mango', label = 'Mango', weight = 100, type = 'item', image = 'mango.png', unique = false, useable = true, shouldClose = true, description = "" },
+mango_smoothie = { name = 'mango_smoothie', label = 'Mango Smoothie', weight = 100, type = 'item', image = 'mango_smoothie.png', unique = false, useable = true, shouldClose = true, description = "" },
+pomegranate = { name = 'pomegranate', label = 'Pomegranate', weight = 100, type = 'item', image = 'pomegranate.png', unique = false, useable = true, shouldClose = true, description = "" },
+pomegranate_smoothie = { name = 'pomegranate_smoothie', label = 'Pomegranate Smoothie', weight = 100, type = 'item', image = 'pomegranate_smoothie.png', unique = false, useable = true, shouldClose = true, description = "" },
+strawberry = { name = 'strawberry', label = 'Strawberry', weight = 100, type = 'item', image = 'strawberry.png', unique = false, useable = true, shouldClose = true, description = "" },
+strawberry_lemonade = { name = 'strawberry_lemonade', label = 'Strawberry Lemonade', weight = 100, type = 'item', image = 'strawberry_lemonade.png', unique = false, useable = true, shouldClose = true, description = "" },
+strawberry_smoothie = { name = 'strawberry_smoothie', label = 'Strawberry Smoothie', weight = 100, type = 'item', image = 'strawberry_smoothie.png', unique = false, useable = true, shouldClose = true, description = "" },
+sugar = { name = 'sugar', label = 'Sugar', weight = 100, type = 'item', image = 'sugar.png', unique = false, useable = true, shouldClose = true, description = "" },
+
+```

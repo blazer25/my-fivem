@@ -1,0 +1,6 @@
+- van vehicle extras
+- npc walk-in customers
+- non-ped closed shops
+- Optimize job van tracking into single watchdog thread
+- interactive catering peds (waving)
+- Notify when paid out (diff if feed)
