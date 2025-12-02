@@ -222,7 +222,8 @@ RegisterNetEvent('md-drugs:server:sellCornerDrugs', function(item, amount, price
         ps.addItem(src, cornsellConfig.CustomItem, price)
         return
     end
-    ps.addMoney(src, 'cash', price)
+    -- Use black_money item instead of cash for criminal activity
+    ps.addItem(src, 'black_money', price)
 end)
 
 RegisterNetEvent('md-drugs:server:getBackRobbed', function() 

@@ -185,6 +185,11 @@ end
 function AddMoney(source, type, amount)
     local player = GetPlayer(source)
     if not player then return end
+    -- Handle black_money as item (dirty money)
+    if type == 'black_money' or type == 'dirty' then
+        AddItem(source, 'black_money', amount)
+        return
+    end
     if Framework == 'esx' then
         player.addAccountMoney(ConvertMoneyType(type), amount)
     elseif Framework == 'qb' or Framework == 'qbx' then

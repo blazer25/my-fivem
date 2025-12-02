@@ -65,7 +65,6 @@ Config.CoolDown = 60000   --- how long until the player can rob a house in ms
 Config.Reward = 
     {   
  Items =  {                                                 -- The items they can get and there amounts
-    {item = 'money', amount = {min = 20, max = 300}},
     {item = 'black_money', amount = {min = 20, max = 300}},
     {item = 'phone', amount = {min = 1, max = 1}},
     {item = "burger", amount = {min = 2, max = 5}},

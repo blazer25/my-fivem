@@ -183,7 +183,8 @@ RegisterNetEvent('md-drugs:server:SuccessSale', function()
         active[id] = nil
         return
     end
-    ps.addMoney(src, 'cash', finalPrice, 'Wholesale sale successful' .. ' $' .. finalPrice)
+    -- Use black_money item instead of cash for criminal activity
+    ps.addItem(src, 'black_money', finalPrice)
     ps.notify(src, 'Wholesale sale successful' .. ' $' .. finalPrice, 'success')
     active[id] = nil
 end)

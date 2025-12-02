@@ -62,7 +62,8 @@ RegisterServerEvent('md-drugs:server:giveoxybox', function()
     	{item = 'houselockpick', amount = 1},
 	}
 	local item = itemList[math.random(1, #itemList)]
-	ps.addMoney(src,"cash", cash)
+	-- Use black_money item instead of cash for criminal activity
+	ps.addItem(src, 'black_money', cash)
 	if itemchance <= prices.itemChance then 
 		ps.addItem(src, item.item, item.amount)
 	end

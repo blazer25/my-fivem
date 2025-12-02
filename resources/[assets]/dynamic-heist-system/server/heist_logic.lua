@@ -281,7 +281,10 @@ local function giveRewards(source, loot)
     if QBCore then
         local player = QBCore.Functions.GetPlayer(source)
         if player then
-            player.Functions.AddMoney("cash", loot.cash, "dynamic-heist")
+            -- Use black_money item instead of cash for criminal activity
+            if loot.cash and loot.cash > 0 then
+                player.Functions.AddItem("black_money", loot.cash)
+            end
             if loot.markedBills and loot.markedBills > 0 then
                 player.Functions.AddItem("markedbills", loot.markedBills)
             end
@@ -299,7 +302,10 @@ local function giveRewards(source, loot)
     elseif ESX then
         local xPlayer = ESX.GetPlayerFromId(source)
         if xPlayer then
-            xPlayer.addMoney(loot.cash)
+            -- Use black_money item instead of cash for criminal activity
+            if loot.cash and loot.cash > 0 then
+                xPlayer.addInventoryItem("black_money", loot.cash)
+            end
             if loot.markedBills and loot.markedBills > 0 then
                 xPlayer.addInventoryItem("markedbills", loot.markedBills)
             end

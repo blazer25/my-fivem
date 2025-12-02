@@ -103,22 +103,21 @@ function AddPlayerMoney(Player, account, TotalBill)
             Player.Functions.AddMoney('cash', TotalBill)
         end
     elseif account == 'dirty' then
+        -- Use black_money item for dirty money (criminal activity)
         if GetResourceState("ox_inventory") == "started" then
-            exports.ox_inventory:AddItem(source, 'markedbills', 1, {worth = TotalBill})
+            exports.ox_inventory:AddItem(source, 'black_money', TotalBill)
         elseif lib.checkDependency('qb-inventory', '2.0.0') then
-            local info = {worth = TotalBill}
-            exports['qb-inventory']:AddItem(source, 'markedbills', 1, false, info)
-            if QBCore.Shared and QBCore.Shared.Items and QBCore.Shared.Items['markedbills'] then
-                TriggerClientEvent('qb-inventory:client:ItemBox', source, QBCore.Shared.Items['markedbills'], "add", info)
+            exports['qb-inventory']:AddItem(source, 'black_money', TotalBill)
+            if QBCore.Shared and QBCore.Shared.Items and QBCore.Shared.Items['black_money'] then
+                TriggerClientEvent('qb-inventory:client:ItemBox', source, QBCore.Shared.Items['black_money'], "add")
             end
         else
             if isQBox then
-                exports.qbx_core:AddItem(source, 'markedbills', 1, {worth = TotalBill})
+                exports.qbx_core:AddItem(source, 'black_money', TotalBill)
             else
-                local info = {worth = TotalBill}
-                Player.Functions.AddItem('markedbills', 1, false, info)
-                if QBCore.Shared and QBCore.Shared.Items and QBCore.Shared.Items['markedbills'] then
-                    TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items['markedbills'], "add", info)
+                Player.Functions.AddItem('black_money', TotalBill)
+                if QBCore.Shared and QBCore.Shared.Items and QBCore.Shared.Items['black_money'] then
+                    TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items['black_money'], "add")
                 end
             end
         end

@@ -197,7 +197,10 @@ RegisterNetEvent('lation_247robbery:CompleteRegisterRobbery', function()
             if add.metadata then
                 AddItem(source, add.item, quantity, add.metadata)
             else
-                if add.item == 'cash' or add.item == 'money' or add.item == 'bank' then
+                -- black_money is always an item, not an account
+                if add.item == 'black_money' or add.item == 'dirty' then
+                    AddItem(source, 'black_money', quantity)
+                elseif add.item == 'cash' or add.item == 'money' or add.item == 'bank' then
                     AddMoney(source, add.item, quantity)
                 else
                     AddItem(source, add.item, quantity)
@@ -261,7 +264,10 @@ RegisterNetEvent('lation_247robbery:CompleteSafeRobbery', function()
             if add.metadata then
                 AddItem(source, add.item, quantity, add.metadata)
             else
-                if add.item == 'cash' or add.item == 'money' or add.item == 'bank' then
+                -- black_money is always an item, not an account
+                if add.item == 'black_money' or add.item == 'dirty' then
+                    AddItem(source, 'black_money', quantity)
+                elseif add.item == 'cash' or add.item == 'money' or add.item == 'bank' then
                     AddMoney(source, add.item, quantity)
                 else
                     AddItem(source, add.item, quantity)

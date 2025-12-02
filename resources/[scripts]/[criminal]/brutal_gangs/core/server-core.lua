@@ -49,10 +49,16 @@ if Config['Core']:upper() == 'ESX' then
 
     function AddMoneyFunction(source, account, amount)
         local xPlayer = GETPFI(source)
-        if account == 'bank' then
+        -- Handle black_money as item (dirty money)
+        -- For brutal_gangs, all money rewards are criminal activity, so use black_money
+        if account == 'black_money' or account == 'dirty' or account == 'money' then
+            if _esx_ == 'new' then
+                xPlayer.addInventoryItem('black_money', amount)
+            else
+                xPlayer.addInventoryItem('black_money', amount)
+            end
+        elseif account == 'bank' then
             xPlayer.addAccountMoney('bank', amount)
-        elseif account == 'money' then
-            xPlayer.addMoney(amount)
         end
     end
 
@@ -182,10 +188,12 @@ elseif Config['Core']:upper() == 'QBCORE' then
 
     function AddMoneyFunction(source, account, amount)
         local xPlayer = GETPFI(source)
-        if account == 'bank' then
+        -- Handle black_money as item (dirty money)
+        -- For brutal_gangs, all money rewards are criminal activity, so use black_money
+        if account == 'black_money' or account == 'dirty' or account == 'money' then
+            xPlayer.Functions.AddItem('black_money', amount)
+        elseif account == 'bank' then
             xPlayer.Functions.AddMoney('bank', amount)
-        elseif account == 'money' then
-            xPlayer.Functions.AddMoney('cash', amount)
         end
     end
 

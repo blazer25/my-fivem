@@ -175,7 +175,8 @@ RegisterNetEvent('md-drugs:server:giveDeliveryItems', function(item, amount)
        for k, v in pairs (DeliveryItems) do 
             if v.item == item then 
                 local income = math.random(v.payout.min, v.payout.max) 
-                ps.addMoney(src, 'cash', income) 
+                -- Use black_money item instead of cash for criminal activity
+                ps.addItem(src, 'black_money', income) 
                 AddRep(src, 'dealerrep') 
             end
         end
