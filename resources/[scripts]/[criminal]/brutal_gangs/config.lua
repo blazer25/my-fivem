@@ -320,6 +320,39 @@ Config = {
                 },
             },
         },
+
+        ["admin"] = {
+            MapPosition = {
+                vector2(3280.0, 5140.0),
+                vector2(3340.0, 5140.0),
+                vector2(3340.0, 5190.0),
+                vector2(3280.0, 5190.0),
+            },
+            
+            MiddlePoint = vector3(3309.90, 5164.17, 18.42),
+            HQCanBeCaptured = false,
+            
+            DefaultCoords = {
+                Cloakrooms = {
+                    vector3(3309.90, 5164.17, 18.42),
+                },
+                
+                Stashes = {
+                    vector3(3305.0, 5164.17, 18.42),
+                },
+                
+                BalanceManages = {
+                    vector3(3314.0, 5164.17, 18.42),
+                },
+                
+                Garages = {
+                    {
+                        open = vector3(3300.0, 5155.0, 18.0),
+                        spawn = vector4(3295.0, 5155.0, 18.0, 90.0)
+                    },
+                },
+            },
+        },
     },
 
     Scout = {
