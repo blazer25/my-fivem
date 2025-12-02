@@ -81,6 +81,26 @@ local function oxPrep()
                 stashConfig.weight
             )
         end
+        -- Register shops at startup if UseShops is enabled
+        if Config.UseShops and Config.Inv == 'ox' and jobConfig.shops then
+            for storeType, shopItems in pairs(jobConfig.shops) do
+                local shopKey = jobName .. ' ' .. storeType
+                local storeLocations = {}
+                for _, storeEntry in pairs(jobConfig.locations.Stores or {}) do
+                    if storeEntry.StoreData.type == storeType and storeEntry.job == jobName then
+                        table.insert(storeLocations, storeEntry.loc)
+                    end
+                end
+                if #storeLocations > 0 then
+                    exports.ox_inventory:RegisterShop(shopKey, {
+                        name      = shopKey,
+                        inventory = shopItems,
+                        locations = storeLocations,
+                        groups    = { [jobName] = 0 }, -- Require the job (grade 0 minimum)
+                    })
+                end
+            end
+        end
     end
 end
 oxPrep()
@@ -424,18 +444,7 @@ lib.callback.register('md-jobs:server:getShops', function(source, job, storeType
             return true
         elseif Config.Inv == 'ox' then
             local shopKey = job .. ' ' .. storeType
-            -- Get locations for this specific store type
-            local storeLocations = {}
-            for _, storeEntry in pairs(Jobs[job].locations.Stores) do
-                if storeEntry.StoreData.type == storeType and storeEntry.job == job then
-                    table.insert(storeLocations, storeEntry.loc)
-                end
-            end
-            exports.ox_inventory:RegisterShop(shopKey, {
-                name      = shopKey,
-                inventory = Jobs[job].shops[storeType],
-                locations = storeLocations,
-            })
+            -- Shop should already be registered in oxPrep(), just return the key
             return shopKey
         end
     end
