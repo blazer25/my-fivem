@@ -648,6 +648,34 @@ Config.market_locations = {
 			},
 			['store'] = 'bank',
 		}
+	},
+	["market_supermarket"] = {
+		['buy_price'] = 250000,
+		['sell_price'] = 125000,
+		['coord'] = {153.79, 244.93, 106.98},
+		['garage_coord'] = {160.0, 250.0, 106.5, 90.0},
+		['truck_parking_location'] = {155.0, 240.0, 106.98, 180.0},
+		['map_blip_coord'] = {153.79, 244.93, 106.98},
+		['sell_blip_coords'] = {
+			{153.79, 244.93, 106.98},
+			{150.0, 247.0, 106.98},
+			{157.0, 242.0, 106.98},
+		},
+		['deliveryman_coord'] = {155.0, 240.0, 106.98},
+		['type'] = '247store',
+		['account'] = {
+			['item'] = {
+				[1] = {
+					['icon'] = 'img/credit_card.png',
+					['account'] = 'bank'
+				},
+				[2] = {
+					['icon'] = 'img/cash.png',
+					['account'] = 'cash'
+				}
+			},
+			['store'] = 'bank',
+		}
 	}
 }
 
@@ -700,12 +728,12 @@ Config.market_types = {
 			[4] = 'pounder',
 			[5] = 'pounder2'
 		},
-		['max_purchasable_categories'] = 4,		-- The max amount of categories that can be purchased
+		['max_purchasable_categories'] = 5,		-- The max amount of categories that can be purchased
 		['categories'] = {						-- Here you configure the categories available to purchase in your store
-			"food_market", "drink_market", "alcohol_market", "vape_market"
+			"food_market", "drink_market", "alcohol_market", "vape_market", "restaurant_supplies"
 		},
 		['default_categories'] = {				-- Here you can configure the categories available when the store has no owner
-			"food_market", "drink_market", "alcohol_market", "vape_market"
+			"food_market", "drink_market", "alcohol_market", "vape_market", "restaurant_supplies"
 		},
 		['blips'] = {							-- Create the blips on map
 			['id'] = 52,						-- Blip ID [Set this value 0 to dont have blip]
@@ -1729,6 +1757,127 @@ Config.market_categories = {
 				['amount_to_delivery'] = 2,
 				['img'] = 'armor.png',
 			}
+		}
+	},
+
+	['restaurant_supplies'] = {
+		['page_name'] = "Restaurant Supplies",
+		['page_desc'] = "Essential ingredients and supplies for restaurants and food service businesses, from fresh produce to cooking essentials",
+		['page_icon'] = '<i class="fa-solid fa-utensils"></i>',
+		['page_img'] = 'img/categories/food.png',
+		['category_buy_price'] = 10000,
+		['category_sell_price'] = 5000,
+		['items'] = {
+			['frozen_fries'] = {
+				['name'] = "Frozen Fries",
+				['price_to_customer'] = 4,
+				['price_to_customer_min'] = 2,
+				['price_to_customer_max'] = 8,
+				['price_to_export'] = 3,
+				['price_to_owner'] = 3,
+				['amount_to_owner'] = 50,
+				['amount_to_delivery'] = 50,
+				['img'] = 'frozen_fries.png',
+			},
+			['frozen_nuggets'] = {
+				['name'] = "Frozen Nuggets",
+				['price_to_customer'] = 4,
+				['price_to_customer_min'] = 2,
+				['price_to_customer_max'] = 8,
+				['price_to_export'] = 3,
+				['price_to_owner'] = 3,
+				['amount_to_owner'] = 50,
+				['amount_to_delivery'] = 50,
+				['img'] = 'frozen_nuggets.png',
+			},
+			['burger_patty'] = {
+				['name'] = "Burger Patty",
+				['price_to_customer'] = 3,
+				['price_to_customer_min'] = 1,
+				['price_to_customer_max'] = 6,
+				['price_to_export'] = 2,
+				['price_to_owner'] = 2,
+				['amount_to_owner'] = 50,
+				['amount_to_delivery'] = 50,
+				['img'] = 'burger_patty.png',
+			},
+			['raw_chicken'] = {
+				['name'] = "Raw Chicken",
+				['price_to_customer'] = 2,
+				['price_to_customer_min'] = 1,
+				['price_to_customer_max'] = 4,
+				['price_to_export'] = 1,
+				['price_to_owner'] = 1,
+				['amount_to_owner'] = 50,
+				['amount_to_delivery'] = 50,
+				['img'] = 'raw_chicken.png',
+			},
+			['burger_cheese'] = {
+				['name'] = "Burger Cheese",
+				['price_to_customer'] = 2,
+				['price_to_customer_min'] = 1,
+				['price_to_customer_max'] = 4,
+				['price_to_export'] = 1,
+				['price_to_owner'] = 1,
+				['amount_to_owner'] = 50,
+				['amount_to_delivery'] = 50,
+				['img'] = 'burger_cheese.png',
+			},
+			['burger_bun'] = {
+				['name'] = "Burger Bun",
+				['price_to_customer'] = 2,
+				['price_to_customer_min'] = 1,
+				['price_to_customer_max'] = 4,
+				['price_to_export'] = 1,
+				['price_to_owner'] = 1,
+				['amount_to_owner'] = 50,
+				['amount_to_delivery'] = 50,
+				['img'] = 'burger_bun.png',
+			},
+			['cooking_oil'] = {
+				['name'] = "Cooking Oil",
+				['price_to_customer'] = 3,
+				['price_to_customer_min'] = 1,
+				['price_to_customer_max'] = 6,
+				['price_to_export'] = 2,
+				['price_to_owner'] = 2,
+				['amount_to_owner'] = 50,
+				['amount_to_delivery'] = 50,
+				['img'] = 'cooking_oil.png',
+			},
+			['lettuce'] = {
+				['name'] = "Lettuce",
+				['price_to_customer'] = 2,
+				['price_to_customer_min'] = 1,
+				['price_to_customer_max'] = 4,
+				['price_to_export'] = 1,
+				['price_to_owner'] = 1,
+				['amount_to_owner'] = 50,
+				['amount_to_delivery'] = 50,
+				['img'] = 'lettuce.png',
+			},
+			['tomato'] = {
+				['name'] = "Tomato",
+				['price_to_customer'] = 2,
+				['price_to_customer_min'] = 1,
+				['price_to_customer_max'] = 4,
+				['price_to_export'] = 1,
+				['price_to_owner'] = 1,
+				['amount_to_owner'] = 50,
+				['amount_to_delivery'] = 50,
+				['img'] = 'tomato.png',
+			},
+			['onion'] = {
+				['name'] = "Onion",
+				['price_to_customer'] = 2,
+				['price_to_customer_min'] = 1,
+				['price_to_customer_max'] = 4,
+				['price_to_export'] = 1,
+				['price_to_owner'] = 1,
+				['amount_to_owner'] = 50,
+				['amount_to_delivery'] = 50,
+				['img'] = 'onion.png',
+			},
 		}
 	},
 }

@@ -87,21 +87,6 @@ Jobs['burgershot'] = {
 
     },
     shops = {
-        fridge = {
-            { name = 'frozen_fries',   price = 3, amount = 50, },
-            { name = 'frozen_nuggets', price = 3, amount = 50, },
-            { name = 'burger_patty',   price = 2, amount = 50, },
-            { name = 'raw_chicken',    price = 1, amount = 50, },
-            { name = 'burger_cheese',  price = 1, amount = 50, },
-        },
-        ingridients = {
-
-            { name = 'burger_bun',  price = 1, amount = 50 },
-            { name = 'cooking_oil', price = 2, amount = 50 },
-            { name = 'lettuce',     price = 1, amount = 50 },
-            { name = 'tomato',      price = 1, amount = 50 },
-            { name = 'onion',       price = 1, amount = 50 },
-        }
     },
     locations = {
         Crafter = {
@@ -167,26 +152,6 @@ Jobs['burgershot'] = {
             },
         },
         Stores = {
-            {
-                StoreData = { type = 'fridge', targetLabel = 'Fridge', menuLabel = 'Fridge' },
-                loc = vector3(-1196.17, -901.54, 13.89),
-                l = 1.5,
-                w = 1.0,
-                lwr = 0.75,
-                upr = 1.25,
-                r = 349,
-                job = jobloc
-            },
-            {
-                StoreData = { type = 'ingridients', targetLabel = 'Ingredients ', menuLabel = 'Ingredients' },
-                loc = vector3(-1202.43, -895.48, 13.89),
-                l = 1.5,
-                w = 1.0,
-                lwr = 0.75,
-                upr = 1.25,
-                r = 300,
-                job = jobloc
-            },
         },
         Tills = {
             { loc = vector3(-1197.79, -893.26, 13.89), l = 1.0, w = 1.0, lwr = 0.5, upr = 0.5, r = 344, commission = 0.2, job = jobloc },
