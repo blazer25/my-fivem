@@ -297,14 +297,14 @@ if not IsDuplicityVersion() then
         end
 
         RequestModel(model)
-        local timeout = 0
-        while not HasModelLoaded(model) and timeout < 100 do
+        local startTime = GetGameTimer()
+        local timeout = 20000 -- 20 seconds timeout
+        while not HasModelLoaded(model) and (GetGameTimer() - startTime) < timeout do
             Wait(100)
-            timeout = timeout + 1
         end
 
         if not HasModelLoaded(model) then
-            print("^1[919ADMIN-Bridge] ERROR: Failed to load model after timeout^0")
+            print(("^1[919ADMIN-Bridge] ERROR: Failed to load model '%s' after %d seconds timeout^0"):format(model, timeout / 1000))
             return
         end
 
