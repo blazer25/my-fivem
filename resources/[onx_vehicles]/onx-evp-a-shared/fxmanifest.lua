@@ -2,7 +2,7 @@ fx_version 'cerulean'
 game 'gta5'
 author 'ONX'
 description 'WiseGuy Emergency Vehicles Pack'
-version '1.1.0'
+version '1.2.2'
 lua54 'yes'
 
 data_file 'AUDIO_GAMEDATA' 'audioconfig/onxevp_game.dat'
@@ -25,4 +25,9 @@ escrow_ignore {
 server_scripts {
   'version.lua',
 }
--- dependency '/assetpacks' -- Commented out - assetpacks not available
+
+escrow_ignore {
+  'dev_extras/**/*.yft',
+  'dev_extras/**/*.xml'
+}
+dependency '/assetpacks'
