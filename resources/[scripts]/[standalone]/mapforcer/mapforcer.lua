@@ -26,7 +26,9 @@ local maps = {
     'Meetingroomprison',
     'Prisoncanteen',
     'Prisonmainblock',
-    'uniqx_burgershot'
+    'uniqx_burgershot',
+    'moreo_supermarket',
+    'moreo_gym'
 
 }
 
