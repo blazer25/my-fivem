@@ -69,7 +69,7 @@ Config.Locales = {
     ["7"] = "Leave",
     ["8"] = "Available Chips: ",
     ["9"] = "You Won!",
-    ["10"] = "[~g~ E ~w~] Play Lucky Wheel - 5000$",
+    ["10"] = "[~g~ E ~w~] Play Lucky Wheel - Free (24h cooldown)",
     ["11"] = "You cant access this!",
     ["12"] = "You dont have enough casino chips to use this!",
     ["13"] = "Good Luck!",
@@ -157,7 +157,7 @@ Config.Locales = {
 
     ["88"] = "You have to much in your pockets",
     ["89"] = "Play slot: ",
-    ["90"] = "Play Lucky Wheel - 5000$",
+    ["90"] = "Play Lucky Wheel - Free (24h cooldown)",
     ["91"] = "Play inside track",
     ["92"] = "Play blackjack",
     ["93"] = "Play roulette",
@@ -183,7 +183,7 @@ Config.Locales = {
     ["112"] = "Price: ",
     ["113"] = "Diamond Casino",
     ["114"] = "We cannot accept this value!",
-    ["115"] = "You already spin it, wait till next server restart!",
+    ["115"] = "You already spin it, wait 24 hours before spinning again!",
 }
 
 Config.AmbientPeds = true

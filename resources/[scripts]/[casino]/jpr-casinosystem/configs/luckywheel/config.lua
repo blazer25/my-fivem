@@ -1,9 +1,9 @@
 LuckywheelConfig	= {}
 
-LuckywheelConfig.SpinOneTimePerServerRestart = true
+LuckywheelConfig.SpinOneTimePerServerRestart = false
 LuckywheelConfig.WheelInteract = vector3(948.41, 44.84, 71.64)
 LuckywheelConfig.WheelPos = vector4(949.71, 45.1, 70.9, 328.0)	-- Where the wheel prop will spawn OR where wheel prop is
-LuckywheelConfig.Price = 5000
+LuckywheelConfig.Price = 0
 LuckywheelConfig.CanInteract = {member = true, vip = true, none = false}
 
 -- type = [weapon, money, item, car] (for money it will give only in bank)

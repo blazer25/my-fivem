@@ -21,8 +21,8 @@ Config.UseCustomSeatbeltIntegration = false -- Enable to use a third-party seatb
 Config.SeatbeltKeybind = "B"
 Config.PreventExitWhileBuckled = true
 Config.DisablePassengerSeatbelts = false
-Config.MinSpeedMphEjectionSeatbeltOff = 20.0
-Config.MinSpeedMphEjectionSeatbeltOn = 100.0
+Config.MinSpeedMphEjectionSeatbeltOff = 50.0
+Config.MinSpeedMphEjectionSeatbeltOn = 200.0
 Config.DisableSeatbeltInEmergencyVehicles = true
 
 -- Default component displays
