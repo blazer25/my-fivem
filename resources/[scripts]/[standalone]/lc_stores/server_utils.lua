@@ -2,6 +2,12 @@ WebhookURL = "WEBHOOK" -- Webhook to send logs to discord
 
 function beforeBuyMarket(source,market_id,price)
 	-- Here you can do any verification when a player is buying a market, like if player has the permission to that or anything else you want to check before buy the market. return true or false
+	
+	-- Block purchases for supermarket and digital den - they are not ownable until more locations are added
+	if market_id == "market_supermarket" or market_id == "digital_den" then
+		return false
+	end
+	
 	return true
 end
 

@@ -622,7 +622,7 @@ Config.market_locations = {
 		}
 	},
 	["digital_den"] = {
-		['buy_price'] = 999999999,
+		['buy_price'] = 99999999999,  -- Non-ownable - set to impossibly high price (way above anyone's pay grade)
 		['sell_price'] = 0,
 		['coord'] = {86.33, -230.93, 54.63},
 		['garage_coord'] = {90.0, -235.0, 54.0, 337.0},
@@ -650,7 +650,7 @@ Config.market_locations = {
 		}
 	},
 	["market_supermarket"] = {
-		['buy_price'] = 999999999,  -- Non-ownable - set to impossibly high price
+		['buy_price'] = 99999999999,  -- Non-ownable - set to impossibly high price (way above anyone's pay grade)
 		['sell_price'] = 0,
 		['coord'] = {153.7893, 244.9305, 106.9764},
 		['garage_coord'] = {160.0, 250.0, 106.5, 90.0},
