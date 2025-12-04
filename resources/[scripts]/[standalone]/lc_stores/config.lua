@@ -650,19 +650,17 @@ Config.market_locations = {
 		}
 	},
 	["market_supermarket"] = {
-		['buy_price'] = 250000,
-		['sell_price'] = 125000,
-		['coord'] = {153.79, 244.93, 106.98},
+		['buy_price'] = 999999999,  -- Non-ownable - set to impossibly high price
+		['sell_price'] = 0,
+		['coord'] = {153.7893, 244.9305, 106.9764},
 		['garage_coord'] = {160.0, 250.0, 106.5, 90.0},
 		['truck_parking_location'] = {155.0, 240.0, 106.98, 180.0},
-		['map_blip_coord'] = {153.79, 244.93, 106.98},
+		['map_blip_coord'] = {153.7893, 244.9305, 106.9764},
 		['sell_blip_coords'] = {
-			{153.79, 244.93, 106.98},
-			{150.0, 247.0, 106.98},
-			{157.0, 242.0, 106.98},
+			{153.7893, 244.9305, 106.9764},
 		},
 		['deliveryman_coord'] = {155.0, 240.0, 106.98},
-		['type'] = '247store',
+		['type'] = 'supermarket_supplies',  -- Custom type - only restaurant supplies
 		['account'] = {
 			['item'] = {
 				[1] = {
@@ -864,6 +862,48 @@ Config.market_types = {
 			['name'] = "Digital Den",
 			['color'] = 3,
 			['scale'] = 0.6,
+		}
+	},
+
+	['supermarket_supplies'] = {  -- Standalone supermarket - restaurant supplies only, non-ownable
+		['stock_capacity'] = 999,  -- High capacity since it's always stocked
+		['max_employees'] = 0,  -- No employees allowed - not ownable
+		['required_job'] = {},
+		['upgrades'] = {
+			['stock'] = {
+				['price'] = 0,
+				['level_reward'] = {
+					[0] = 999,
+				}
+			},
+			['truck'] = {
+				['price'] = 0,
+				['level_reward'] = {
+					[0] = 0,
+				}
+			},
+			['relationship'] = {
+				['price'] = 0,
+				['level_reward'] = {
+					[0] = 0,
+				}
+			},
+		},
+		['trucks'] = {
+			[0] = 'speedo',
+		},
+		['max_purchasable_categories'] = 0,  -- Can't purchase categories - always has restaurant supplies
+		['categories'] = {
+			"restaurant_supplies"  -- Only restaurant supplies available
+		},
+		['default_categories'] = {
+			"restaurant_supplies"  -- Always available - no owner needed
+		},
+		['blips'] = {
+			['id'] = 52,
+			['name'] = "Supermarket",
+			['color'] = 2,
+			['scale'] = 0.8,
 		}
 	}
 }
