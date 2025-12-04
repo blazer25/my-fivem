@@ -29,6 +29,7 @@ local maps = {
     'uniqx_burgershot',
     'moreo_supermarket',
     'moreo_gym'
+    'moreo_fishandchip'
 
 }
 
