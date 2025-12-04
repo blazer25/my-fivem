@@ -1,10 +1,10 @@
 --------------------COMMUNITY ID-------------------
-community_id = ''
+community_id = 'blazer'
 --	Sets a prefix for saved values at the user end, without this people who play on multiple LVC server could face conflicts. **Once set DO NOT CHANGE. It will result in loss of data for end users.**
 --		I recommend something short (4-6 characters) for example a community abbreviation. SPACES ARE NOT ALLOWED.
 
 ------------------MENU KEYBINDING------------------
-open_menu_key = 'O'
+open_menu_key = 'Q'
 --	Sets default key for RegisterKeyMapping. Examples: 'l','F5', etc. DEFAULT: 'O', users may set one in their GTA V > Settings > Hotkeys > FiveM settings. 
 --		More info: https://cookbook.fivem.net/2020/01/06/using-the-new-console-key-bindings/
 --		List of Keys: https://pastebin.com/u9ewvWWZ
