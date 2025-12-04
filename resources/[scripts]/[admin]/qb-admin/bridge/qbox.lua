@@ -326,38 +326,40 @@ if not IsDuplicityVersion() then
     end)
 
     -- Callback to get vehicle info from admin's client
-    lib.callback.register('919-admin:server:GetVehicleInfoFromAdmin', function()
-        local ped = PlayerPedId()
-        local veh = GetVehiclePedIsIn(ped, false)
-        
-        if veh == 0 or veh == nil then
-            return nil
-        end
-        
-        -- Get plate
-        local plate = GetVehicleNumberPlateText(veh)
-        if plate then
-            plate = plate:gsub("^%s*(.-)%s*$", "%1") -- trim whitespace
-        end
-        
-        local props = lib.getVehicleProperties(veh)
-        local hash = props.model
-        local vehModel = GetEntityModel(veh)
-        
-        -- Get vehicle name from qbx_core (server-side lookup needed, so we'll send the hash and let server figure it out)
-        -- Actually, we need the model name, so let's use exports
-        local vehiclesByHash = exports.qbx_core:GetVehiclesByHash()
-        local vehicleData = vehiclesByHash[vehModel]
-        
-        if not vehicleData or not vehicleData.model then
-            return nil
-        end
-        
-        return {
-            model = vehicleData.model,
-            hash = hash,
-            plate = plate,
-            props = props
-        }
-    end)
+    if not IsDuplicityVersion() then
+        lib.callback.register('919-admin:server:GetVehicleInfoFromAdmin', function()
+            local ped = PlayerPedId()
+            local veh = GetVehiclePedIsIn(ped, false)
+            
+            if veh == 0 or veh == nil then
+                return nil
+            end
+            
+            -- Get plate
+            local plate = GetVehicleNumberPlateText(veh)
+            if plate then
+                plate = plate:gsub("^%s*(.-)%s*$", "%1") -- trim whitespace
+            end
+            
+            local props = lib.getVehicleProperties(veh)
+            local hash = props.model
+            local vehModel = GetEntityModel(veh)
+            
+            -- Get vehicle name from qbx_core (server-side lookup needed, so we'll send the hash and let server figure it out)
+            -- Actually, we need the model name, so let's use exports
+            local vehiclesByHash = exports.qbx_core:GetVehiclesByHash()
+            local vehicleData = vehiclesByHash[vehModel]
+            
+            if not vehicleData or not vehicleData.model then
+                return nil
+            end
+            
+            return {
+                model = vehicleData.model,
+                hash = hash,
+                plate = plate,
+                props = props
+            }
+        end)
+    end
 end

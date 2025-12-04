@@ -987,6 +987,41 @@ end)
 RegisterServerEvent("919-admin:server:AddVehicleToGarage", function(targetId)
     local src = source
     if AdminPanel.HasPermission(src, "savecar") then
+        -- Check if ox_lib is available
+        if GetResourceState('ox_lib') ~= 'started' then
+            TriggerClientEvent("919-admin:client:ShowPanelAlert", src, "danger", "<strong>Error</strong> ox_lib resource is not started. Please ensure ox_lib is running.")
+            print("^1[919ADMIN] ERROR: ox_lib resource is not started. Cannot use lib.callback.await^0")
+            return
+        end
+        
+        -- Check if lib is available (it should be from shared_scripts or server_scripts)
+        if not lib or type(lib) ~= 'table' then
+            TriggerClientEvent("919-admin:client:ShowPanelAlert", src, "danger", "<strong>Error</strong> ox_lib is not properly initialized. Please restart the server or contact an administrator.")
+            print("^1[919ADMIN] ERROR: lib global is not available. Type: " .. type(lib) .. "^0")
+            print("^1[919ADMIN] DEBUG: Make sure '@ox_lib/init.lua' is loaded and ox_lib resource is started.^0")
+            return
+        end
+        
+        -- Ensure callback module is loaded (lazy loading)
+        if not lib.callback then
+            -- Try to trigger lazy loading by accessing it
+            local success, callbackModule = pcall(function()
+                return lib.callback
+            end)
+            if not success or not callbackModule then
+                TriggerClientEvent("919-admin:client:ShowPanelAlert", src, "danger", "<strong>Error</strong> Failed to load ox_lib callback module.")
+                print("^1[919ADMIN] ERROR: Failed to load lib.callback module.^0")
+                return
+            end
+        end
+        
+        -- Check if callback.await is available
+        if type(lib.callback) ~= 'table' or type(lib.callback.await) ~= 'function' then
+            TriggerClientEvent("919-admin:client:ShowPanelAlert", src, "danger", "<strong>Error</strong> ox_lib callback.await is not available. Please restart the server.")
+            print("^1[919ADMIN] ERROR: lib.callback.await is not a function. Type: " .. type(lib.callback.await) .. "^0")
+            return
+        end
+        
         -- Get vehicle info from admin (who is in the vehicle)
         local vehicleInfo = lib.callback.await('919-admin:server:GetVehicleInfoFromAdmin', src)
         if not vehicleInfo then

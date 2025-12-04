@@ -41,6 +41,7 @@ files {
 }
 
 shared_scripts {
+    '@ox_lib/init.lua',
     'locales/locale.lua',
     'locales/en.lua', -- Can change to other languages available in locales folder
     'config.lua',
@@ -66,4 +67,7 @@ client_scripts {
     'client/DeveloperOptions.lua',
 }
 
-dependencies { 'oxmysql' }
+dependencies { 
+    'ox_lib',
+    'oxmysql' 
+}
