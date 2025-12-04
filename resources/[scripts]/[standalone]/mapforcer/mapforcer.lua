@@ -28,7 +28,7 @@ local maps = {
     'Prisonmainblock',
     'uniqx_burgershot',
     'moreo_supermarket',
-    'moreo_gym'
+    'moreo_gym',
     'moreo_fishandchip'
 
 }
