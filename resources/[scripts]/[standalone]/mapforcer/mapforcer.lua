@@ -29,7 +29,8 @@ local maps = {
     'uniqx_burgershot',
     'moreo_supermarket',
     'moreo_gym',
-    'moreo_fishandchip'
+    'moreo_fishandchip',
+    'Sandy BCSO'
 
 }
 
