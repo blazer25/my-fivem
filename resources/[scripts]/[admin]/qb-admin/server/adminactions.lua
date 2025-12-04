@@ -987,6 +987,26 @@ end)
 RegisterServerEvent("919-admin:server:AddVehicleToGarage", function(targetId)
     local src = source
     if AdminPanel.HasPermission(src, "savecar") then
+        -- Check if ox_lib is available
+        if GetResourceState('ox_lib') ~= 'started' then
+            TriggerClientEvent("919-admin:client:ShowPanelAlert", src, "danger", "<strong>Error</strong> ox_lib resource is not started. Please ensure ox_lib is running.")
+            print("^1[919ADMIN] ERROR: ox_lib resource is not started. Cannot use lib.callback.await^0")
+            return
+        end
+        
+        -- Check if lib global is available
+        if type(lib) ~= 'table' then
+            TriggerClientEvent("919-admin:client:ShowPanelAlert", src, "danger", "<strong>Error</strong> ox_lib is not properly initialized. Please restart the server or contact an administrator.")
+            print("^1[919ADMIN] ERROR: lib global is not available. Make sure '@ox_lib/init.lua' is in shared_scripts and ox_lib is started.^0")
+            return
+        end
+        
+        if type(lib.callback) ~= 'table' or type(lib.callback.await) ~= 'function' then
+            TriggerClientEvent("919-admin:client:ShowPanelAlert", src, "danger", "<strong>Error</strong> ox_lib callback system is not available. Please restart the server or contact an administrator.")
+            print("^1[919ADMIN] ERROR: lib.callback is not available. ox_lib may not be fully loaded.^0")
+            return
+        end
+        
         -- Get vehicle info from admin (who is in the vehicle)
         local vehicleInfo = lib.callback.await('919-admin:server:GetVehicleInfoFromAdmin', src)
         if not vehicleInfo then
