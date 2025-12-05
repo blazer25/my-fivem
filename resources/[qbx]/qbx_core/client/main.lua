@@ -83,3 +83,11 @@ lib.callback.register('qbx_core:client:getVehicleClasses', function()
     end
     return classes
 end)
+
+lib.callback.register('qbx:getStreetName', function(coords)
+    local street1, street2 = GetStreetNameAtCoord(coords.x, coords.y, coords.z)
+    return {
+        main = GetStreetNameFromHashKey(street1),
+        cross = GetStreetNameFromHashKey(street2)
+    }
+end)

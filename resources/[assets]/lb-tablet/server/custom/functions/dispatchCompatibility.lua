@@ -142,12 +142,10 @@ RegisterNetEvent("police:server:policeAlert", function(text, camId, playerSource
     local coords = GetEntityCoords(playerPed)
     
     -- Get street name for location label
-    local street1, street2 = GetStreetNameAtCoord(coords.x, coords.y, coords.z)
-    local street1name = GetStreetNameFromHashKey(street1)
-    local street2name = GetStreetNameFromHashKey(street2)
-    local locationLabel = street1name
-    if street2name and street2name ~= "" then
-        locationLabel = street1name .. " " .. street2name
+    local streetInfo = lib.callback.await('qbx:getStreetName', src, coords)
+    local locationLabel = streetInfo.main
+    if streetInfo.cross and streetInfo.cross ~= "" then
+        locationLabel = streetInfo.main .. " " .. streetInfo.cross
     end
     
     local title = text or "Dispatch"

@@ -11,10 +11,12 @@ IsUsingXTPrison = GetResourceState('xt-prison'):find('start')
 ---@param minGrade? integer
 ---@return boolean?
 function IsLeoAndOnDuty(player, minGrade)
+    if not player or not player.PlayerData then return false end
     local job = player.PlayerData.job
     if job and job.type == 'leo' and job.onduty then
         return job.grade.level >= (minGrade or 0)
     end
+    return false
 end
 
 -- Functions
@@ -176,12 +178,10 @@ RegisterNetEvent('police:server:policeAlert', function(text, camId, playerSource
     local players = exports.qbx_core:GetQBPlayers()
     
     -- Get street name for location label
-    local street1, street2 = GetStreetNameAtCoord(coords.x, coords.y, coords.z)
-    local street1name = GetStreetNameFromHashKey(street1)
-    local street2name = GetStreetNameFromHashKey(street2)
-    local locationLabel = street1name
-    if street2name and street2name ~= "" then
-        locationLabel = street1name .. " " .. street2name
+    local streetInfo = lib.callback.await('qbx:getStreetName', playerSource, coords)
+    local locationLabel = streetInfo.main
+    if streetInfo.cross and streetInfo.cross ~= "" then
+        locationLabel = streetInfo.main .. " " .. streetInfo.cross
     end
     
     -- Send dispatch to lb-tablet MDT
