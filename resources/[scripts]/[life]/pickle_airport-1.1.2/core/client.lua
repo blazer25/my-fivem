@@ -9,6 +9,22 @@ function CreateVeh(modelHash, ...)
         Wait(100)
     end
     
+    -- Get network ID and ensure proper network registration
+    local netId = NetworkGetNetworkIdFromEntity(veh)
+    if netId and netId > 0 then
+        -- Allow network migration to prevent desync issues
+        SetNetworkIdCanMigrate(netId, true)
+        -- Wait for network ID to be properly registered
+        while not NetworkDoesEntityExistWithNetworkId(netId) do
+            Wait(10)
+        end
+    end
+    
+    -- Set vehicle ownership and properties
+    SetVehicleHasBeenOwnedByPlayer(veh, true)
+    SetVehicleNeedsToBeHotwired(veh, false)
+    SetVehRadioStation(veh, 'OFF')
+    
     -- Set as mission entity to prevent automatic cleanup
     SetEntityAsMissionEntity(veh, true, true)
     
