@@ -27,6 +27,22 @@ end
 function AddItem(source, name, amount)
     local xPlayer = QBCore.Functions.GetPlayer(source)
     if name == "money" or name == "cash" then 
+        -- Check hourly earnings cap for airport mission rewards
+        local success, cappedAmount, message = exports['economy_cap']:CheckAndAddEarnings(source, amount, 'airport-mission')
+        if not success then
+            ShowNotification(source, message or 'You have reached your hourly earnings limit')
+            return false
+        end
+        
+        amount = cappedAmount
+        if amount <= 0 then
+            return false
+        end
+        
+        if message then
+            ShowNotification(source, message)
+        end
+        
         return xPlayer.Functions.AddMoney("cash", amount)
     else
         return xPlayer.Functions.AddItem(name, amount)

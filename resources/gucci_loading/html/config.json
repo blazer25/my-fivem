@@ -52,10 +52,10 @@
         "Do not spam the chat\nor use slurs or hate speech."
     ],
     "teamMembers": [
-        { "name": "GucciFlipFlops", "role": "Head Developer", "discord": "pakinextdoor", "image": "./assets/png/fakalheadshot.png" },
-        { "name": "HerGTR", "role": "Founding Member", "discord": "dwboutit", "image": "./assets/png/gatorheadshot.png" },
-        { "name": "Mitch", "role": "Founding Member", "discord": "builtlikemitch", "image": "./assets/png/mitchheadshot.png" },
-        { "name": "Haz", "role": "Founding Member", "discord": "spooky1001", "image": "./assets/png/headshot.png" }
+        { "name": "Blazer", "role": "Owner", "discord": "blazer", "image": "./assets/png/headshot.png" },
+        { "name": "Dankz", "role": "Manager", "discord": "dankz", "image": "./assets/png/headshot.png" },
+        { "name": "Chris Stone", "role": "Developer", "discord": "chrisstone", "image": "./assets/png/headshot.png" },
+        { "name": "Chase Webby", "role": "Admin", "discord": "chasewebby", "image": "./assets/png/headshot.png" }
     ],
     "gallery": [
         { "path": "./assets/jpg/fivemsupranrcisist.jpg"},
