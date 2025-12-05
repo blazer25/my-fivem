@@ -1,6 +1,16 @@
 Framework = {}
 currentZone = nil
 
+-- Wrapper function to check license before opening trucker menu
+local function CheckLicenseAndOpenMenu()
+    local licenses = lib.callback.await('qbx_idcard:integration:server:GetPlayerLicenses', false)
+    if not licenses or not licenses['driver_truck'] then
+        Framework:Notify("You need a Truck License to start this job. Complete the license school first.", "error")
+        return
+    end
+    OpenTruckerMenu()
+end
+
 function Framework:GetIdentifier()
     if shared.Framework == "qb" then
         return FrameworkObject.Functions.GetPlayerData().citizenid
@@ -104,7 +114,7 @@ for k, v in pairs(shared.TruckerJob) do
                         icon = "fas fa-briefcase",
                         onSelect = function()
                             currentZone = k
-                            OpenTruckerMenu()
+                            CheckLicenseAndOpenMenu()
                         end,
                         canInteract = function(entity, distance, data)
                             return not working 
@@ -131,7 +141,7 @@ for k, v in pairs(shared.TruckerJob) do
                         icon = "fas fa-briefcase",
                         action = function()
                             currentZone = k
-                            OpenTruckerMenu()
+                            CheckLicenseAndOpenMenu()
                         end,
                         canInteract = function()
                             if not working then 
@@ -192,7 +202,7 @@ function HandleDealerZone(_coords)
             if not working then
                 Draw3DText(coords.x, coords.y, coords.z + 0.4, shared.Locales["open_job"])
                 if IsControlJustReleased(0, 38) then
-                    OpenTruckerMenu()
+                    CheckLicenseAndOpenMenu()
                 end
             else
                 Draw3DText(coords.x, coords.y, coords.z + 0.4, shared.Locales["cancel_job"])

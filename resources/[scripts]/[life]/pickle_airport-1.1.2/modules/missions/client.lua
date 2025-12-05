@@ -235,6 +235,13 @@ function StopMission()
 end
 
 function StartMission(Type)
+    -- Check for plane license before starting mission
+    local licenses = lib.callback.await('qbx_idcard:integration:server:GetPlayerLicenses', false)
+    if not licenses or not licenses['driver_plane'] then
+        ShowNotification("You need a Plane License to start this job. Complete the license school first.")
+        return
+    end
+    
     local vehicle = (Config.MissionCommand and GetCurrentAircraft() or nil)
     if MissionIndex == nil then 
         if not vehicle then 
