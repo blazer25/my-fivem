@@ -138,6 +138,14 @@ function OpenFlightMenu(index, vehicle)
 end
 
 function OpenSpawnMenu(index)
+    -- Check for plane license before allowing spawn
+    local licenses = lib.callback.await('qbx_idcard:integration:server:GetPlayerLicenses', false)
+    if not licenses or not licenses['driver_plane'] then
+        ShowNotification("You need a Plane License to spawn aircraft. Complete the license school first.")
+        Interact = false
+        return
+    end
+    
     local menu_id = "airport_spawn_menu"
     local options = Config.Spawner.Vehicles
     local cfg = Config.Airports[index]
