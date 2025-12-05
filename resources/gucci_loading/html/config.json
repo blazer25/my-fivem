@@ -3,8 +3,8 @@
     "backgroundImage": "./assets/png/supra1.png",
     "videoUrl": "",
     "watermark": { 
-        "label": { "text": "The Vibe RP", "colorWordCount": 2 }, 
-        "subHeading": "Loading Screen", 
+        "label": { "text": "Life$tyle RolePlay", "colorWordCount": 2 }, 
+        "subHeading": "A city with serious RP", 
         "logo": "./assets/png/logo.png" 
     },
     "socialHeaders": [
@@ -12,7 +12,7 @@
             "type": "discord", 
             "cardLabel": "Discord Server", 
             "cardInfo": "Join the discord to keep up with the latest on the FiveM server!", 
-            "link": "https://discord.gg/dbFChqBh5u", 
+            "link": "https://discord.gg/qbox", 
             "enabled": true 
         },
         { 
@@ -20,28 +20,28 @@
             "cardLabel": "Instagram Page", 
             "cardInfo": "Follow the instagram page for more content!", 
             "link": "https://instagram.com", 
-            "enabled": true 
+            "enabled": false 
         },
         { 
             "type": "telegram", 
             "cardLabel": "Telegram Channel", 
             "cardInfo": "Join the telegram channel for more news and updates!", 
             "link": "https://telegram.com", 
-            "enabled": true 
+            "enabled": false 
         },
         { 
             "type": "youtube", 
             "cardLabel": "Youtube Channel", 
             "cardInfo": "Subscribe to the youtube channel for more updates!",
             "link": "https://youtube.com", 
-            "enabled": true 
+            "enabled": false 
         },
         { 
             "type": "tiktok", 
             "cardLabel": "Tik Tok Channel", 
             "cardInfo": "Follow us on tik tok for more content!", 
-            "link": "https://discord.gg/dbFChqBh5u", 
-            "enabled": true 
+            "link": "https://discord.gg/qbox", 
+            "enabled": false 
         }
     ],
     "rules": [
