@@ -35,6 +35,12 @@ local stores = {
 		mdwoods 		   	= 2,
 		leancup 		   	= 25,
 		xtcburner 	   		= 25,
+		empty_weed_bag   	= 5,
+		sprunk 		     	= 10,
+		singlepress 	 	= 10000,
+		heroinlabkit 	 	= 10000,
+		lsdlabkit 	 	 	= 10000,
+		cleaningkit 	 	= 50,
 	},
 }
 
