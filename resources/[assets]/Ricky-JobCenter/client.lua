@@ -120,7 +120,7 @@ Citizen.CreateThread(function()
                 1.0, 1.0, 0.5,
                 255, 255, 255, 100,
                 false, false, 2, false,
-                '', '', false
+                nil, nil, false
             )
 
             local distance = #(playerCoords - location)
