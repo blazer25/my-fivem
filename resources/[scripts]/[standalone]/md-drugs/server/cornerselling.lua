@@ -213,30 +213,15 @@ RegisterNetEvent('md-drugs:server:sellCornerDrugs', function(item, amount, price
         return
     end
     
-    -- Check hourly earnings cap
-    local success, cappedAmount, message = exports['economy_cap']:CheckAndAddEarnings(src, price, 'drug-cornerselling')
-    if not success then
-        ps.notify(src, message or 'You have reached your hourly earnings limit', 'error')
-        DrugDeals[ps.getIdentifier(src)] = nil
-        return
-    end
-    
     AddRep(src, 'cornerselling', Drugs[item].rep * amount)
     DrugDeals[ps.getIdentifier(src)] = nil
     
-    if cappedAmount > 0 then
-        if cornsellConfig.MarkedBills then
-            ps.addItem(src, 'markedbills', cappedAmount, {worth = cappedAmount})
-        elseif cornsellConfig.CustomItem ~= '' then
-            ps.addItem(src, cornsellConfig.CustomItem, cappedAmount)
-        else
-            -- Use black_money item instead of cash for criminal activity
-            ps.addItem(src, 'black_money', cappedAmount)
-        end
-        
-        if message then
-            ps.notify(src, message, 'inform')
-        end
+    if cornsellConfig.MarkedBills then
+        ps.addItem(src, 'markedbills', price, {worth = price})
+    elseif cornsellConfig.CustomItem ~= '' then
+        ps.addItem(src, cornsellConfig.CustomItem, price)
+    else
+        ps.addMoney(src, 'cash', price, 'drug-cornerselling')
     end
 end)
 

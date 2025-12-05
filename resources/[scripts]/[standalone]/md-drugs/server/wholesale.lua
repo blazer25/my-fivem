@@ -184,22 +184,8 @@ RegisterNetEvent('md-drugs:server:SuccessSale', function()
         return
     end
     
-    -- Check hourly earnings cap
-    local success, cappedAmount, message = exports['economy_cap']:CheckAndAddEarnings(src, finalPrice, 'drug-wholesale')
-    if not success then
-        ps.notify(src, message or 'You have reached your hourly earnings limit', 'error')
-        active[id] = nil
-        return
-    end
-    
-    -- Use black_money item instead of cash for criminal activity
-    if cappedAmount > 0 then
-        ps.addItem(src, 'black_money', cappedAmount)
-        ps.notify(src, 'Wholesale sale successful' .. ' $' .. cappedAmount, 'success')
-        if message then
-            ps.notify(src, message, 'inform')
-        end
-    end
+    ps.addMoney(src, 'cash', finalPrice, 'drug-wholesale')
+    ps.notify(src, 'Wholesale sale successful' .. ' $' .. finalPrice, 'success')
     active[id] = nil
 end)
 
