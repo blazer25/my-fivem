@@ -30,7 +30,9 @@ local maps = {
     'moreo_supermarket',
     'moreo_gym',
     'moreo_fishandchip',
-    'Sandy BCSO'
+    'Sandy BCSO',
+    'qua_lspd',
+    'nxp_firedepartment_LS'
 
 }
 
