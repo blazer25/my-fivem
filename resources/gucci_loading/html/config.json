@@ -1,0 +1,153 @@
+{
+    "selectedColor": "#ff007b",
+    "backgroundImage": "./assets/png/supra1.png",
+    "videoUrl": "",
+    "watermark": { 
+        "label": { "text": "The Vibe RP", "colorWordCount": 2 }, 
+        "subHeading": "Loading Screen", 
+        "logo": "./assets/png/logo.png" 
+    },
+    "socialHeaders": [
+        { 
+            "type": "discord", 
+            "cardLabel": "Discord Server", 
+            "cardInfo": "Join the discord to keep up with the latest on the FiveM server!", 
+            "link": "https://discord.gg/dbFChqBh5u", 
+            "enabled": true 
+        },
+        { 
+            "type": "instagram", 
+            "cardLabel": "Instagram Page", 
+            "cardInfo": "Follow the instagram page for more content!", 
+            "link": "https://instagram.com", 
+            "enabled": true 
+        },
+        { 
+            "type": "telegram", 
+            "cardLabel": "Telegram Channel", 
+            "cardInfo": "Join the telegram channel for more news and updates!", 
+            "link": "https://telegram.com", 
+            "enabled": true 
+        },
+        { 
+            "type": "youtube", 
+            "cardLabel": "Youtube Channel", 
+            "cardInfo": "Subscribe to the youtube channel for more updates!",
+            "link": "https://youtube.com", 
+            "enabled": true 
+        },
+        { 
+            "type": "tiktok", 
+            "cardLabel": "Tik Tok Channel", 
+            "cardInfo": "Follow us on tik tok for more content!", 
+            "link": "https://discord.gg/dbFChqBh5u", 
+            "enabled": true 
+        }
+    ],
+    "rules": [
+        "No griefing or trolling other players.",
+        "Respect all admins and staff decisions.",
+        "No hacking, exploiting, or modding\nin unfair ways.",
+        "Keep your behavior mature\nand respectful at all times.",
+        "Do not spam the chat\nor use slurs or hate speech."
+    ],
+    "teamMembers": [
+        { "name": "GucciFlipFlops", "role": "Head Developer", "discord": "pakinextdoor", "image": "./assets/png/fakalheadshot.png" },
+        { "name": "HerGTR", "role": "Founding Member", "discord": "dwboutit", "image": "./assets/png/gatorheadshot.png" },
+        { "name": "Mitch", "role": "Founding Member", "discord": "builtlikemitch", "image": "./assets/png/mitchheadshot.png" },
+        { "name": "Haz", "role": "Founding Member", "discord": "spooky1001", "image": "./assets/png/headshot.png" }
+    ],
+    "gallery": [
+        { "path": "./assets/jpg/fivemsupranrcisist.jpg"},
+        { "path": "./assets/jpg/sunsetsupraitsugsik.jpg"},
+        { "path": "./assets/jpg/midiguess.jpg"},
+        { "path": "./assets/jpg/hellcatdurangoitsugsik.jpg"},
+        { "path": "./assets/jpg/IMG_2135.jpeg"},
+        { "path": "./assets/png/oldies2.png" },
+        { "path": "./assets/png/oldies1.png" },
+        { "path": "./assets/png/supra6.png" },
+        { "path": "./assets/png/supra5.png" },
+        { "path": "./assets/jpg/mitch-donk1.jpg" },
+        { "path": "./assets/jpg/mitch-donk2.jpg" },
+        { "path": "./assets/jpg/mitch-donk3.jpg" },
+        { "path": "./assets/png/supra3.png" },
+        { "path": "./assets/png/supra4.png" },
+        { "path": "./assets/png/bluebmw.png" },
+        { "path": "./assets/png/headshot.png" },
+        { "path": "./assets/png/supra2.png" },
+        { "path": "./assets/jpg/rarri_lol.jpg"}
+    ],
+    "keyboardShortcuts": {
+        "keys": [
+            { 
+                "key": "B", 
+                "onFoot": "Point",
+                "inCar": "Put on seatbelt"
+            },
+            { 
+                "key": "Left Arrow", 
+                "onFoot": null,
+                "inCar": "Left Indicator"
+            },
+            { 
+                "key": "Right Arrow", 
+                "onFoot": null,
+                "inCar": "Right Indicator"
+            },
+            { 
+                "key": "Up Arrow", 
+                "onFoot": null,
+                "inCar": "Hazard Lights"
+            },
+            { 
+                "key": "M", 
+                "onFoot": "Pull out phone",
+                "inCar": null
+            },
+            {
+                "key": "L", 
+                "onFoot": "Lock vehicle",
+                "inCar": null
+            },
+            {
+                "key": "G", 
+                "onFoot": null,
+                "inCar": "Toggle vehicle engine on/off"
+            },
+            {
+                "key": "J", 
+                "onFoot": "Park vehicle",
+                "inCar": null
+            },
+            {
+                "key": "Z", 
+                "onFoot": "Open radial menu",
+                "inCar": null
+            },
+            {
+                "key": "X", 
+                "onFoot": "Hands up",
+                "inCar": null
+            },
+            {
+                "key": "0", 
+                "onFoot": null,
+                "inCar": "Vehicle controller"
+            },
+            {
+                "key": "LALT", 
+                "onFoot": "Third eye view",
+                "inCar": null
+            }
+        ]
+    },
+    "music": [
+        { "path": "./assets/mp3/1008gs.mp3", "title": "1008 Grams", "artist": "OT7 Quanny", "image": null },
+        { "path": "./assets/mp3/free_g.mp3", "title": "Free G", "artist": "SDot Go", "image": null },
+        { "path": "./assets/mp3/gta.mp3", "title": "GTA", "artist": "Future, Metro Boomin", "image": null },
+        { "path": "./assets/mp3/like_that.mp3", "title": "Like That", "artist": "Future, Metro Boomin", "image": null },
+        { "path": "./assets/mp3/stop_me.mp3", "title": "Stop Me When I'm Lyin'", "artist": "RX Papi", "image": null },
+        { "path": "./assets/mp3/type_shi.mp3", "title": "Type Shit", "artist": "Future, Metro Boomin", "image": null }
+    ],
+    "defaultVolume": 100
+}
