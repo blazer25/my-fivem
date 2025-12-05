@@ -20,7 +20,6 @@ local maps = {
     'henhouse_milo',
     'anarchy_LittleHouse',
     'anarchy_Townhall',
-    'thunder_medicalcenter',
     'mc_grapeseed',
     'Mirror-Park-Clubhouse',
     'Meetingroomprison',
