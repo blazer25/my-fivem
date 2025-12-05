@@ -1,6 +1,11 @@
 -- Get subhandling class or just return CHandlingData
 ---@param vehicle integer
 local function getVehicleSubhandlingClass(vehicle)
+  if not DoesEntityExist(vehicle) then
+    warn(('getVehicleSubhandlingClass: Vehicle entity %s does not exist'):format(vehicle))
+    return "CHandlingData"
+  end
+  
   local vehicleModel = GetEntityModel(vehicle)
   local vehicleSubHandlingClass = (
     (IsThisModelACar(vehicleModel)) and "CCarHandlingData" or
@@ -16,6 +21,11 @@ end
 ---@param class string
 ---@param fieldName string
 function getVehicleHandlingValue(vehicle, class, fieldName)
+  if not DoesEntityExist(vehicle) then
+    warn(('getVehicleHandlingValue: Vehicle entity %s does not exist'):format(vehicle))
+    return nil
+  end
+  
   if string.sub(fieldName, 1, 3) == "vec" then -- is vec
     return GetVehicleHandlingVector(vehicle, class or "CHandlingData", fieldName)
   elseif string.sub(fieldName, 1, 1) == "f" then
@@ -30,6 +40,11 @@ end
 ---@param fieldName string
 ---@param value any
 function setVehicleHandlingValue(vehicle, class, fieldName, value)
+  if not DoesEntityExist(vehicle) then
+    warn(('setVehicleHandlingValue: Vehicle entity %s does not exist'):format(vehicle))
+    return
+  end
+  
   local prevValue = fieldName == "nInitialDriveGears" and getVehicleHandlingValue(vehicle, class, fieldName) or nil
   
   -- Set power to wheels based on selected drivetrain bias
@@ -70,6 +85,11 @@ end
 ---Get vehicle base handling
 ---@param vehicle integer
 function getBaseVehicleHandling(vehicle)
+  if not DoesEntityExist(vehicle) then
+    warn(('getBaseVehicleHandling: Vehicle entity %s does not exist'):format(vehicle))
+    return {}
+  end
+  
   local subHandlingClass = getVehicleSubhandlingClass(vehicle)
   local handling = {}
 
@@ -136,6 +156,10 @@ end
 ---@return table|false
 local function getGTAPerformanceMods(vehicle)
   if not vehicle or vehicle == 0 then return false end
+  if not DoesEntityExist(vehicle) then
+    warn(('getGTAPerformanceMods: Vehicle entity %s does not exist'):format(vehicle))
+    return false
+  end
 
   return {
     modEngine = GetVehicleMod(vehicle, 11),
@@ -223,6 +247,11 @@ end
 ---@param servicingHealth table
 ---@return table newHandling
 local function calculateServicingHandling(vehicle, handling, servicingHealth)
+  if not DoesEntityExist(vehicle) then
+    warn(('calculateServicingHandling: Vehicle entity %s does not exist'):format(vehicle))
+    return handling
+  end
+  
   local hash = GetEntityModel(vehicle)
   local isSupportedVeh = IsThisModelACar(hash) or IsThisModelABike(hash) or IsThisModelAQuadbike(hash)
   if not isSupportedVeh then return handling end
@@ -303,7 +332,7 @@ local function applyVehicleTuningHandling(vehicle, tuningConfig)
     end
   end
 
-  if NetworkGetEntityOwner(vehicle) == cache.playerId and performanceMods then
+  if DoesEntityExist(vehicle) and NetworkGetEntityOwner(vehicle) == cache.playerId and performanceMods then
     reapplyGTAPerformanceMods(vehicle, performanceMods)
     -- ToggleVehicleMod(vehicle, 18, tuningConfig.turbocharging == 1)
   end
@@ -312,6 +341,10 @@ end
 AddStateBagChangeHandler("tuningConfig", "", function(bagName, _, value)
   local vehicle = GetEntityFromStateBagName(bagName)
   if vehicle == 0 then return end
+  if not DoesEntityExist(vehicle) then
+    warn(('StateBagChangeHandler tuningConfig: Vehicle entity %s does not exist'):format(vehicle))
+    return
+  end
   if not value then return end
 
   applyVehicleTuningHandling(vehicle, value)
@@ -355,7 +388,7 @@ local function applyVehicleServicingHandling(vehicle, servicingData)
     end
   end
 
-  if NetworkGetEntityOwner(vehicle) == cache.playerId and performanceMods then
+  if DoesEntityExist(vehicle) and NetworkGetEntityOwner(vehicle) == cache.playerId and performanceMods then
     reapplyGTAPerformanceMods(vehicle, performanceMods)
   end
 end
@@ -363,6 +396,10 @@ end
 AddStateBagChangeHandler("servicingData", "", function(bagName, _, value)
   local vehicle = GetEntityFromStateBagName(bagName)
   if vehicle == 0 then return end
+  if not DoesEntityExist(vehicle) then
+    warn(('StateBagChangeHandler servicingData: Vehicle entity %s does not exist'):format(vehicle))
+    return
+  end
   if not value then return end
   
   applyVehicleServicingHandling(vehicle, value)
@@ -370,11 +407,17 @@ end)
 
 local function onEnterVehicle(vehicle)
   if not vehicle or vehicle == 0 then return end
+  if not DoesEntityExist(vehicle) then
+    warn(('onEnterVehicle: Vehicle entity %s does not exist'):format(vehicle))
+    return
+  end
 
   -- If Config.SmoothFirstGear is enabled
   if Config.SmoothFirstGear then
     local advancedFlags = getVehicleHandlingValue(vehicle, "CCarHandlingData", "strAdvancedFlags") --[[@as integer]]
-    setVehicleHandlingValue(vehicle, "CCarHandlingData", "strAdvancedFlags", calculateFlagForSmoothFirstGear(advancedFlags))
+    if advancedFlags then
+      setVehicleHandlingValue(vehicle, "CCarHandlingData", "strAdvancedFlags", calculateFlagForSmoothFirstGear(advancedFlags))
+    end
   end
 
   local state = Entity(vehicle).state or {}

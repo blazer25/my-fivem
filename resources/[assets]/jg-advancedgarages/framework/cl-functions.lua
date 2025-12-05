@@ -286,6 +286,20 @@ end
 -- Vehicle Functions
 --
 
+---Wait for entity to exist (helper function for vehicle spawning)
+---@param entity integer
+---@param maxWait number Maximum wait time in milliseconds
+---@return boolean exists
+local function waitForEntity(entity, maxWait)
+  maxWait = maxWait or 5000
+  local waited = 0
+  while not DoesEntityExist(entity) and waited < maxWait do
+    Wait(100)
+    waited = waited + 100
+  end
+  return DoesEntityExist(entity)
+end
+
 ---@param vehicle integer
 ---@return number fuelLevel
 function Framework.Client.VehicleGetFuel(vehicle)
@@ -444,6 +458,11 @@ end
 ---@param vehicle integer
 ---@return table|false props
 function Framework.Client.GetVehicleProperties(vehicle)
+  if not DoesEntityExist(vehicle) then
+    warn(('GetVehicleProperties: Vehicle entity %s does not exist'):format(vehicle))
+    return false
+  end
+  
   if GetResourceState("jg-mechanic") == "started" then
     return exports["jg-mechanic"]:getVehicleProperties(vehicle)
   else
@@ -462,6 +481,11 @@ end
 ---@param vehicle integer
 ---@param props table
 function Framework.Client.SetVehicleProperties(vehicle, props)
+  if not DoesEntityExist(vehicle) then
+    warn(('SetVehicleProperties: Vehicle entity %s does not exist'):format(vehicle))
+    return false
+  end
+  
   if GetResourceState("jg-mechanic") == "started" then
     return exports["jg-mechanic"]:setVehicleProperties(vehicle, props)
   else
