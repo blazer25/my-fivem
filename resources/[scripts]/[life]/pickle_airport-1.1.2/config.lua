@@ -137,6 +137,12 @@ Config.Airports = {
                 ID = 423,
                 Color = 5,
                 Scale = 0.75
+            },
+            Hangar = {
+                Label = "Airport Hangar",
+                ID = 423,
+                Color = 38,
+                Scale = 0.75
             }
         },
         Locations = {
@@ -153,6 +159,12 @@ Config.Airports = {
                 ID = 423,
                 Color = 5,
                 Scale = 0.75
+            },
+            Hangar = {
+                Label = "Airport Hangar",
+                ID = 423,
+                Color = 38,
+                Scale = 0.75
             }
         },
         Locations = {
@@ -168,6 +180,12 @@ Config.Airports = {
                 Label = "Airport",
                 ID = 423,
                 Color = 5,
+                Scale = 0.75
+            },
+            Hangar = {
+                Label = "Airport Hangar",
+                ID = 423,
+                Color = 38,
                 Scale = 0.75
             }
         },
