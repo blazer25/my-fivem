@@ -1061,6 +1061,22 @@ RegisterServerEvent("919-admin:server:AddVehicleToGarage", function(targetId)
                 })
                 
                 if vehicleId then
+                    -- Update vehicle with jg-advancedgarages required fields
+                    -- Check if jg-advancedgarages is active
+                    if GetResourceState('jg-advancedgarages') == 'started' then
+                        -- Get the garage value from the created vehicle
+                        local vehicleData = MySQL.single.await('SELECT garage, state FROM player_vehicles WHERE id = ?', {vehicleId})
+                        local garageId = vehicleData and vehicleData.garage or nil
+                        local inGarage = (vehicleData and vehicleData.state == 1) and 1 or 0
+                        
+                        -- Update with jg-advancedgarages fields
+                        MySQL.update.await('UPDATE player_vehicles SET job_vehicle = 0, gang_vehicle = 0, garage_id = ?, in_garage = ? WHERE id = ?', {
+                            garageId or '',
+                            inGarage,
+                            vehicleId
+                        })
+                    end
+                    
                     -- Link the vehicle entity to the database entry
                     local adminVehicle = GetVehiclePedIsIn(GetPlayerPed(src), false)
                     if adminVehicle ~= 0 then
