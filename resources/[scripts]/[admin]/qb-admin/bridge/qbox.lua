@@ -330,16 +330,21 @@ if not IsDuplicityVersion() then
         lib.callback.register('919-admin:server:GetVehicleInfoFromAdmin', function()
             local ped = PlayerPedId()
             
-            -- First check if ped is in any vehicle
-            if not IsPedInAnyVehicle(ped, false) then
-                return nil
+            -- Try multiple detection methods
+            local veh = nil
+            
+            -- Method 1: Check if ped is in any vehicle first
+            if IsPedInAnyVehicle(ped, false) then
+                veh = GetVehiclePedIsUsing(ped)
             end
             
-            -- Use GetVehiclePedIsUsing for more reliable detection
-            local veh = GetVehiclePedIsUsing(ped)
+            -- Method 2: Fallback to GetVehiclePedIsIn if first method failed
+            if (not veh or veh == 0) then
+                veh = GetVehiclePedIsIn(ped, false)
+            end
             
-            -- Additional validation
-            if veh == 0 or veh == nil or not DoesEntityExist(veh) then
+            -- Final validation
+            if not veh or veh == 0 or not DoesEntityExist(veh) then
                 return nil
             end
             
@@ -353,17 +358,26 @@ if not IsDuplicityVersion() then
             local hash = props.model
             local vehModel = GetEntityModel(veh)
             
-            -- Get vehicle name from qbx_core (server-side lookup needed, so we'll send the hash and let server figure it out)
-            -- Actually, we need the model name, so let's use exports
+            -- Try to get vehicle name from qbx_core
+            local vehicleModel = nil
             local vehiclesByHash = exports.qbx_core:GetVehiclesByHash()
             local vehicleData = vehiclesByHash[vehModel]
             
-            if not vehicleData or not vehicleData.model then
-                return nil
+            if vehicleData and vehicleData.model then
+                vehicleModel = vehicleData.model
+            else
+                -- Fallback: Use display name from game if not in database
+                local displayName = GetDisplayNameFromVehicleModel(vehModel)
+                if displayName and displayName ~= "CARNOTFOUND" then
+                    vehicleModel = displayName:lower()
+                else
+                    -- Last resort: Use the hash as model name
+                    vehicleModel = tostring(vehModel)
+                end
             end
             
             return {
-                model = vehicleData.model,
+                model = vehicleModel,
                 hash = hash,
                 plate = plate,
                 props = props
