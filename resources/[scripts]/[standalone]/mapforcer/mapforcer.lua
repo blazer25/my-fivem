@@ -31,7 +31,10 @@ local maps = {
     'moreo_fishandchip',
     'Sandy_BCSO',
     'qua_lspd',
-    'nxp_firedepartment_LS'
+    'nxp_firedepartment_LS',
+    'bakery',
+    'patoche_secret_bossroom',
+    'gta5interiors_splitsides'
 
 }
 
