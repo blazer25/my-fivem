@@ -63,7 +63,15 @@ RegisterServerEvent('md-drugs:server:giveoxybox', function()
 	}
 	local item = itemList[math.random(1, #itemList)]
 	
-	ps.addMoney(src, 'cash', cash, 'drug-oxy-run')
+	-- Check hourly earnings cap
+	local success, cappedAmount, message = exports['economy_cap']:CheckAndAddEarnings(src, cash, 'drug-oxy-run')
+	if success and cappedAmount > 0 then
+		-- Use black_money item instead of cash for criminal activity
+		ps.addItem(src, 'black_money', cappedAmount)
+		if message then
+			ps.notify(src, message, 'inform')
+		end
+	end
 	
 	if itemchance <= prices.itemChance then 
 		ps.addItem(src, item.item, item.amount)
