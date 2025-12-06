@@ -20,12 +20,18 @@ CreateThread(function()
         framework = 'esx'
         DebugPrint("[Outfit Bag] ESX loaded")
     elseif Config.Framework == "qb" then
-        while QBCore == nil do
-            QBCore = exports['qb-core']:GetCoreObject()
-            Wait(100)
+        if GetResourceState('qbx_core') == 'started' then
+            -- QBox doesn't need QBCore object, uses exports directly
+            framework = 'qb'
+            DebugPrint("[Outfit Bag] QBox (qbx_core) loaded")
+        else
+            while QBCore == nil do
+                QBCore = exports['qb-core']:GetCoreObject()
+                Wait(100)
+            end
+            framework = 'qb'
+            DebugPrint("[Outfit Bag] QBCore loaded")
         end
-        framework = 'qb'
-        DebugPrint("[Outfit Bag] QBCore loaded")
     elseif Config.Framework == "custom" then
         framework = 'custom' -- don't remove this
         -- set your own framework
@@ -96,12 +102,33 @@ AddEventHandler('rs_outfitbag:open', function()
                             end
                         end) 
                     elseif framework == "qb" then
-                        QBCore.Functions.TriggerCallback("rs_outfitbag:getOutfitCount", function(count)
-                            if count >= Config.MaxOutfits then
-                                     Notify(Language.title, Language.maxoutfits, 'error')
-                                return
+                        local count
+                        if GetResourceState('qbx_core') == 'started' then
+                            -- QBox uses ox_lib callbacks
+                            count = lib.callback.await("rs_outfitbag:getOutfitCount", false)
+                        else
+                            -- QBCore uses TriggerCallback
+                            QBCore.Functions.TriggerCallback("rs_outfitbag:getOutfitCount", function(result)
+                                count = result
+                            end)
+                            while count == nil do
+                                Wait(10)
                             end
+                        end
+                        
+                        if count >= Config.MaxOutfits then
+                            Notify(Language.title, Language.maxoutfits, 'error')
+                            return
+                        end
 
+                        local input
+                        if GetResourceState('qbx_core') == 'started' then
+                            -- QBox uses ox_lib inputDialog
+                            input = lib.inputDialog(Language.saveoutfit, {
+                                { type = "input", label = Language.nameoutfit, placeholder = Language.myoutfit }
+                            })
+                        else
+                            -- QBCore uses qb-input
                             local dialog = exports['qb-input']:ShowInput({
                                 header = Language.saveoutfit,
                                 submitText = Language.save,
@@ -114,36 +141,39 @@ AddEventHandler('rs_outfitbag:open', function()
                                     }
                                 }
                             })
-
                             if dialog and dialog.outfitName then
-                                local ped = PlayerPedId()
-                                local outfit = {
-                                    model = GetEntityModel(ped),
-                                    drawableVariations = {},
-                                    propVariations = {}
-                                }
-
-                                for i = 0, 11 do
-                                    table.insert(outfit.drawableVariations, {
-                                        component = i,
-                                        drawable = GetPedDrawableVariation(ped, i),
-                                        texture = GetPedTextureVariation(ped, i),
-                                        palette = GetPedPaletteVariation(ped, i)
-                                    })
-                                end
-
-                                for i = 0, 7 do
-                                    table.insert(outfit.propVariations, {
-                                        component = i,
-                                        drawable = GetPedPropIndex(ped, i),
-                                        texture = GetPedPropTextureIndex(ped, i)
-                                    })
-                                end
-            
-                                TriggerServerEvent("rs_outfitbag:saveOutfit", dialog.outfitName, outfit)
-                                Notify(Language.title, Language.savedoutfit .. dialog.outfitName, 'success')
+                                input = {dialog.outfitName}
                             end
-                        end)
+                        end
+
+                        if input and input[1] then
+                            local ped = PlayerPedId()
+                            local outfit = {
+                                model = GetEntityModel(ped),
+                                drawableVariations = {},
+                                propVariations = {}
+                            }
+
+                            for i = 0, 11 do
+                                table.insert(outfit.drawableVariations, {
+                                    component = i,
+                                    drawable = GetPedDrawableVariation(ped, i),
+                                    texture = GetPedTextureVariation(ped, i),
+                                    palette = GetPedPaletteVariation(ped, i)
+                                })
+                            end
+
+                            for i = 0, 7 do
+                                table.insert(outfit.propVariations, {
+                                    component = i,
+                                    drawable = GetPedPropIndex(ped, i),
+                                    texture = GetPedPropTextureIndex(ped, i)
+                                })
+                            end
+
+                            TriggerServerEvent("rs_outfitbag:saveOutfit", input[1], outfit)
+                            Notify(Language.title, Language.savedoutfit .. '\n' .. input[1], 'success')
+                        end
                     elseif framework == "custom" then
                         -- Add your custom framework logic here
                     end
@@ -210,94 +240,98 @@ end)
 
 RegisterNetEvent('rs_outfitbag:showOutfitList')
 AddEventHandler('rs_outfitbag:showOutfitList', function()
-    ESX.TriggerServerCallback("rs_outfitbag:getOutfits", function(outfits)
-        if not outfits or #outfits == 0 then
-                
-            if Config.Notify == 'esx' then
-                Notify(Language.nooutfits)
-            else
-                Notify(Language.title, Language.nooutfits, 'error')
-            end
-            return
+    local outfits
+    
+    if framework == "esx" then
+        ESX.TriggerServerCallback("rs_outfitbag:getOutfits", function(result)
+            outfits = result
+            processOutfits(outfits)
+        end)
+        return
+    elseif framework == "qb" then
+        -- Use ox_lib callback for QBox/QBCore
+        outfits = lib.callback.await("rs_outfitbag:getOutfits", false)
+        processOutfits(outfits)
+    end
+end)
+
+local function processOutfits(outfits)
+    if not outfits or #outfits == 0 then
+        if Config.Notify == 'esx' then
+            Notify(Language.nooutfits)
+        else
+            Notify(Language.title, Language.nooutfits, 'error')
         end
+        return
+    end
 
+    local elements = {}
 
-        local elements = {}
-
-        for _, outfit in pairs(outfits) do
-
-            table.insert(elements, {
-                title = outfit.name,
-                description = Language.moreoptions,
-                icon = "shirt",
-                menu = "outfit:" .. outfit.id
-            })
-
-
-            local options = {
-                {
-                    title = Language.dressup,
-                    icon = "tshirt",
-                    onSelect = function()
-                                local ped = PlayerPedId()
-
-
-                                local dict = "missmic4"
-                                local clip = "michael_tux_fidget"
-
-                                RequestAnimDict(dict)
-                                while not HasAnimDictLoaded(dict) do
-                                    Wait(10)
-                                end
-
-
-                                TaskPlayAnim(ped, dict, clip, 8.0, -8.0, 1500, 48, 0, false, false, false)
-
-                                
-                                Wait(3500)
-                        TriggerServerEvent("rs_outfitbag:wearOutfit", outfit.id)
-                    end
-                },
-                {
-                    title = Language.rename,
-                    icon = "pen",
-                    onSelect = function()
-                        local newName = lib.inputDialog(Language.renameoutfit, {
-                            { type = "input", label = Language.renameoutfitname, default = outfit.name }
-                        })
-                        if newName and newName[1] then
-                            TriggerServerEvent("rs_outfitbag:renameOutfit", outfit.id, newName[1])
-                        end
-                    end
-                },
-                {
-                    title = Language.delete,
-                    icon = "trash",
-                    onSelect = function()
-                        TriggerServerEvent("rs_outfitbag:deleteOutfit", outfit.id)
-                    end
-                }
-            }
-
-
-            lib.registerContext({
-                id = "outfit:" .. outfit.id,
-                title = outfit.name,
-                options = options
-            })
-        end
-
-
-        lib.registerContext({
-            id = "outfits_main",
-            title = Language.myoutfit,
-            options = elements
+    for _, outfit in pairs(outfits) do
+        table.insert(elements, {
+            title = outfit.name,
+            description = Language.moreoptions,
+            icon = "shirt",
+            menu = "outfit:" .. outfit.id
         })
 
+        local options = {
+            {
+                title = Language.dressup,
+                icon = "tshirt",
+                onSelect = function()
+                    local ped = PlayerPedId()
 
-        lib.showContext("outfits_main")
-    end)
-end)
+                    local dict = "missmic4"
+                    local clip = "michael_tux_fidget"
+
+                    RequestAnimDict(dict)
+                    while not HasAnimDictLoaded(dict) do
+                        Wait(10)
+                    end
+
+                    TaskPlayAnim(ped, dict, clip, 8.0, -8.0, 1500, 48, 0, false, false, false)
+
+                    Wait(3500)
+                    TriggerServerEvent("rs_outfitbag:wearOutfit", outfit.id)
+                end
+            },
+            {
+                title = Language.rename,
+                icon = "pen",
+                onSelect = function()
+                    local newName = lib.inputDialog(Language.renameoutfit, {
+                        { type = "input", label = Language.renameoutfitname, default = outfit.name }
+                    })
+                    if newName and newName[1] then
+                        TriggerServerEvent("rs_outfitbag:renameOutfit", outfit.id, newName[1])
+                    end
+                end
+            },
+            {
+                title = Language.delete,
+                icon = "trash",
+                onSelect = function()
+                    TriggerServerEvent("rs_outfitbag:deleteOutfit", outfit.id)
+                end
+            }
+        }
+
+        lib.registerContext({
+            id = "outfit:" .. outfit.id,
+            title = outfit.name,
+            options = options
+        })
+    end
+
+    lib.registerContext({
+        id = "outfits_main",
+        title = Language.myoutfit,
+        options = elements
+    })
+
+    lib.showContext("outfits_main")
+end
 
 
 if Config.Command.enabled then

@@ -8,7 +8,9 @@ CreateThread(function()
     while Config.Framework == 'auto' do
         Wait(100)
 
-        if GetResourceState("es_extended") == "started" then
+        if GetResourceState("qbx_core") == "started" then
+            Config.Framework = "qb"
+        elseif GetResourceState("es_extended") == "started" then
             Config.Framework = "esx"
         elseif GetResourceState("qb-core") == "started" then
             Config.Framework = "qb"
@@ -54,36 +56,61 @@ CreateThread(function()
         end)
         
     elseif Config.Framework == "qb" then
-        while QBCore == nil do
-            QBCore = exports['qb-core']:GetCoreObject()
-            Wait(100)
+        -- Check if using QBox
+        if GetResourceState('qbx_core') == 'started' then
+            framework = 'qb'
+            ServerDebugPrint("[Outfit Bag] QBox (qbx_core) loaded")
+            
+            -- QBox uses ox_lib callbacks
+            lib.callback.register("rs_outfitbag:getOutfits", function(source)
+                local Player = exports.qbx_core:GetPlayer(source)
+                if not Player then return {} end
+                
+                local identifier = Player.PlayerData.citizenid
+                local results = MySQL.query.await('SELECT id, name FROM user_outfits WHERE identifier = ?', {identifier})
+                return results or {}
+            end)
+            
+            lib.callback.register("rs_outfitbag:getOutfitCount", function(source)
+                local Player = exports.qbx_core:GetPlayer(source)
+                if not Player then return 0 end
+                
+                local identifier = Player.PlayerData.citizenid
+                local count = MySQL.scalar.await("SELECT COUNT(*) FROM user_outfits WHERE identifier = ?", {identifier})
+                return count or 0
+            end)
+        else
+            while QBCore == nil do
+                QBCore = exports['qb-core']:GetCoreObject()
+                Wait(100)
+            end
+            framework = 'qb'
+            ServerDebugPrint("[Outfit Bag] QBCore loaded")
+
+            QBCore.Functions.CreateCallback("rs_outfitbag:getOutfits", function(src, cb)
+                local player = QBCore.Functions.GetPlayer(src)
+                if not player then cb({}) return end
+
+                local identifier = player.PlayerData.citizenid
+                exports.oxmysql:execute('SELECT id, name FROM user_outfits WHERE identifier = ?', {identifier}, function(results)
+                    cb(results)
+                end)
+            end)
+
+            QBCore.Functions.CreateCallback("rs_outfitbag:getOutfitCount", function(src, cb)
+                local player = QBCore.Functions.GetPlayer(src)
+                if not player then cb(0) return end
+
+                local identifier = player.PlayerData.citizenid
+                exports.oxmysql:scalar("SELECT COUNT(*) FROM user_outfits WHERE identifier = ?", {identifier}, function(count)
+                    cb(count or 0)
+                end)
+            end)
+
+            QBCore.Functions.CreateUseableItem("outfit_bag", function(src, item)
+                TriggerClientEvent("rs_outfitbag:place", src)
+            end)
         end
-        framework = 'qb'
-        ServerDebugPrint("[Outfit Bag] QBCore loaded")
-
-        QBCore.Functions.CreateCallback("rs_outfitbag:getOutfits", function(src, cb)
-            local player = QBCore.Functions.GetPlayer(src)
-            if not player then cb({}) return end
-
-            local identifier = player.PlayerData.citizenid
-            exports.oxmysql:execute('SELECT id, name FROM user_outfits WHERE identifier = ?', {identifier}, function(results)
-                cb(results)
-            end)
-        end)
-
-        QBCore.Functions.CreateCallback("rs_outfitbag:getOutfitCount", function(src, cb)
-            local player = QBCore.Functions.GetPlayer(src)
-            if not player then cb(0) return end
-
-            local identifier = player.PlayerData.citizenid
-            exports.oxmysql:scalar("SELECT COUNT(*) FROM user_outfits WHERE identifier = ?", {identifier}, function(count)
-                cb(count or 0)
-            end)
-        end)
-
-        QBCore.Functions.CreateUseableItem("outfit_bag", function(src, item)
-            TriggerClientEvent("rs_outfitbag:place", src)
-        end)
 
     elseif Config.Framework == "custom" then
         framework = 'custom'
@@ -97,7 +124,11 @@ local function GetPlayer(source)
     if Config.Framework == "esx" then
         return ESX.GetPlayerFromId(source)
     elseif Config.Framework == "qb" then
-        return QBCore.Functions.GetPlayer(source)
+        if GetResourceState('qbx_core') == 'started' then
+            return exports.qbx_core:GetPlayer(source)
+        else
+            return QBCore.Functions.GetPlayer(source)
+        end
     end
 end
 

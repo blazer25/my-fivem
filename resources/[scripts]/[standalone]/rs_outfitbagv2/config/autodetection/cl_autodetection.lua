@@ -1,7 +1,10 @@
 if Config.Framework == 'auto' then
     print("^3[WARNING]^0 Framework detection is set to 'auto'. Check if it is set correctly in config.lua.")
     CreateThread(function()
-        if GetResourceState('qb-core') == 'started' then
+        if GetResourceState('qbx_core') == 'started' then
+            Config.Framework = 'qb'
+            print("^2[INFO]^0 Framework detection: QBox (qbx_core)")
+        elseif GetResourceState('qb-core') == 'started' then
             QBCore = exports['qb-core']:GetCoreObject()
             Config.Framework = 'qb'
             print("^2[INFO]^0 Framework detection: QBcore")
