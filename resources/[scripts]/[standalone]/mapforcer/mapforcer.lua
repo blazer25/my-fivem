@@ -34,7 +34,10 @@ local maps = {
     'nxp_firedepartment_LS',
     'bakery',
     'patoche_secret_bossroom',
-    'gta5interiors_splitsides'
+    'gta5interiors_splitsides',
+    'SLBK11_MissionRow',
+    'restaurant',
+    'Arcade Bar Interior'
 
 }
 
